@@ -1,0 +1,30 @@
+/**
+ * Application Configuration
+ * Centralized configuration for API endpoints and app settings
+ */
+
+export const config = {
+  // API Configuration
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000',
+  
+  // Feature Flags
+  ENABLE_AUTH: import.meta.env.VITE_ENABLE_AUTH !== 'false', // Default to true, can be disabled via env
+  
+  // Default Settings
+  DEFAULT_HORIZON: 'intraday' as 'intraday' | 'short' | 'long',
+  DEFAULT_MIN_CONFIDENCE: 0.3,
+  DEFAULT_RISK_PARAMS: {
+    stopLossPct: 2.0,
+    capitalRiskPct: 1.0,
+    drawdownLimitPct: 5.0,
+  },
+  
+  // UI Settings
+  REFRESH_INTERVAL: 120000, // 120 seconds (2 minutes) - dashboard refresh interval
+  DEBOUNCE_DELAY: 300, // 300ms for search inputs
+  
+  // Request Throttling (Frontend-side)
+  MAX_REQUESTS_PER_MINUTE: 20, // Maximum requests per minute from frontend
+  THROTTLE_WINDOW_MS: 60 * 1000, // 1 minute window for request counting
+};
+
