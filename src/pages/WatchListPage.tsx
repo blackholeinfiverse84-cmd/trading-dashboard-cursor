@@ -11,6 +11,52 @@ const WatchListPage = () => {
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [newSymbol, setNewSymbol] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Available stocks list - US + Indian stocks
+  const availableStocks = [
+    // US Stocks
+    'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'META', 'AMZN', 'NVDA', 'AMD', 'INTC', 'NFLX',
+    'IBM', 'ORACLE', 'CISCO', 'UBER', 'COIN', 'PYPL', 'SHOP', 'SQ', 'DDOG', 'NET',
+    // Indian Stocks - Banking & Finance
+    'SBIN.NS', 'AXISBANK.NS', 'ICICIBANK.NS', 'KOTAKBANK.NS', 'HDFC.NS', 'BAJAJFINSV.NS',
+    // Indian Stocks - IT & Tech
+    'TCS.NS', 'INFY.NS', 'WIPRO.NS', 'HCLTECH.NS', 'TECHM.NS',
+    // Indian Stocks - Automobiles
+    'TATAMOTORS.NS', 'M&M.NS', 'MARUTI.NS', 'BAJAJ-AUTO.NS', 'EICHERMOT.NS',
+    // Indian Stocks - Steel & Metal
+    'TATASTEEL.NS', 'JSWSTEEL.NS', 'HINDALCO.NS', 'NMDC.NS',
+    // Indian Stocks - Energy
+    'GAIL.NS', 'POWERGRID.NS', 'NTPC.NS', 'COAL.NS', 'BPCL.NS',
+    // Indian Stocks - Infrastructure & Transport
+    'ADANIPORTS.NS', 'ADANIGREEN.NS', 'ADANITRANS.NS', 'LT.NS',
+    // Indian Stocks - Consumer & Others
+    'ASIANPAINT.NS', 'ULTRACEMCO.NS', 'SUNPHARMA.NS', 'NESTLEIND.NS', 'BRITANNIA.NS',
+    'HINDUNILVR.NS', 'ITC.NS'
+  ];
+
+  const handleSymbolInput = (value: string) => {
+    const upperValue = value.toUpperCase();
+    setNewSymbol(upperValue);
+    
+    // Filter suggestions based on input
+    if (upperValue.length > 0) {
+      const filtered = availableStocks.filter(stock => 
+        stock.includes(upperValue) && !watchlist.includes(stock)
+      );
+      setSuggestions(filtered.slice(0, 8)); // Show max 8 suggestions
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelectSuggestion = (symbol: string) => {
+    if (!watchlist.includes(symbol)) {
+      setWatchlist([...watchlist, symbol]);
+      setNewSymbol('');
+      setSuggestions([]);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('watchlist', JSON.stringify(watchlist));
@@ -48,6 +94,7 @@ const WatchListPage = () => {
     if (newSymbol && !watchlist.includes(newSymbol.toUpperCase())) {
       setWatchlist([...watchlist, newSymbol.toUpperCase()]);
       setNewSymbol('');
+      setSuggestions([]);
     }
   };
 
@@ -65,16 +112,34 @@ const WatchListPage = () => {
 
         <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
           <div className="flex items-center gap-2 mb-3">
-            <input
-              type="text"
-              value={newSymbol}
-              onChange={(e) => setNewSymbol(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addToWatchlist()}
-              placeholder="Enter symbol (e.g., AAPL)"
-              className="flex-1 px-3 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={newSymbol}
+                onChange={(e) => handleSymbolInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSelectSuggestion(newSymbol)}
+                placeholder="e.g., AAPL, TCS.NS"
+                className="w-full px-3 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              
+              {/* Suggestions Dropdown */}
+              {suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg z-10">
+                  {suggestions.map((stock) => (
+                    <button
+                      key={stock}
+                      type="button"
+                      onClick={() => handleSelectSuggestion(stock)}
+                      className="w-full px-3 py-1.5 text-left text-white text-sm hover:bg-slate-600 transition-colors first:rounded-t-lg last:rounded-b-lg border-b border-slate-600 last:border-b-0"
+                    >
+                      {stock}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button
-              onClick={addToWatchlist}
+              onClick={() => handleSelectSuggestion(newSymbol)}
               className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded transition-colors flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />

@@ -10,11 +10,59 @@ const ComparePage = () => {
   const [loading, setLoading] = useState(false);
   const [newSymbol, setNewSymbol] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Available stocks list - US + Indian stocks
+  const availableStocks = [
+    // US Stocks
+    'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'META', 'AMZN', 'NVDA', 'AMD', 'INTC', 'NFLX',
+    'IBM', 'ORACLE', 'CISCO', 'UBER', 'COIN', 'PYPL', 'SHOP', 'SQ', 'DDOG', 'NET',
+    // Indian Stocks - Banking & Finance
+    'SBIN.NS', 'AXISBANK.NS', 'ICICIBANK.NS', 'KOTAKBANK.NS', 'HDFC.NS', 'BAJAJFINSV.NS',
+    // Indian Stocks - IT & Tech
+    'TCS.NS', 'INFY.NS', 'WIPRO.NS', 'HCLTECH.NS', 'TECHM.NS',
+    // Indian Stocks - Automobiles
+    'TATAMOTORS.NS', 'M&M.NS', 'MARUTI.NS', 'BAJAJ-AUTO.NS', 'EICHERMOT.NS',
+    // Indian Stocks - Steel & Metal
+    'TATASTEEL.NS', 'JSWSTEEL.NS', 'HINDALCO.NS', 'NMDC.NS',
+    // Indian Stocks - Energy
+    'GAIL.NS', 'POWERGRID.NS', 'NTPC.NS', 'COAL.NS', 'BPCL.NS',
+    // Indian Stocks - Infrastructure & Transport
+    'ADANIPORTS.NS', 'ADANIGREEN.NS', 'ADANITRANS.NS', 'LT.NS',
+    // Indian Stocks - Consumer & Others
+    'ASIANPAINT.NS', 'ULTRACEMCO.NS', 'SUNPHARMA.NS', 'NESTLEIND.NS', 'BRITANNIA.NS',
+    'HINDUNILVR.NS', 'ITC.NS'
+  ];
 
   const handleAddSymbol = () => {
     if (newSymbol && !selectedSymbols.includes(newSymbol.toUpperCase()) && selectedSymbols.length < 4) {
       setSelectedSymbols([...selectedSymbols, newSymbol.toUpperCase()]);
       setNewSymbol('');
+      setSuggestions([]);
+      setShowAddModal(false);
+    }
+  };
+
+  const handleSymbolInput = (value: string) => {
+    const upperValue = value.toUpperCase();
+    setNewSymbol(upperValue);
+    
+    // Filter suggestions based on input
+    if (upperValue.length > 0) {
+      const filtered = availableStocks.filter(stock => 
+        stock.includes(upperValue) && !selectedSymbols.includes(stock)
+      );
+      setSuggestions(filtered.slice(0, 6)); // Show max 6 suggestions
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelectSuggestion = (symbol: string) => {
+    if (!selectedSymbols.includes(symbol) && selectedSymbols.length < 4) {
+      setSelectedSymbols([...selectedSymbols, symbol]);
+      setNewSymbol('');
+      setSuggestions([]);
       setShowAddModal(false);
     }
   };
@@ -207,20 +255,35 @@ const ComparePage = () => {
                 </button>
               </div>
               <div className="space-y-4">
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-300 mb-2">Symbol</label>
                   <input
                     type="text"
                     value={newSymbol}
-                    onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
-                    placeholder="e.g., AAPL"
+                    onChange={(e) => handleSymbolInput(e.target.value)}
+                    placeholder="e.g., AAPL, TCS.NS"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         handleAddSymbol();
                       }
                     }}
-                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                  
+                  {/* Suggestions Dropdown */}
+                  {suggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg z-10">
+                      {suggestions.map((stock) => (
+                        <button
+                          key={stock}
+                          onClick={() => handleSelectSuggestion(stock)}
+                          className="w-full px-4 py-2 text-left text-white hover:bg-slate-600 transition-colors first:rounded-t-lg last:rounded-b-lg border-b border-slate-600 last:border-b-0"
+                        >
+                          {stock}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-3 pt-2">
                   <button

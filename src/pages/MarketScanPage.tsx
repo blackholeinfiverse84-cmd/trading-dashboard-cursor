@@ -21,6 +21,50 @@ const MarketScanContent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [horizon, setHorizon] = useState<'intraday' | 'short' | 'long'>('intraday');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Available stocks list - US + Indian stocks
+  const availableStocks = [
+    // US Stocks
+    'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'META', 'AMZN', 'NVDA', 'AMD', 'INTC', 'NFLX',
+    'IBM', 'ORACLE', 'CISCO', 'UBER', 'COIN', 'PYPL', 'SHOP', 'SQ', 'DDOG', 'NET',
+    // Indian Stocks - Banking & Finance
+    'SBIN.NS', 'AXISBANK.NS', 'ICICIBANK.NS', 'KOTAKBANK.NS', 'HDFC.NS', 'BAJAJFINSV.NS',
+    // Indian Stocks - IT & Tech
+    'TCS.NS', 'INFY.NS', 'WIPRO.NS', 'HCLTECH.NS', 'TECHM.NS',
+    // Indian Stocks - Automobiles
+    'TATAMOTORS.NS', 'M&M.NS', 'MARUTI.NS', 'BAJAJ-AUTO.NS', 'EICHERMOT.NS',
+    // Indian Stocks - Steel & Metal
+    'TATASTEEL.NS', 'JSWSTEEL.NS', 'HINDALCO.NS', 'NMDC.NS',
+    // Indian Stocks - Energy
+    'GAIL.NS', 'POWERGRID.NS', 'NTPC.NS', 'COAL.NS', 'BPCL.NS',
+    // Indian Stocks - Infrastructure & Transport
+    'ADANIPORTS.NS', 'ADANIGREEN.NS', 'ADANITRANS.NS', 'LT.NS',
+    // Indian Stocks - Consumer & Others
+    'ASIANPAINT.NS', 'ULTRACEMCO.NS', 'SUNPHARMA.NS', 'NESTLEIND.NS', 'BRITANNIA.NS',
+    'HINDUNILVR.NS', 'ITC.NS'
+  ];
+
+  const handleSymbolInput = (value: string) => {
+    const upperValue = value.toUpperCase();
+    setSearchQuery(upperValue);
+    
+    // Filter suggestions based on input
+    if (upperValue.length > 0) {
+      const filtered = availableStocks.filter(stock => 
+        stock.includes(upperValue)
+      );
+      setSuggestions(filtered.slice(0, 8)); // Show max 8 suggestions
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelectSuggestion = (symbol: string) => {
+    setSearchQuery(symbol);
+    setSuggestions([]);
+    handleSearch(symbol);
+  };
   const [analyzeResults, setAnalyzeResults] = useState<AnalyzeResponse | null>(null);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState<PredictionItem | null>(null);

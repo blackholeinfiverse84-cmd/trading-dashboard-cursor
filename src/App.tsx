@@ -7,7 +7,6 @@ import { NotificationProvider } from './contexts/NotificationContext';
 // All real-time updates use REST API polling instead
 import { AppRoutes } from './routes';
 import ErrorBoundary from './components/ErrorBoundary';
-import BackendConnectionBanner from './components/BackendConnectionBanner';
 import './App.css';
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
             <AuthProvider>
               {/* WebSocketProvider removed - backend uses REST API only */}
               <NotificationProvider>
-                <BackendConnectionBanner />
                 <AppRoutes />
               </NotificationProvider>
             </AuthProvider>

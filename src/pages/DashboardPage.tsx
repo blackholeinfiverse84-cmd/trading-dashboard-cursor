@@ -176,23 +176,16 @@ const DashboardPage = () => {
       // REMOVED: Duplicate connection check - already checked in useEffect
       // This was causing extra API calls and hitting rate limits
       
-      // Only show stocks that user has explicitly selected/added
-      // No auto-loading of default symbols - user must choose what to view
-      if (userAddedTrades.length === 0) {
-        // No user-added stocks - show empty state with prompt to add stocks
-        setTopStocks([]);
-        setPortfolioValue(0);
-        setDailyChange(0);
-        setDailyChangePercent(0);
-        setTotalGain(0);
-        setTotalGainPercent(0);
-        setLastUpdated(new Date());
-        setLoading(false);
-        return;
+      // Load user-added trades, or use default symbols if none exist
+      let symbols: string[] = userAddedTrades.map(t => t.symbol);
+      
+      // If no user-added trades, load some popular stocks by default
+      if (symbols.length === 0) {
+        symbols = ['AAPL', 'GOOGL', 'MSFT']; // Default popular stocks
+        console.log('[Dashboard] No user-added trades, loading default symbols:', symbols);
       }
-
-      // Load only user-selected symbols
-      const symbols = userAddedTrades.map(t => t.symbol);
+      
+      console.log('[Dashboard] Loading predictions for symbols:', symbols);
       
       // Try predict endpoint with single symbol
       let response;
@@ -317,17 +310,19 @@ const DashboardPage = () => {
       
       // Calculate real portfolio metrics from predictions
       if (validPredictions.length > 0) {
-        // Calculate total portfolio value (sum of all predicted prices)
+        // Calculate total portfolio value (sum of all current prices)
+        // Using current_price as the base portfolio value
         const totalValue = validPredictions.reduce((sum: number, pred: PredictionItem) => {
-          return sum + (pred.predicted_price || pred.current_price || 0);
+          const price = pred.current_price || 0;
+          return sum + price;
         }, 0);
         
         // Calculate total gain/loss from predicted returns
         const totalReturn = validPredictions.reduce((sum: number, pred: PredictionItem) => {
           const currentPrice = pred.current_price || 0;
-          const predictedPrice = pred.predicted_price || currentPrice;
-          const returnValue = ((predictedPrice - currentPrice) / currentPrice) * 100;
-          return sum + (returnValue * currentPrice / 100); // Convert percentage to dollar amount
+          const returnPercent = pred.predicted_return || 0;
+          const returnValue = (returnPercent / 100) * currentPrice; // Convert percentage to absolute value
+          return sum + returnValue;
         }, 0);
         
         // Calculate daily change (difference from previous portfolio value)
@@ -338,9 +333,9 @@ const DashboardPage = () => {
           setDailyChangePercent(changePercent);
         } else {
           // First load - use average return as daily change estimate
-          const avgReturn = validPredictions.reduce((sum: number, pred: PredictionItem) => {
+          const avgReturn = validPredictions.length > 0 ? validPredictions.reduce((sum: number, pred: PredictionItem) => {
             return sum + (pred.predicted_return || 0);
-          }, 0) / validPredictions.length;
+          }, 0) / validPredictions.length : 0;
           const estimatedChange = (avgReturn / 100) * totalValue;
           setDailyChange(estimatedChange);
           setDailyChangePercent(avgReturn);
@@ -348,8 +343,16 @@ const DashboardPage = () => {
         
         setPortfolioValue(totalValue);
         setTotalGain(totalReturn);
-        setTotalGainPercent((totalReturn / totalValue) * 100);
+        // Guard against division by zero
+        setTotalGainPercent(totalValue > 0 ? (totalReturn / totalValue) * 100 : 0);
         setPreviousPortfolioValue(totalValue);
+        
+        console.log('[Dashboard] Portfolio Metrics:', {
+          totalValue,
+          totalReturn,
+          gainPercent: totalValue > 0 ? (totalReturn / totalValue) * 100 : 0,
+          predictionsCount: validPredictions.length,
+        });
       } else {
         // Reset to 0 if no predictions
         setPortfolioValue(0);
@@ -391,6 +394,21 @@ const DashboardPage = () => {
   };
 
   // Save user-added trades to localStorage
+  // Clear all cached trades from localStorage and reload
+  const clearCacheAndReload = () => {
+    localStorage.removeItem('userAddedTrades');
+    localStorage.removeItem('visibleTopStocks');
+    setUserAddedTrades([]);
+    setTopStocks([]);
+    setPortfolioValue(0);
+    setDailyChange(0);
+    setDailyChangePercent(0);
+    setTotalGain(0);
+    setTotalGainPercent(0);
+    setError('Cache cleared. Add stocks to get started!');
+    setTimeout(() => setError(null), 3000);
+  };
+
   const saveUserAddedTrades = (trades: PredictionItem[]) => {
     console.log('[DashboardPage] Saving user-added trades:', trades.map(t => t.symbol));
     setUserAddedTrades(trades);

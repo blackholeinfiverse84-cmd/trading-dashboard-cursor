@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import ServerStatusIndicator from './ServerStatusIndicator';
 import NotificationCenter from './NotificationCenter';
 
+
 interface NavbarProps {
   onSearch: (query: string) => void;
   activeTab: 'stocks' | 'crypto' | 'commodities';
@@ -253,6 +254,8 @@ const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick }: NavbarProps) 
           <div className="hidden sm:block">
             <NotificationCenter />
           </div>
+
+
 
           {/* Theme Switcher - Completely rewritten */}
           <div ref={themeMenuRef} className="relative theme-switcher-container">
