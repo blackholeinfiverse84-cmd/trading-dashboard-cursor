@@ -22,9 +22,5 @@ export const config = {
   // UI Settings
   REFRESH_INTERVAL: 120000, // 120 seconds (2 minutes) - dashboard refresh interval
   DEBOUNCE_DELAY: 300, // 300ms for search inputs
-  
-  // Request Throttling (Frontend-side)
-  MAX_REQUESTS_PER_MINUTE: 20, // Maximum requests per minute from frontend
-  THROTTLE_WINDOW_MS: 60 * 1000, // 1 minute window for request counting
 };
 

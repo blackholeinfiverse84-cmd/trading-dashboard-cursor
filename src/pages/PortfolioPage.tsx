@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { TrendingUp, TrendingDown, Plus } from 'lucide-react';
 import { stockAPI, TimeoutError, type PredictionItem } from '../services/api';
+import { formatUSDToINR } from '../utils/currencyConverter';
 
 const PortfolioPage = () => {
   const [holdings, setHoldings] = useState<any[]>([]);
@@ -194,12 +195,12 @@ const PortfolioPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
             <p className="text-gray-400 text-xs mb-1">Total Value</p>
-            <p className="text-xl font-bold text-white">${totalValue.toLocaleString()}</p>
+            <p className="text-xl font-bold text-white">{formatUSDToINR(totalValue)}</p>
           </div>
           <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
             <p className="text-gray-400 text-xs mb-1">Total Gain/Loss</p>
             <p className={`text-xl font-bold ${totalGain >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              ${totalGain >= 0 ? '+' : ''}{totalGain.toLocaleString()}
+              {totalGain >= 0 ? '+' : ''}{formatUSDToINR(totalGain)}
             </p>
           </div>
           <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
@@ -239,7 +240,7 @@ const PortfolioPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-gray-300">{holding.shares}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-gray-300">${holding.avgPrice.toFixed(2)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-white">${holding.currentPrice.toFixed(2)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-white">${holding.value.toLocaleString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-white">{formatUSDToINR(holding.value)}</td>
                         <td className="px-3 py-2 whitespace-nowrap">
                           <div className="flex items-center space-x-2">
                             {gain >= 0 ? (

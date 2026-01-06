@@ -1,5 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import { config } from '../config';
+import { PredictionItem, type AnalyzeResponse } from '../types';
+
+// Export the types so they can be imported from this module
+export type { PredictionItem, AnalyzeResponse };
 
 // Debug logging (can be disabled in production)
 const DEBUG = import.meta.env.DEV || false;
@@ -8,63 +12,6 @@ const log = (...args: any[]) => {
     console.log('[API]', ...args);
   }
 };
-
-// TypeScript interfaces for API responses
-export interface PredictionItem {
-  symbol: string;
-  action: 'LONG' | 'SHORT' | 'HOLD' | 'BUY' | 'SELL';
-  predicted_return: number;
-  confidence: number;
-  stop_loss?: number;
-  take_profit?: number;
-  risk_score?: number;
-  error?: string;
-  horizon?: string; // Horizon for this prediction
-  predicted_price?: number; // Predicted price
-  current_price?: number; // Current price
-  isUserAdded?: boolean; // Frontend-only flag for user-added trades
-  ensemble_details?: {
-    models_align: boolean;
-    price_agreement: boolean;
-  };
-  individual_predictions?: Record<string, {
-    action: string;
-    predicted_return: number;
-    confidence: number;
-  }>;
-  horizon_details?: Record<string, unknown>; // Additional horizon-specific details
-}
-
-export interface PredictResponse {
-  metadata: {
-    count: number;
-    horizon: string;
-    timestamp?: string;
-    error?: string;
-  };
-  predictions: PredictionItem[];
-}
-
-export interface ScanAllResponse {
-  metadata: {
-    count: number;
-    horizon: string;
-    timestamp?: string;
-    error?: string;
-  };
-  shortlist: PredictionItem[];
-  all_predictions: PredictionItem[];
-}
-
-export interface AnalyzeResponse {
-  metadata: {
-    symbol: string;
-    horizons: string[];
-    timestamp?: string;
-    error?: string;
-  };
-  predictions: PredictionItem[];
-}
 
 // Custom error class for timeouts on long-running requests
 // This allows components to distinguish "still processing" from "actual failure"
@@ -79,64 +26,6 @@ export class TimeoutError extends Error {
 let isBackendOnline = true;
 let connectionCheckInProgress = false;
 
-// Request throttling - Limit frontend to 20 requests per minute
-const MAX_REQUESTS = config.MAX_REQUESTS_PER_MINUTE || 20;
-const THROTTLE_WINDOW_MS = config.THROTTLE_WINDOW_MS || 60 * 1000; // 1 minute window
-let requestCount = 0;
-let requestTimestamps: number[] = [];
-
-/**
- * Clean up old request timestamps outside the throttle window
- */
-function cleanupOldRequests() {
-  const now = Date.now();
-  requestTimestamps = requestTimestamps.filter(ts => now - ts < THROTTLE_WINDOW_MS);
-  requestCount = requestTimestamps.length;
-}
-
-/**
- * Check if we can make a request (under 20 requests limit)
- * Returns true if request can proceed, false if throttled
- */
-function canMakeRequest(): boolean {
-  cleanupOldRequests();
-  return requestCount < MAX_REQUESTS;
-}
-
-/**
- * Record a request timestamp
- */
-function recordRequest() {
-  const now = Date.now();
-  requestTimestamps.push(now);
-  requestCount = requestTimestamps.length;
-  cleanupOldRequests();
-}
-
-/**
- * Get remaining requests in current window
- */
-export function getRemainingRequests(): number {
-  cleanupOldRequests();
-  return Math.max(0, MAX_REQUESTS - requestCount);
-}
-
-/**
- * Get request limit status
- */
-export function getRequestLimitStatus(): { used: number; limit: number; remaining: number; resetIn: number } {
-  cleanupOldRequests();
-  const oldestTimestamp = requestTimestamps.length > 0 ? Math.min(...requestTimestamps) : Date.now();
-  const resetIn = Math.max(0, THROTTLE_WINDOW_MS - (Date.now() - oldestTimestamp));
-  
-  return {
-    used: requestCount,
-    limit: MAX_REQUESTS,
-    remaining: Math.max(0, MAX_REQUESTS - requestCount),
-    resetIn: Math.ceil(resetIn / 1000) // seconds
-  };
-}
-
 const api = axios.create({
   baseURL: config.API_BASE_URL,
   headers: {
@@ -146,31 +35,14 @@ const api = axios.create({
   withCredentials: false, // CORS is handled by backend
 });
 
-// Add token to requests if available and enforce request throttling
+// Add token to requests if available
 api.interceptors.request.use(
-  async (config) => {
-    // Check request throttling BEFORE making the request
-    if (!canMakeRequest()) {
-      const status = getRequestLimitStatus();
-      const error = new Error(
-        `Request limit exceeded. You have used ${status.used}/${status.limit} requests. ` +
-        `Please wait ${status.resetIn} seconds before making more requests.`
-      );
-      (error as any).isThrottled = true;
-      (error as any).throttleStatus = status;
-      return Promise.reject(error);
-    }
-    
-    // Record this request
-    recordRequest();
-    
-    // Add authentication token
+  (config) => {
     const token = localStorage.getItem('token');
     // Only add token if it's a valid JWT (not 'no-auth-required')
     if (token && token !== 'no-auth-required' && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
     return config;
   },
   (error) => {
@@ -292,17 +164,6 @@ api.interceptors.response.use(
         if (originalRequest) {
           originalRequest._retry = true; // Prevent retry
         }
-      } else if (error.isThrottled) {
-        // Frontend request throttling - show user-friendly message
-        const throttleStatus = error.throttleStatus || getRequestLimitStatus();
-        message = error.message || 
-          `Request limit reached (${throttleStatus.used}/${throttleStatus.limit}). ` +
-          `Please wait ${throttleStatus.resetIn} seconds before making more requests.`;
-        
-        // Don't retry throttled requests
-        if (originalRequest) {
-          originalRequest._retry = true;
-        }
       } else if (status === 503) {
         message = 'Service temporarily unavailable. The prediction engine is initializing. Please try again in a moment.';
       } else if (status >= 500) {
@@ -353,15 +214,8 @@ export const stockAPI = {
     stopLossPct?: number,
     capitalRiskPct?: number,
     drawdownLimitPct?: number
-  ): Promise<PredictResponse> => {
-    const payload: {
-      symbols: string[];
-      horizon: string;
-      risk_profile?: string;
-      stop_loss_pct?: number;
-      capital_risk_pct?: number;
-      drawdown_limit_pct?: number;
-    } = {
+  ) => {
+    const payload: any = {
       symbols,
       horizon,
     };
@@ -372,13 +226,15 @@ export const stockAPI = {
     
     log('Calling /tools/predict with:', payload);
     try {
-      const response = await api.post<PredictResponse>('/tools/predict', payload);
+      const response = await api.post('/tools/predict', payload);
       log('Predict response received:', { status: response.status, hasPredictions: 'predictions' in response.data });
       return response.data;
-    } catch (error: unknown) {
+    } catch (error: any) {
       log('Predict error:', { 
-        message: error instanceof Error ? error.message : String(error),
-        isTimeout: error instanceof TimeoutError,
+        message: error.message, 
+        code: error.code, 
+        status: error.response?.status,
+        hasResponse: !!error.response 
       });
       throw error;
     }
@@ -390,14 +246,8 @@ export const stockAPI = {
     minConfidence: number = 0.3,
     stopLossPct?: number,
     capitalRiskPct?: number
-  ): Promise<ScanAllResponse> => {
-    const payload: {
-      symbols: string[];
-      horizon: string;
-      min_confidence: number;
-      stop_loss_pct?: number;
-      capital_risk_pct?: number;
-    } = {
+  ) => {
+    const payload: any = {
       symbols,
       horizon,
       min_confidence: minConfidence,
@@ -405,16 +255,8 @@ export const stockAPI = {
     if (stopLossPct !== undefined) payload.stop_loss_pct = stopLossPct;
     if (capitalRiskPct !== undefined) payload.capital_risk_pct = capitalRiskPct;
     
-    try {
-      const response = await api.post<ScanAllResponse>('/tools/scan_all', payload);
-      return response.data;
-    } catch (error: unknown) {
-      log('ScanAll error:', { 
-        message: error instanceof Error ? error.message : String(error),
-        isTimeout: error instanceof TimeoutError,
-      });
-      throw error;
-    }
+    const response = await api.post('/tools/scan_all', payload);
+    return response.data;
   },
   
   analyze: async (
@@ -423,23 +265,15 @@ export const stockAPI = {
     stopLossPct: number = 2.0,
     capitalRiskPct: number = 1.0,
     drawdownLimitPct: number = 5.0
-  ): Promise<AnalyzeResponse> => {
-    try {
-      const response = await api.post<AnalyzeResponse>('/tools/analyze', {
-        symbol,
-        horizons,
-        stop_loss_pct: stopLossPct,
-        capital_risk_pct: capitalRiskPct,
-        drawdown_limit_pct: drawdownLimitPct,
-      });
-      return response.data;
-    } catch (error: unknown) {
-      log('Analyze error:', { 
-        message: error instanceof Error ? error.message : String(error),
-        isTimeout: error instanceof TimeoutError,
-      });
-      throw error;
-    }
+  ) => {
+    const response = await api.post('/tools/analyze', {
+      symbol,
+      horizons,
+      stop_loss_pct: stopLossPct,
+      capital_risk_pct: capitalRiskPct,
+      drawdown_limit_pct: drawdownLimitPct,
+    });
+    return response.data;
   },
   
   fetchData: async (
@@ -528,22 +362,14 @@ export const stockAPI = {
     horizon: string = 'intraday',
     nEpisodes: number = 10,
     forceRetrain: boolean = false
-  ): Promise<{ success: boolean; message?: string; symbol?: string; horizon?: string }> => {
-    try {
-      const response = await api.post<{ success: boolean; message?: string; symbol?: string; horizon?: string }>('/tools/train_rl', {
-        symbol,
-        horizon,
-        n_episodes: nEpisodes,
-        force_retrain: forceRetrain,
-      });
-      return response.data;
-    } catch (error: unknown) {
-      log('TrainRL error:', { 
-        message: error instanceof Error ? error.message : String(error),
-        isTimeout: error instanceof TimeoutError,
-      });
-      throw error;
-    }
+  ) => {
+    const response = await api.post('/tools/train_rl', {
+      symbol,
+      horizon,
+      n_episodes: nEpisodes,
+      force_retrain: forceRetrain,
+    });
+    return response.data;
   },
   
   health: async () => {

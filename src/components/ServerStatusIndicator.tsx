@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { stockAPI } from '../services/api';
-import { CheckCircle2, XCircle, AlertCircle, Loader2, Activity, Server, Wifi, WifiOff } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, Loader2, Server, WifiOff } from 'lucide-react';
 
 interface ServerStatusIndicatorProps {
   className?: string;
@@ -36,7 +36,7 @@ const ServerStatusIndicator = ({ className = '', showDetails = false }: ServerSt
     setError(null);
 
     try {
-      // Check connection first
+      // Check connection first (uses same endpoint as health check base)
       const connectionCheck = await stockAPI.checkConnection();
       
       if (!connectionCheck.connected) {
@@ -47,14 +47,15 @@ const ServerStatusIndicator = ({ className = '', showDetails = false }: ServerSt
         return;
       }
 
-      // If connected, get health status
+      // If connected, get health status (only if connection check passed)
+      // This makes 2 requests total, but only every 2 minutes = ~1 request per minute
       try {
         const health = await stockAPI.health();
         setHealthStatus(health);
         setConnectionStatus('connected');
         setError(null);
       } catch (healthError: any) {
-        // Connection works but health check failed
+        // Connection works but health check failed - still mark as connected
         setConnectionStatus('connected');
         setError(healthError.message || 'Health check failed');
         setHealthStatus({

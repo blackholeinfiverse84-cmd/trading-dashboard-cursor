@@ -6,7 +6,7 @@ import { useAssetType } from '../contexts/AssetTypeContext';
 import StocksView from '../components/StocksView';
 import CryptoView from '../components/CryptoView';
 import CommoditiesView from '../components/CommoditiesView';
-import { TrendingUp, TrendingDown, Minus, BarChart3, ThumbsUp, ThumbsDown, Sparkles, Loader2, X, ChevronDown, ChevronUp, Brain, Cpu, Zap, AlertCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, BarChart3, ThumbsUp, Sparkles, Loader2, X, ChevronDown, ChevronUp, Brain, Cpu, Zap, AlertCircle } from 'lucide-react';
 import StopLoss from '../components/StopLoss';
 import CandlestickChart from '../components/CandlestickChart';
 
@@ -19,7 +19,6 @@ const MarketScanContent = () => {
   // Removed selectedSymbols - not currently used in UI
   const [predictions, setPredictions] = useState<PredictionItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [horizon, setHorizon] = useState<'intraday' | 'short' | 'long'>('intraday');
   const [analyzeResults, setAnalyzeResults] = useState<AnalyzeResponse | null>(null);
@@ -58,8 +57,8 @@ const MarketScanContent = () => {
     // Check immediately
     checkConnection();
     
-    // Check every 30 seconds to ensure connection is maintained
-    const interval = setInterval(checkConnection, 30000);
+    // Check every 120 seconds (2 minutes) to reduce API calls and stay under rate limit
+    const interval = setInterval(checkConnection, 120000);
     
     return () => clearInterval(interval);
   }, []); // Empty dependency array - only run on mount
@@ -95,11 +94,9 @@ const MarketScanContent = () => {
     setError(null);
     setPredictions([]); // Clear previous results immediately
     setSearchQuery(trimmedSymbol); // Update search query state
-    setLoadingMessage('Connecting to backend...');
     
     try {
       console.log('MarketScanPage: Calling API with symbol:', trimmedSymbol, 'horizon:', horizon);
-      setLoadingMessage('Processing prediction (this may take 60-90 seconds on first run)...');
       const response = await stockAPI.predict([trimmedSymbol], horizon);
       
       console.log('MarketScanPage: API response received:', response);
@@ -138,7 +135,6 @@ const MarketScanContent = () => {
       if (error instanceof TimeoutError) {
         // Keep loading state active, show processing message
         setError(null); // Clear any previous errors
-        setLoadingMessage('Processing prediction (this may take 60-90 seconds on first run)...');
         console.log('MarketScanPage: Request timed out but backend is still processing');
         // Don't clear loading state - backend is still working
         return;
@@ -153,7 +149,6 @@ const MarketScanContent = () => {
       if (err.message?.includes('Authentication required') || err.message?.includes('Session expired')) {
         setError('Please login to access this feature. Redirecting to login...');
         setLoading(false);
-        setLoadingMessage('');
         // Redirect will be handled by API interceptor
         return;
       }
@@ -166,7 +161,6 @@ const MarketScanContent = () => {
       }
       
       setLoading(false);
-      setLoadingMessage('');
       console.error('MarketScanPage: Full error details:', {
         message: err.message,
         response: (error as any)?.response?.data,
@@ -182,7 +176,7 @@ const MarketScanContent = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await stockAPI.analyze(symbol, [horizon], 2.0, 1.0, 5.0);
+      const response = await stockAPI.analyze(symbol, [horizon]);
       
       // Check for errors in metadata
       if (response.metadata?.error) {
@@ -531,9 +525,16 @@ const MarketScanContent = () => {
                 const confidence = (pred.confidence || 0) * 100;
                 const isPositive = (pred.predicted_return || 0) > 0;
                 const isExpanded = expandedPredictions.has(index);
-                const ensembleDetails = pred.ensemble_details || {};
-                const individualPreds = pred.individual_predictions || {};
-                const horizonDetails = pred.horizon_details || {};
+                const ensembleDetails = (pred.ensemble_details || {}) as Record<string, unknown>;
+                const individualPreds = (pred.individual_predictions || {}) as Record<string, {
+                  action: string;
+                  predicted_return: number;
+                  confidence: number;
+                  price?: number;
+                  return?: number;
+                  [key: string]: unknown;
+                }>;
+                const horizonDetails = (pred.horizon_details || {}) as Record<string, unknown>;
                 
                 return (
                   <div 
@@ -648,7 +649,7 @@ const MarketScanContent = () => {
                               Ensemble Analysis
                             </h4>
                             <div className="grid grid-cols-2 gap-3">
-                              {ensembleDetails.decision_maker && (
+                              {typeof ensembleDetails.decision_maker === 'string' && ensembleDetails.decision_maker && (
                                 <div>
                                   <p className="text-xs text-gray-400 mb-1">Decision Maker</p>
                                   <p className="text-sm text-white font-medium">{ensembleDetails.decision_maker}</p>
@@ -670,10 +671,10 @@ const MarketScanContent = () => {
                                   </p>
                                 </div>
                               )}
-                              {ensembleDetails.total_vote !== undefined && (
+                              {ensembleDetails.total_vote !== undefined && typeof ensembleDetails.total_vote === 'number' && (
                                 <div>
                                   <p className="text-xs text-gray-400 mb-1">Total Vote</p>
-                                  <p className="text-sm text-white font-medium">{ensembleDetails.total_vote.toFixed(4)}</p>
+                                  <p className="text-sm text-white font-medium">{Number(ensembleDetails.total_vote).toFixed(4)}</p>
                                 </div>
                               )}
                             </div>
@@ -746,15 +747,15 @@ const MarketScanContent = () => {
                               Horizon Information
                             </h4>
                             <div className="space-y-2">
-                              {horizonDetails.description && (
+                              {typeof horizonDetails.description === 'string' && horizonDetails.description && (
                                 <p className="text-xs text-gray-300">{horizonDetails.description}</p>
                               )}
-                              {horizonDetails.target_days && (
+                              {horizonDetails.target_days !== undefined && horizonDetails.target_days !== null && (
                                 <p className="text-xs text-gray-400">
-                                  Target Days: <span className="text-white">{horizonDetails.target_days}</span>
+                                  Target Days: <span className="text-white">{String(horizonDetails.target_days)}</span>
                                 </p>
                               )}
-                              {horizonDetails.type && (
+                              {typeof horizonDetails.type === 'string' && horizonDetails.type && (
                                 <p className="text-xs text-gray-400">
                                   Type: <span className="text-white capitalize">{horizonDetails.type}</span>
                                 </p>

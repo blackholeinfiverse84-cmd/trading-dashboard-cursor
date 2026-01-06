@@ -23,7 +23,7 @@ const BackendConnectionBanner = ({ className = '' }: BackendConnectionBannerProp
   const connectionStatus = connectionState.isChecking ? 'checking' : 'disconnected';
 
   return (
-    <div className={`${className} fixed top-0 left-0 right-0 z-50 animate-slideDown`}>
+    <div className={`${className} fixed top-0 left-0 lg:left-64 right-0 z-[60] animate-slideDown`}>
       <div className="bg-red-900/95 border-b-2 border-red-500 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-start gap-3">

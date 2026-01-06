@@ -56,7 +56,7 @@ const LayoutContent = ({ children }: LayoutProps) => {
       key={theme} // Force re-render when theme changes
       className={`flex h-screen relative ${
         theme === 'light' ? 'bg-gray-100' : 
-        theme === 'space' ? 'bg-[#1b0725]' : // Deep purple-black matching Uni-Guru
+        theme === 'space' ? 'bg-[#1b0725]' : // Deep purple-black matching Space theme
         'bg-slate-900'
       }`}
       style={theme === 'space' ? { backgroundColor: '#1b0725' } : undefined}

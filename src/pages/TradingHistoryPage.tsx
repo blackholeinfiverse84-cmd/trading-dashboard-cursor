@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { formatUSDToINR } from '../utils/currencyConverter';
 
 const TradingHistoryPage = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -99,7 +100,7 @@ const TradingHistoryPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-gray-300">{transaction.shares}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-300">${transaction.price?.toFixed(2) || '0.00'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
-                        ${transaction.total?.toLocaleString() || '0.00'}
+                        {formatUSDToINR(transaction.total || 0)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">

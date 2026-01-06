@@ -17,6 +17,7 @@ const AnalyticsPage = () => {
     modelPerformance: Record<string, { count: number; avgReturn: number }>;
   } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d'>('30d');
   const [features, setFeatures] = useState<Record<string, unknown> | null>(null);
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
@@ -115,6 +116,7 @@ const AnalyticsPage = () => {
         loadFeaturesForSymbol(predictions[0].symbol);
       }
       setLoading(false);
+      setError(null);
     } catch (error: unknown) {
       // Handle TimeoutError - backend is still processing
       if (error instanceof TimeoutError) {
@@ -128,6 +130,7 @@ const AnalyticsPage = () => {
       const err = error instanceof Error ? error : new Error(String(error));
       console.error('Failed to load analytics:', err);
       setAnalytics(null);
+      setError(err.message || 'Failed to load analytics');
       setLoading(false);
     }
   };
@@ -135,7 +138,7 @@ const AnalyticsPage = () => {
   const loadFeaturesForSymbol = async (symbol: string) => {
     try {
       setSelectedSymbol(symbol);
-      const response = await stockAPI.fetchData([symbol], '2y', true, false);
+      const response = await stockAPI.fetchData([symbol], '2y', true);
       if (response.data && response.data[symbol] && response.data[symbol].features) {
         setFeatures(response.data[symbol].features);
       }
@@ -183,6 +186,11 @@ const AnalyticsPage = () => {
 
         {loading ? (
           <div className="text-center py-8 text-gray-400">Loading analytics...</div>
+        ) : error ? (
+          <div className="bg-red-900 border border-red-700 rounded-lg p-4 text-red-200">
+            <p className="font-semibold mb-1">Error Loading Analytics</p>
+            <p className="text-sm">{error}</p>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">

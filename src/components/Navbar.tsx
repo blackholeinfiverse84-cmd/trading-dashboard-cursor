@@ -30,30 +30,48 @@ const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick }: NavbarProps) 
   };
 
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    if (value.length > 0) {
-      const symbols = getSymbolList();
-      const filtered = symbols.filter((symbol) =>
-        symbol.toLowerCase().includes(value.toLowerCase())
-      ).slice(0, 10);
-      setFilteredSymbols(filtered);
-      setShowSuggestions(true);
-    } else {
+    try {
+      setSearchQuery(value);
+      if (value.length > 0) {
+        const symbols = getSymbolList();
+        const filtered = symbols.filter((symbol) =>
+          symbol.toLowerCase().includes(value.toLowerCase())
+        ).slice(0, 10);
+        setFilteredSymbols(filtered);
+        setShowSuggestions(true);
+      } else {
+        setFilteredSymbols([]);
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.error('Error in search change:', error);
       setFilteredSymbols([]);
       setShowSuggestions(false);
     }
   };
 
   const handleSelectStock = (symbol: string) => {
-    setSearchQuery(symbol);
-    setShowSuggestions(false);
-    onSearch(symbol);
+    try {
+      setSearchQuery(symbol);
+      setShowSuggestions(false);
+      if (onSearch && typeof onSearch === 'function') {
+        onSearch(symbol);
+      }
+    } catch (error) {
+      console.error('Error selecting stock:', error);
+      setShowSuggestions(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery) {
-      onSearch(searchQuery);
+    try {
+      e.preventDefault();
+      if (searchQuery && onSearch && typeof onSearch === 'function') {
+        onSearch(searchQuery);
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.error('Error submitting search:', error);
       setShowSuggestions(false);
     }
   };
@@ -96,9 +114,16 @@ const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick }: NavbarProps) 
 
   // Handle theme change
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'space') => {
-    console.log('Changing theme to:', newTheme);
-    setTheme(newTheme);
-    setShowThemeMenu(false);
+    try {
+      console.log('Changing theme to:', newTheme);
+      if (setTheme && typeof setTheme === 'function') {
+        setTheme(newTheme);
+      }
+      setShowThemeMenu(false);
+    } catch (error) {
+      console.error('Error changing theme:', error);
+      setShowThemeMenu(false);
+    }
   };
 
   const isLight = theme === 'light';
@@ -312,7 +337,7 @@ const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick }: NavbarProps) 
                     }`}
                   >
                     <Sparkles className="w-4 h-4" />
-                    <span>Space (Uni-Guru)</span>
+                    <span>Space</span>
                     {theme === 'space' && <span className="ml-auto text-xs font-bold">✓</span>}
                   </button>
                 </div>

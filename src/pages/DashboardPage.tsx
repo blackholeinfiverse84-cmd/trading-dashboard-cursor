@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Layout from '../components/Layout';
 import { stockAPI, POPULAR_STOCKS, TimeoutError, type PredictionItem } from '../services/api';
 import { useConnection } from '../contexts/ConnectionContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { TrendingUp, TrendingDown, DollarSign, Activity, RefreshCw, AlertCircle, Sparkles, Plus, X, Search, Loader2, Trash2, CheckCircle2 } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { formatUSDToINR } from '../utils/currencyConverter';
 
 const DashboardPage = () => {
   const { connectionState } = useConnection();
@@ -40,7 +41,9 @@ const DashboardPage = () => {
     const savedTrades = localStorage.getItem('userAddedTrades');
     if (savedTrades) {
       try {
-        setUserAddedTrades(JSON.parse(savedTrades));
+        const parsed = JSON.parse(savedTrades);
+        setUserAddedTrades(parsed);
+        console.log('[DashboardPage] Loaded user-added trades from localStorage:', parsed.map((t: PredictionItem) => t.symbol));
       } catch (err) {
         console.error('Failed to load user-added trades:', err);
       }
@@ -173,9 +176,23 @@ const DashboardPage = () => {
       // REMOVED: Duplicate connection check - already checked in useEffect
       // This was causing extra API calls and hitting rate limits
       
-      // Use only 1-2 symbols for dashboard to avoid timeout
-      // Dashboard loads faster with fewer symbols
-      const symbols = ['AAPL']; // Start with just one symbol for faster loading
+      // Only show stocks that user has explicitly selected/added
+      // No auto-loading of default symbols - user must choose what to view
+      if (userAddedTrades.length === 0) {
+        // No user-added stocks - show empty state with prompt to add stocks
+        setTopStocks([]);
+        setPortfolioValue(0);
+        setDailyChange(0);
+        setDailyChangePercent(0);
+        setTotalGain(0);
+        setTotalGainPercent(0);
+        setLastUpdated(new Date());
+        setLoading(false);
+        return;
+      }
+
+      // Load only user-selected symbols
+      const symbols = userAddedTrades.map(t => t.symbol);
       
       // Try predict endpoint with single symbol
       let response;
@@ -217,6 +234,13 @@ const DashboardPage = () => {
       // Filter out predictions with errors
       const validPredictions = (response.predictions || []).filter((p: PredictionItem) => !p.error);
       
+      console.log('[Dashboard] API Response:', {
+        metadata: response.metadata,
+        totalPredictions: response.predictions?.length || 0,
+        validPredictions: validPredictions.length,
+        firstPrediction: validPredictions[0],
+      });
+      
       if (validPredictions.length > 0) {
         // Set initial prediction immediately (fast loading)
         setTopStocks(validPredictions);
@@ -243,7 +267,7 @@ const DashboardPage = () => {
                 // Show training message
                 setError(`Training model for ${symbolToTrain}... This will take 60-90 seconds. The dashboard will refresh automatically when complete.`);
                 
-                stockAPI.trainRL(symbolToTrain, 'intraday', 10, false)
+                stockAPI.trainRL(symbolToTrain, 'intraday', 10)
                   .then((trainResult) => {
                     console.log('[Dashboard] Model training completed:', trainResult);
                     // After training completes, reload predictions
@@ -336,6 +360,7 @@ const DashboardPage = () => {
       }
       
       setLastUpdated(new Date());
+      setLoading(false); // Clear loading state after successful data load
     } catch (error: unknown) {
       // Handle TimeoutError - backend is still processing
       if (error instanceof TimeoutError) {
@@ -367,6 +392,7 @@ const DashboardPage = () => {
 
   // Save user-added trades to localStorage
   const saveUserAddedTrades = (trades: PredictionItem[]) => {
+    console.log('[DashboardPage] Saving user-added trades:', trades.map(t => t.symbol));
     setUserAddedTrades(trades);
     localStorage.setItem('userAddedTrades', JSON.stringify(trades));
   };
@@ -375,6 +401,28 @@ const DashboardPage = () => {
   const saveHiddenTrades = (symbols: string[]) => {
     setHiddenTrades(symbols);
     localStorage.setItem('hiddenTrades', JSON.stringify(symbols));
+  };
+
+  // Normalize symbol for consistent comparison (handle .NS suffix variations)
+  const normalizeSymbolForComparison = (symbol: string): string => {
+    return symbol.trim().toUpperCase();
+  };
+
+  // Check if symbol exists in either user-added or backend stocks (case-insensitive)
+  const symbolExistsInTopPerformers = (checkSymbol: string): boolean => {
+    const normalized = normalizeSymbolForComparison(checkSymbol);
+    
+    // Check in user-added trades
+    const inUserTrades = userAddedTrades.some(t => 
+      normalizeSymbolForComparison(t.symbol) === normalized
+    );
+    
+    // Check in backend stocks
+    const inBackendStocks = topStocks.some(t => 
+      normalizeSymbolForComparison(t.symbol) === normalized
+    );
+    
+    return inUserTrades || inBackendStocks;
   };
 
   // Handle search suggestions for add trade
@@ -387,6 +435,7 @@ const DashboardPage = () => {
       ).slice(0, 8); // Show max 8 suggestions
       setFilteredSymbols(filtered);
       setShowSuggestions(filtered.length > 0);
+      console.log('[Dashboard] Symbol suggestions:', { query, count: filtered.length, suggestions: filtered });
     } else {
       setFilteredSymbols([]);
       setShowSuggestions(false);
@@ -445,9 +494,31 @@ const DashboardPage = () => {
     setAddTradeError(null);
 
     try {
-      // Check if trade already exists
-      const existingTrade = userAddedTrades.find(t => t.symbol === symbol);
-      if (existingTrade) {
+      // Log state for debugging
+      console.log('[DashboardPage] Add Trade - State Check:', {
+        inputSymbol: symbol,
+        userAddedTradesCount: userAddedTrades.length,
+        userAddedSymbols: userAddedTrades.map(t => t.symbol),
+        topStocksCount: topStocks.length,
+        topStockSymbols: topStocks.map(t => t.symbol),
+        hiddenTrades: hiddenTrades,
+      });
+      
+      // Check if trade already exists in BOTH user-added trades AND backend stocks (case-insensitive)
+      if (symbolExistsInTopPerformers(symbol)) {
+        console.log('[DashboardPage] Duplicate found for symbol:', symbol);
+        // If it's in userAddedTrades, check if it's hidden - if so, unhide it
+        const isInUserTrades = userAddedTrades.some(t => normalizeSymbolForComparison(t.symbol) === symbol);
+        if (isInUserTrades && hiddenTrades.includes(symbol)) {
+          console.log('[DashboardPage] Found AAPL in userAddedTrades but it\'s hidden - unhiding it');
+          setHiddenTrades(hiddenTrades.filter(s => s !== symbol));
+          saveHiddenTrades(hiddenTrades.filter(s => s !== symbol));
+          setShowAddTradeModal(false);
+          setAddTradeSymbol('');
+          setAddTradeError(null);
+          setAddTradeLoading(false);
+          return;
+        }
         setAddTradeError('This symbol is already in your Top Performers');
         setAddTradeLoading(false);
         return;
@@ -484,6 +555,7 @@ const DashboardPage = () => {
       };
 
       const updatedTrades = [...userAddedTrades, newTrade];
+      console.log('[DashboardPage] Successfully added trade:', { symbol, newTrade, updatedTradesCount: updatedTrades.length });
       saveUserAddedTrades(updatedTrades);
 
       // Close modal and reset
@@ -492,7 +564,13 @@ const DashboardPage = () => {
       setAddTradeError(null);
     } catch (error: any) {
       console.error('Failed to add trade:', error);
-      setAddTradeError(error.message || 'Failed to fetch prediction for this symbol');
+      
+      // Handle TimeoutError gracefully - request is still being processed
+      if (error instanceof TimeoutError) {
+        setAddTradeError('Request is taking longer than expected. The backend is still processing your request. This is normal when models need training (60-90 seconds). Please wait a moment and try again, or check the backend logs.');
+      } else {
+        setAddTradeError(error.message || 'Failed to fetch prediction for this symbol');
+      }
     } finally {
       setAddTradeLoading(false);
     }
@@ -517,6 +595,21 @@ const DashboardPage = () => {
   
   // Combine backend stocks and user-added trades
   const allTopStocks = [...visibleTopStocks, ...userAddedTrades];
+  
+  // Debug logging for data consistency
+  React.useEffect(() => {
+    if (userAddedTrades.length > 0 || visibleTopStocks.length > 0) {
+      console.log('[DashboardPage] Data Summary:', {
+        userAddedTradesCount: userAddedTrades.length,
+        userAddedSymbols: userAddedTrades.map(t => t.symbol),
+        visibleTopStocksCount: visibleTopStocks.length,
+        visibleSymbols: visibleTopStocks.map(t => t.symbol),
+        totalCount: allTopStocks.length,
+        allSymbols: allTopStocks.map(t => t.symbol),
+        hiddenTrades: hiddenTrades,
+      });
+    }
+  }, [userAddedTrades, visibleTopStocks, allTopStocks, hiddenTrades]);
 
   // Generate chart data from top stocks (only real data, no fallback)
   const chartData = allTopStocks.length > 0 ? allTopStocks.map((stock) => ({
@@ -530,7 +623,7 @@ const DashboardPage = () => {
   const stats = [
     { 
       label: 'Portfolio Value', 
-      value: `$${portfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
+      value: formatUSDToINR(portfolioValue), 
       icon: DollarSign, 
       change: dailyChangePercent >= 0 ? `+${dailyChangePercent.toFixed(2)}%` : `${dailyChangePercent.toFixed(2)}%`,
       changeColor: dailyChangePercent >= 0 ? 'text-green-400' : 'text-red-400',
@@ -538,7 +631,7 @@ const DashboardPage = () => {
     },
     { 
       label: 'Daily Change', 
-      value: `$${dailyChange.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
+      value: formatUSDToINR(dailyChange), 
       icon: Activity, 
       change: dailyChangePercent >= 0 ? `+${dailyChangePercent.toFixed(2)}%` : `${dailyChangePercent.toFixed(2)}%`,
       changeColor: dailyChange >= 0 ? 'text-green-400' : 'text-red-400',
@@ -546,7 +639,7 @@ const DashboardPage = () => {
     },
     { 
       label: 'Total Gain', 
-      value: `$${totalGain.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
+      value: formatUSDToINR(totalGain), 
       icon: TrendingUp, 
       change: totalGainPercent >= 0 ? `+${totalGainPercent.toFixed(2)}%` : `${totalGainPercent.toFixed(2)}%`,
       changeColor: totalGain >= 0 ? 'text-green-400' : 'text-red-400',
@@ -556,8 +649,8 @@ const DashboardPage = () => {
 
   return (
     <Layout>
-      <div className="space-y-3 md:space-y-4 animate-fadeIn w-full">
-        {/* Header Section - Compact on mobile */}
+      <div className="space-y-3 md:space-y-4 animate-fadeIn w-full relative">
+        {/* Added relative for modal positioning */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
@@ -612,7 +705,7 @@ const DashboardPage = () => {
 
         {/* Health Status - Compact chip on mobile, full bar on desktop */}
         {healthStatus && !error && (
-          <>
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
             {/* Mobile: Compact chip */}
             <div className="md:hidden">
               <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-500/10 border border-green-500/30 rounded-lg">
@@ -631,7 +724,7 @@ const DashboardPage = () => {
                 </span>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* General Error Banner */}
@@ -749,7 +842,7 @@ const DashboardPage = () => {
                     <YAxis 
                       stroke={isLight ? "#6B7280" : "#9CA3AF"}
                       tick={{ fill: isLight ? '#6B7280' : '#9CA3AF', fontSize: 11 }}
-                      tickFormatter={(value) => `$${value > 999 ? (value/1000).toFixed(1) + 'k' : value.toLocaleString()}`}
+                      tickFormatter={(value) => formatUSDToINR(value > 999 ? value/1000 : value).replace(/₹/, '₹').slice(0, -3) + (value > 999 ? 'k' : '')}
                       width={55}
                     />
                     <Tooltip 
@@ -762,7 +855,7 @@ const DashboardPage = () => {
                         color: isLight ? '#111827' : '#E2E8F0'
                       }}
                       labelStyle={{ color: isLight ? '#111827' : '#E2E8F0', fontWeight: 'bold', fontSize: '11px' }}
-                      formatter={(value: any) => [`$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 'Value']}
+                      formatter={(value: any) => [formatUSDToINR(Number(value)), 'Value']}
                       cursor={{ stroke: '#3B82F6', strokeWidth: 1 }}
                     />
                     <Area 
@@ -778,9 +871,22 @@ const DashboardPage = () => {
               </div>
             ) : (
               <div className="text-center py-8 md:py-12">
-                <Sparkles className={`w-8 h-8 md:w-12 md:h-12 ${isLight ? 'text-gray-400' : 'text-gray-500'} mx-auto mb-2 md:mb-3 opacity-50`} />
-                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm md:text-base`}>No data available</p>
-                <p className={`${isLight ? 'text-gray-500' : 'text-gray-500'} text-xs md:text-sm mt-1`}>Predictions will appear here once available</p>
+                <div className={`${isLight ? 'bg-gray-100' : 'bg-slate-700/50'} rounded-lg p-4 md:p-6`}>
+                  <Activity className={`w-10 h-10 md:w-12 md:h-12 mx-auto mb-2 md:mb-3 ${isLight ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm md:text-base mb-2`}>
+                    No data available yet
+                  </p>
+                  <p className={`${isLight ? 'text-gray-500' : 'text-gray-500'} text-xs md:text-sm mb-3`}>
+                    Predictions will appear here once loaded
+                  </p>
+                  <button
+                    onClick={() => loadDashboardData()}
+                    className="px-3 py-1.5 md:px-4 md:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs md:text-sm font-medium transition-colors"
+                  >
+                    <RefreshCw className="w-3 h-3 md:w-4 md:h-4 inline mr-1" />
+                    Refresh
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -791,6 +897,9 @@ const DashboardPage = () => {
               <h2 className={`text-base md:text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-2`}>
                 <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
                 Top Performers
+                <span className={`text-xs font-normal px-1.5 py-0.5 rounded ${isLight ? 'bg-gray-200 text-gray-700' : 'bg-slate-700 text-slate-300'}`}>
+                  {allTopStocks.length}
+                </span>
               </h2>
               <button
                 onClick={() => {
@@ -822,7 +931,7 @@ const DashboardPage = () => {
                 </button>
               </div>
             ) : allTopStocks.length > 0 ? (
-              <div className="space-y-2.5 max-h-[500px] md:max-h-[600px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-2.5 max-h-[60vh] md:max-h-[70vh] overflow-y-auto custom-scrollbar rounded-lg">
                 {allTopStocks.map((stock, index) => {
                   const isPositive = (stock.predicted_return || 0) > 0;
                   const confidence = (stock.confidence || 0) * 100;
@@ -862,7 +971,7 @@ const DashboardPage = () => {
                               </div>
                               <div className="flex items-center justify-between">
                                 <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-lg`}>
-                                  ${(stock.predicted_price || stock.current_price || 0).toFixed(2)}
+                                  {formatUSDToINR(stock.predicted_price || stock.current_price || 0)}
                                 </p>
                                 {stock.predicted_return !== undefined && (
                                   <p className={`text-base font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -920,7 +1029,7 @@ const DashboardPage = () => {
                         <div className="flex items-center gap-4 flex-shrink-0">
                           <div className="text-right">
                             <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-sm`}>
-                              ${(stock.predicted_price || stock.current_price || 0).toFixed(2)}
+                              {formatUSDToINR(stock.predicted_price || stock.current_price || 0)}
                             </p>
                             <div className="flex items-center gap-1.5 justify-end mt-0.5">
                               <div className={`w-1.5 h-1.5 rounded-full ${
@@ -952,9 +1061,24 @@ const DashboardPage = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Sparkles className={`w-10 h-10 ${isLight ? 'text-gray-400' : 'text-gray-500'} mx-auto mb-3 opacity-50`} />
-                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm`}>No predictions available</p>
-                <p className={`${isLight ? 'text-gray-500' : 'text-gray-500'} text-xs mt-1`}>Try refreshing or check your connection</p>
+                <Plus className={`w-12 h-12 ${isLight ? 'text-blue-400' : 'text-blue-400'} mx-auto mb-4`} />
+                <p className={`${isLight ? 'text-gray-700' : 'text-gray-300'} text-base font-semibold mb-2`}>
+                  No stocks selected yet
+                </p>
+                <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm mb-6`}>
+                  Add stocks to your dashboard to view predictions and portfolio performance
+                </p>
+                <button
+                  onClick={() => {
+                    setShowAddTradeModal(true);
+                    setAddTradeError(null);
+                    setTimeout(() => addTradeInputRef.current?.focus(), 100);
+                  }}
+                  className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg font-semibold transition-all active:scale-95 inline-flex items-center gap-2 min-h-[44px]"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Add Your First Stock</span>
+                </button>
               </div>
             )}
           </div>
@@ -1008,7 +1132,7 @@ const DashboardPage = () => {
         {/* Add Trade Modal */}
         {showAddTradeModal && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-3 xs:p-4 safe-area-inset">
-            <div className={`${isLight ? 'bg-white border border-gray-200' : 'bg-slate-800 border border-slate-700'} rounded-xl p-4 xs:p-5 sm:p-6 w-full max-w-md animate-fadeIn max-h-[90vh] overflow-y-auto mx-auto shadow-xl`}>
+            <div className={`${isLight ? 'bg-white border border-gray-200' : 'bg-slate-800 border border-slate-700'} rounded-xl p-4 xs:p-5 sm:p-6 w-full max-w-md animate-fadeIn max-h-[90vh] mx-auto shadow-xl overflow-hidden flex flex-col`}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-2`}>
                   <Plus className="w-5 h-5 text-blue-400" />
@@ -1026,81 +1150,83 @@ const DashboardPage = () => {
                 </button>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className={`block text-sm font-medium ${isLight ? 'text-gray-700' : 'text-gray-300'} mb-2`}>
-                    Stock Symbol
-                  </label>
-                  <div className="relative" ref={suggestionsRef}>
-                    <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-500' : 'text-gray-400'} z-10`} />
-                    <input
-                      ref={addTradeInputRef}
-                      type="text"
-                      value={addTradeSymbol}
-                      onChange={(e) => {
-                        const value = e.target.value.toUpperCase();
-                        setAddTradeSymbol(value);
-                        setAddTradeError(null);
-                      }}
-                      onFocus={() => {
-                        if (filteredSymbols.length > 0) {
-                          setShowSuggestions(true);
-                        }
-                      }}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && !addTradeLoading) {
-                          setShowSuggestions(false);
-                          handleAddTrade();
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setShowSuggestions(false);
-                        }
-                      }}
-                      placeholder="e.g., AAPL, TSLA, GOOGL"
-                      className={`w-full pl-10 pr-4 py-2.5 ${isLight 
-                        ? 'bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500' 
-                        : 'bg-slate-700/50 border border-slate-600 text-white placeholder-gray-400'
-                      } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                      disabled={addTradeLoading}
-                    />
-                    
-                    {/* Suggestions Dropdown */}
-                    {showSuggestions && filteredSymbols.length > 0 && (
-                      <div className={`absolute top-full left-0 right-0 mt-1 ${isLight 
-                        ? 'bg-white border-2 border-gray-300' 
-                        : 'bg-slate-700 border-2 border-slate-600'
-                      } rounded-lg shadow-2xl max-h-60 overflow-y-auto z-[9999]`}>
-                        {filteredSymbols.map((suggestionSymbol) => {
-                          const isExactMatch = suggestionSymbol.toUpperCase() === addTradeSymbol.toUpperCase();
-                          return (
-                            <button
-                              key={suggestionSymbol}
-                              type="button"
-                              onMouseDown={(e) => {
-                                e.preventDefault();
-                                setAddTradeSymbol(suggestionSymbol.toUpperCase());
-                                setShowSuggestions(false);
-                                setAddTradeError(null);
-                              }}
-                              className={`w-full px-3 py-2 text-sm text-left transition-colors ${
-                                isExactMatch 
-                                  ? (isLight ? 'bg-blue-100 text-blue-900 font-semibold' : 'bg-blue-600/50 text-white font-semibold')
-                                  : (isLight ? 'text-gray-900 hover:bg-gray-100' : 'text-white hover:bg-slate-600')
-                              }`}
-                            >
-                              {suggestionSymbol}
-                              {isExactMatch && ' ✓'}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
+              <div className="overflow-y-auto flex-1 -mx-2 px-2">
+                <div className="space-y-4">
+                  <div>
+                    <label className={`block text-sm font-medium ${isLight ? 'text-gray-700' : 'text-gray-300'} mb-2`}>
+                      Stock Symbol
+                    </label>
+                    <div className="relative" ref={suggestionsRef}>
+                      <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-500' : 'text-gray-400'} z-10`} />
+                      <input
+                        ref={addTradeInputRef}
+                        type="text"
+                        value={addTradeSymbol}
+                        onChange={(e) => {
+                          const value = e.target.value.toUpperCase();
+                          setAddTradeSymbol(value);
+                          setAddTradeError(null);
+                        }}
+                        onFocus={() => {
+                          if (filteredSymbols.length > 0) {
+                            setShowSuggestions(true);
+                          }
+                        }}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && !addTradeLoading) {
+                            setShowSuggestions(false);
+                            handleAddTrade();
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            setShowSuggestions(false);
+                          }
+                        }}
+                        placeholder="e.g., AAPL, TSLA, GOOGL"
+                        className={`w-full pl-10 pr-4 py-2.5 ${isLight 
+                          ? 'bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500' 
+                          : 'bg-slate-700/50 border border-slate-600 text-white placeholder-gray-400'
+                        } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        disabled={addTradeLoading}
+                      />
+                      
+                      {/* Suggestions Dropdown - positioned relative to input, will show above if needed */}
+                      {showSuggestions && filteredSymbols.length > 0 && (
+                        <div className={`absolute top-full left-0 right-0 mt-1 ${isLight 
+                          ? 'bg-white border-2 border-gray-300' 
+                          : 'bg-slate-700 border-2 border-slate-600'
+                        } rounded-lg shadow-2xl max-h-60 overflow-y-auto z-[9999]`}>
+                          {filteredSymbols.map((suggestionSymbol) => {
+                            const isExactMatch = suggestionSymbol.toUpperCase() === addTradeSymbol.toUpperCase();
+                            return (
+                              <button
+                                key={suggestionSymbol}
+                                type="button"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  setAddTradeSymbol(suggestionSymbol.toUpperCase());
+                                  setShowSuggestions(false);
+                                  setAddTradeError(null);
+                                }}
+                                className={`w-full px-3 py-2 text-sm text-left transition-colors ${
+                                  isExactMatch 
+                                    ? (isLight ? 'bg-blue-100 text-blue-900 font-semibold' : 'bg-blue-600/50 text-white font-semibold')
+                                    : (isLight ? 'text-gray-900 hover:bg-gray-100' : 'text-white hover:bg-slate-600')
+                                }`}
+                              >
+                                {suggestionSymbol}
+                                {isExactMatch && ' ✓'}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'} mt-1`}>
+                      Enter a stock symbol to fetch its prediction and add it to Top Performers
+                    </p>
                   </div>
-                  <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'} mt-1`}>
-                    Enter a stock symbol to fetch its prediction and add it to Top Performers
-                  </p>
                 </div>
 
                 {addTradeError && (
@@ -1118,16 +1244,16 @@ const DashboardPage = () => {
                     disabled={addTradeLoading || !addTradeSymbol.trim()}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg font-semibold transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 min-h-[44px] touch-manipulation"
                   >
-                    {addTradeLoading ? (
-                      <>
+                    {addTradeLoading ? (     
+                      <React.Fragment>
                         <Loader2 className="w-4 h-4 animate-spin" />
                         <span>Fetching...</span>
-                      </>
+                      </React.Fragment>
                     ) : (
-                      <>
+                      <React.Fragment>
                         <Plus className="w-4 h-4" />
                         <span>Add Trade</span>
-                      </>
+                      </React.Fragment>
                     )}
                   </button>
                   <button

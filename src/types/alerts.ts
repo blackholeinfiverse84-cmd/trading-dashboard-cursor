@@ -35,3 +35,6 @@ export interface AppNotification {
 
 export type AlertType = PriceAlert | PredictionAlert;
 
+
+
+

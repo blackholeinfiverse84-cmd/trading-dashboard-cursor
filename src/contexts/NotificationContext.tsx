@@ -29,8 +29,9 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     refreshNotifications();
     
-    // Refresh every 5 seconds to check for new notifications
-    const interval = setInterval(refreshNotifications, 5000);
+    // Refresh every 30 seconds to check for new notifications (conservative - doesn't make API calls)
+    // This only reads from localStorage, so it's safe to refresh frequently
+    const interval = setInterval(refreshNotifications, 30000);
     return () => clearInterval(interval);
   }, [refreshNotifications]);
 

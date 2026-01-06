@@ -7,13 +7,29 @@ const FloatingAIButton = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  const handleOpen = () => {
+    try {
+      setIsOpen(true);
+    } catch (error) {
+      console.error('Error opening AI chat:', error);
+    }
+  };
+
+  const handleClose = () => {
+    try {
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Error closing AI chat:', error);
+    }
+  };
+
   return (
     <>
       {/* Floating Button */}
       <button
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group touch-manipulation ${
           isHovered ? 'scale-110' : 'scale-100'
         }`}
@@ -45,8 +61,8 @@ const FloatingAIButton = () => {
       {/* Chat Panel */}
       {isOpen && (
         <AIChatPanel
-          onClose={() => setIsOpen(false)}
-          onMinimize={() => setIsOpen(false)}
+          onClose={handleClose}
+          onMinimize={handleClose}
         />
       )}
     </>
