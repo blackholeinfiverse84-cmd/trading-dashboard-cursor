@@ -76,15 +76,15 @@ const AnalyticsPage = () => {
         const ind = p.individual_predictions || {};
         if (ind.random_forest) {
           modelPerformance.random_forest.count++;
-          modelPerformance.random_forest.avgReturn += ind.random_forest.return || 0;
+          modelPerformance.random_forest.avgReturn += (ind.random_forest as any)?.return || 0;
         }
         if (ind.lightgbm) {
           modelPerformance.lightgbm.count++;
-          modelPerformance.lightgbm.avgReturn += ind.lightgbm.return || 0;
+          modelPerformance.lightgbm.avgReturn += (ind.lightgbm as any)?.return || 0;
         }
         if (ind.xgboost) {
           modelPerformance.xgboost.count++;
-          modelPerformance.xgboost.avgReturn += ind.xgboost.return || 0;
+          modelPerformance.xgboost.avgReturn += (ind.xgboost as any)?.return || 0;
         }
         if (ind.dqn) {
           modelPerformance.dqn.count++;
