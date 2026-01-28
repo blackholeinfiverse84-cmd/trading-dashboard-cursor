@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { formatUSDToINR } from '../utils/currencyConverter';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from 'lightweight-charts';
 import { stockAPI } from '../services/api';

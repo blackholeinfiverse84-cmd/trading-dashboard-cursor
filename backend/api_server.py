@@ -978,7 +978,7 @@ async def execute_trade(
         }
         
         # Log the trade execution
-        logger.info(f"Trade executed: {symbol} {side} {quantity} @ ${entry_price} (Risk: {risk_percentage:.2f}%)")
+        logger.info(f"Trade executed: {symbol} {side} {quantity} @ ₹{entry_price} (Risk: {risk_percentage:.2f}%)")
         log_api_request('/tools/execute', data_dict, result, 200)
         
         return result

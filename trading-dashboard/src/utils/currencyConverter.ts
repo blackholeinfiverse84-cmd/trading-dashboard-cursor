@@ -52,14 +52,18 @@ export const formatINR = (
  * @returns Formatted INR string
  */
 export const formatUSDToINR = (
-  usdAmount: number,
+  amount: number,
+  symbol?: string,
   options: {
     minimumFractionDigits?: number;
     maximumFractionDigits?: number;
     showSymbol?: boolean;
   } = {}
 ): string => {
-  const inrAmount = convertToINR(usdAmount);
+  // If symbol is an Indian stock (ends with .NS or .BO), it's likely already in INR
+  const isIndianStock = symbol && (symbol.toUpperCase().endsWith('.NS') || symbol.toUpperCase().endsWith('.BO'));
+
+  const inrAmount = isIndianStock ? amount : convertToINR(amount);
   return formatINR(inrAmount, options);
 };
 

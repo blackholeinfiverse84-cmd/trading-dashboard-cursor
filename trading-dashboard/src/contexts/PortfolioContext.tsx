@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { stockAPI } from '../services/api';
 
 // Portfolio Types
 export type PortfolioType = 'seed' | 'tree' | 'sky' | 'scenario';
@@ -153,9 +154,8 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
     setError(null);
     
     try {
-      // Fetch current price from backend
-      const response = await fetch(`http://127.0.0.1:8000/tools/predict?symbols=${holding.symbol}&horizon=intraday`);
-      const data = await response.json();
+      // Fetch current price from backend using stockAPI
+      const data = await stockAPI.predict([holding.symbol], 'intraday');
       
       let currentPrice = holding.avgPrice;
       if (data.predictions && data.predictions.length > 0) {
@@ -246,8 +246,7 @@ export const PortfolioProvider: React.FC<{ children: ReactNode }> = ({ children 
         return;
       }
       
-      const response = await fetch(`http://127.0.0.1:8000/tools/predict?symbols=${symbols.join(',')}&horizon=intraday`);
-      const data = await response.json();
+      const data = await stockAPI.predict(symbols, 'intraday');
       
       if (data.predictions) {
         const updatedHoldings = holdings.map(holding => {

@@ -253,10 +253,10 @@ export const exportPortfolioToPDF = async (holdings: any[]): Promise<void> => {
   const data = holdings.map(holding => ({
     Symbol: holding.symbol,
     Shares: holding.shares,
-    'Avg Price': `$${holding.avgPrice?.toFixed(2) || '0.00'}`,
-    'Current Price': `$${holding.currentPrice?.toFixed(2) || '0.00'}`,
-    Value: `$${holding.value?.toFixed(2) || '0.00'}`,
-    'Gain/Loss': `$${((holding.currentPrice - holding.avgPrice) * holding.shares).toFixed(2)}`,
+    'Avg Price': `₹${holding.avgPrice?.toFixed(2) || '0.00'}`,
+    'Current Price': `₹${holding.currentPrice?.toFixed(2) || '0.00'}`,
+    Value: `₹${holding.value?.toFixed(2) || '0.00'}`,
+    'Gain/Loss': `₹${((holding.currentPrice - holding.avgPrice) * holding.shares).toFixed(2)}`,
     'Gain/Loss %': `${(((holding.currentPrice - holding.avgPrice) / holding.avgPrice) * 100).toFixed(2)}%`,
   }));
   await exportToPDF(data, 'Portfolio Report', `portfolio-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
@@ -285,8 +285,8 @@ export const exportPredictionsToPDF = async (predictions: any[]): Promise<void> 
   const data = predictions.map(pred => ({
     Symbol: pred.symbol,
     Action: pred.action,
-    'Current Price': `$${pred.current_price?.toFixed(2) || '0.00'}`,
-    'Predicted Price': `$${pred.predicted_price?.toFixed(2) || '0.00'}`,
+    'Current Price': `₹${pred.current_price?.toFixed(2) || '0.00'}`,
+    'Predicted Price': `₹${pred.predicted_price?.toFixed(2) || '0.00'}`,
     'Predicted Return %': `${(pred.predicted_return || 0).toFixed(2)}%`,
     Confidence: `${((pred.confidence || 0) * 100).toFixed(0)}%`,
     Horizon: pred.horizon || 'N/A',
@@ -323,8 +323,8 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
 /**
  * Format number as currency
  */
-export const formatCurrency = (value: number, currency: string = 'USD'): string => {
-  return new Intl.NumberFormat('en-US', {
+export const formatCurrency = (value: number, currency: string = 'INR'): string => {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: currency,
   }).format(value);

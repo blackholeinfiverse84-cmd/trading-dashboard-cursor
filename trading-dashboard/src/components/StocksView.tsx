@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, TrendingUp, TrendingDown, Sparkles, Loader2, BarChart3 } from 'lucide-react';
-import { POPULAR_STOCKS } from '../services/api';
+import { stockAPI, POPULAR_STOCKS } from '../services/api';
+import { formatUSDToINR } from '../utils/currencyConverter';
 
 interface StocksViewProps {
   onSearch: (symbol: string) => void;
@@ -219,13 +220,13 @@ const StocksView = ({ onSearch, onAnalyze, predictions, loading, error, horizon 
                     {pred.current_price && (
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-sm">Current Price:</span>
-                        <span className="text-white font-semibold">${pred.current_price.toFixed(2)}</span>
+                        <span className="text-white font-semibold">{formatUSDToINR(pred.current_price, pred.symbol)}</span>
                       </div>
                     )}
                     {pred.predicted_price && (
                       <div className="flex justify-between">
                         <span className="text-gray-400 text-sm">Predicted Price:</span>
-                        <span className="text-white font-semibold">${pred.predicted_price.toFixed(2)}</span>
+                        <span className="text-white font-semibold">{formatUSDToINR(pred.predicted_price, pred.symbol)}</span>
                       </div>
                     )}
                     {pred.predicted_return !== undefined && (

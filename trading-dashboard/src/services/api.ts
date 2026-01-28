@@ -69,10 +69,10 @@ api.interceptors.response.use(
         // Timeout - server is running but request took too long
         // Check if this is a long-running request (predict, scanAll, analyze, trainRL)
         const url = originalRequest?.url || '';
-        const isLongRunningRequest = url.includes('/tools/predict') || 
-                                     url.includes('/tools/scan_all') || 
-                                     url.includes('/tools/analyze') || 
-                                     url.includes('/tools/train_rl');
+        const isLongRunningRequest = url.includes('/tools/predict') ||
+          url.includes('/tools/scan_all') ||
+          url.includes('/tools/analyze') ||
+          url.includes('/tools/train_rl');
         
         if (isLongRunningRequest) {
           // For long-running requests, timeout means "still processing", not failure
@@ -224,15 +224,18 @@ export const authAPI = {
 // Stock Data API
 export const stockAPI = {
   predict: async (
-    symbols: string[], 
+    symbols: string | string[], 
     horizon: string = 'intraday', 
     riskProfile?: string,
     stopLossPct?: number,
     capitalRiskPct?: number,
     drawdownLimitPct?: number
   ) => {
+    // Handle both single symbol (string) and multiple symbols (array)
+    const symbolArray = Array.isArray(symbols) ? symbols : [symbols];
+    
     const payload: any = {
-      symbols,
+      symbols: symbolArray,
       horizon,
     };
     if (riskProfile) payload.risk_profile = riskProfile;

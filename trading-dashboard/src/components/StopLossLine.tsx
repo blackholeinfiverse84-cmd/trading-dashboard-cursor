@@ -48,7 +48,7 @@ const StopLossLine = ({
       lineWidth: 2,
       lineStyle: 2, // Dashed
       axisLabelVisible: true,
-      title: `Stop-Loss (${side}): $${price.toFixed(2)}`,
+      title: `Stop-Loss (${side}): ₹${price.toFixed(2)}`,
     });
 
     priceLineRef.current = priceLine;
