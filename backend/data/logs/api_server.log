@@ -55677,3 +55677,121 @@ ConnectionResetError: [WinError 10054] An existing connection was forcibly close
 2026-01-28 17:12:36,303 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.4361)
 2026-01-28 17:12:36,304 - core.mcp_adapter - INFO - [predict_1769600556_70] [OK] MSFT: LONG (confidence: 0.4361)
 2026-01-28 17:12:36,305 - core.mcp_adapter - INFO - MCP Response [predict_1769600556_70]: 30.43ms
+2026-01-28 17:16:36,250 - core.mcp_adapter - INFO - MCP Request [predict_1769600796_71]: predict
+2026-01-28 17:16:36,250 - core.mcp_adapter - INFO - [predict_1769600796_71] Predicting AAPL (intraday)
+2026-01-28 17:16:36,251 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:16:36,253 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.4018)
+2026-01-28 17:16:36,255 - core.mcp_adapter - INFO - [predict_1769600796_71] [OK] AAPL: HOLD (confidence: 0.4018)
+2026-01-28 17:16:36,255 - core.mcp_adapter - INFO - [predict_1769600796_71] Predicting GOOGL (intraday)
+2026-01-28 17:16:36,257 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:16:36,261 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.5930)
+2026-01-28 17:16:36,262 - core.mcp_adapter - INFO - [predict_1769600796_71] [OK] GOOGL: HOLD (confidence: 0.5930)
+2026-01-28 17:16:36,263 - core.mcp_adapter - INFO - [predict_1769600796_71] Predicting MSFT (intraday)
+2026-01-28 17:16:36,266 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:16:36,268 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.8427)
+2026-01-28 17:16:36,270 - core.mcp_adapter - INFO - [predict_1769600796_71] [OK] MSFT: HOLD (confidence: 0.8427)
+2026-01-28 17:16:36,270 - core.mcp_adapter - INFO - MCP Response [predict_1769600796_71]: 20.51ms
+2026-01-28 17:18:09,154 - core.mcp_adapter - INFO - MCP Request [predict_1769600889_72]: predict
+2026-01-28 17:18:09,155 - core.mcp_adapter - INFO - [predict_1769600889_72] Predicting RELIANCE.NS (intraday)
+2026-01-28 17:18:09,156 - core.ml.model - INFO - Generating prediction for RELIANCE.NS (intraday) - Placeholder implementation
+2026-01-28 17:18:09,160 - core.ml.model - INFO - Generated prediction: LONG for RELIANCE.NS (confidence: 0.6271)
+2026-01-28 17:18:09,162 - core.mcp_adapter - INFO - [predict_1769600889_72] [OK] RELIANCE.NS: LONG (confidence: 0.6271)
+2026-01-28 17:18:09,163 - core.mcp_adapter - INFO - MCP Response [predict_1769600889_72]: 10.13ms
+2026-01-28 17:19:23,294 - core.mcp_adapter - INFO - MCP Request [predict_1769600963_73]: predict
+2026-01-28 17:19:23,309 - core.mcp_adapter - INFO - [predict_1769600963_73] Predicting AAPL (intraday)
+2026-01-28 17:19:23,314 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:19:23,323 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.7643)
+2026-01-28 17:19:23,325 - core.mcp_adapter - INFO - [predict_1769600963_73] [OK] AAPL: HOLD (confidence: 0.7643)
+2026-01-28 17:19:23,353 - core.mcp_adapter - INFO - [predict_1769600963_73] Predicting GOOGL (intraday)
+2026-01-28 17:19:23,357 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:19:23,363 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.7687)
+2026-01-28 17:19:23,367 - core.mcp_adapter - INFO - [predict_1769600963_73] [OK] GOOGL: HOLD (confidence: 0.7687)
+2026-01-28 17:19:23,369 - core.mcp_adapter - INFO - [predict_1769600963_73] Predicting MSFT (intraday)
+2026-01-28 17:19:23,373 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:19:23,384 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.5444)
+2026-01-28 17:19:23,398 - core.mcp_adapter - INFO - [predict_1769600963_73] [OK] MSFT: HOLD (confidence: 0.5444)
+2026-01-28 17:19:23,400 - core.mcp_adapter - INFO - MCP Response [predict_1769600963_73]: 107.80ms
+2026-01-28 17:19:39,962 - core.mcp_adapter - INFO - MCP Request [predict_1769600979_74]: predict
+2026-01-28 17:19:39,964 - core.mcp_adapter - INFO - [predict_1769600979_74] Predicting RELIANCE.NS (intraday)
+2026-01-28 17:19:39,966 - core.ml.model - INFO - Generating prediction for RELIANCE.NS (intraday) - Placeholder implementation
+2026-01-28 17:19:39,969 - core.ml.model - INFO - Generated prediction: HOLD for RELIANCE.NS (confidence: 0.7367)
+2026-01-28 17:19:39,971 - core.mcp_adapter - INFO - [predict_1769600979_74] [OK] RELIANCE.NS: HOLD (confidence: 0.7367)
+2026-01-28 17:19:39,972 - core.mcp_adapter - INFO - MCP Response [predict_1769600979_74]: 13.45ms
+2026-01-28 17:21:39,092 - core.mcp_adapter - INFO - MCP Request [predict_1769601099_75]: predict
+2026-01-28 17:21:39,092 - core.mcp_adapter - INFO - [predict_1769601099_75] Predicting AAPL (intraday)
+2026-01-28 17:21:39,096 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:21:39,098 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.6403)
+2026-01-28 17:21:39,100 - core.mcp_adapter - INFO - [predict_1769601099_75] [OK] AAPL: SHORT (confidence: 0.6403)
+2026-01-28 17:21:39,100 - core.mcp_adapter - INFO - [predict_1769601099_75] Predicting GOOGL (intraday)
+2026-01-28 17:21:39,103 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:21:39,107 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.7344)
+2026-01-28 17:21:39,108 - core.mcp_adapter - INFO - [predict_1769601099_75] [OK] GOOGL: LONG (confidence: 0.7344)
+2026-01-28 17:21:39,109 - core.mcp_adapter - INFO - [predict_1769601099_75] Predicting MSFT (intraday)
+2026-01-28 17:21:39,112 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:21:39,115 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.6890)
+2026-01-28 17:21:39,116 - core.mcp_adapter - INFO - [predict_1769601099_75] [OK] MSFT: HOLD (confidence: 0.6890)
+2026-01-28 17:21:39,117 - core.mcp_adapter - INFO - MCP Response [predict_1769601099_75]: 26.71ms
+2026-01-28 17:21:39,123 - core.mcp_adapter - INFO - MCP Request [predict_1769601099_76]: predict
+2026-01-28 17:21:39,124 - core.mcp_adapter - INFO - [predict_1769601099_76] Predicting AAPL (intraday)
+2026-01-28 17:21:39,125 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:21:39,128 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.7314)
+2026-01-28 17:21:39,131 - core.mcp_adapter - INFO - [predict_1769601099_76] [OK] AAPL: LONG (confidence: 0.7314)
+2026-01-28 17:21:39,132 - core.mcp_adapter - INFO - [predict_1769601099_76] Predicting GOOGL (intraday)
+2026-01-28 17:21:39,133 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:21:39,138 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.7355)
+2026-01-28 17:21:39,141 - core.mcp_adapter - INFO - [predict_1769601099_76] [OK] GOOGL: LONG (confidence: 0.7355)
+2026-01-28 17:21:39,141 - core.mcp_adapter - INFO - [predict_1769601099_76] Predicting MSFT (intraday)
+2026-01-28 17:21:39,145 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:21:39,149 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.5511)
+2026-01-28 17:21:39,151 - core.mcp_adapter - INFO - [predict_1769601099_76] [OK] MSFT: HOLD (confidence: 0.5511)
+2026-01-28 17:21:39,151 - core.mcp_adapter - INFO - MCP Response [predict_1769601099_76]: 29.03ms
+2026-01-28 17:21:55,468 - core.mcp_adapter - INFO - MCP Request [predict_1769601115_77]: predict
+2026-01-28 17:21:55,469 - core.mcp_adapter - INFO - [predict_1769601115_77] Predicting AAPL (intraday)
+2026-01-28 17:21:55,471 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:21:55,474 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.7106)
+2026-01-28 17:21:55,474 - core.mcp_adapter - INFO - [predict_1769601115_77] [OK] AAPL: SHORT (confidence: 0.7106)
+2026-01-28 17:21:55,475 - core.mcp_adapter - INFO - [predict_1769601115_77] Predicting GOOGL (intraday)
+2026-01-28 17:21:55,477 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:21:55,480 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.6920)
+2026-01-28 17:21:55,484 - core.mcp_adapter - INFO - [predict_1769601115_77] [OK] GOOGL: SHORT (confidence: 0.6920)
+2026-01-28 17:21:55,486 - core.mcp_adapter - INFO - [predict_1769601115_77] Predicting MSFT (intraday)
+2026-01-28 17:21:55,488 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:21:55,491 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.7903)
+2026-01-28 17:21:55,494 - core.mcp_adapter - INFO - [predict_1769601115_77] [OK] MSFT: SHORT (confidence: 0.7903)
+2026-01-28 17:21:55,495 - core.mcp_adapter - INFO - MCP Response [predict_1769601115_77]: 26.08ms
+2026-01-28 17:21:55,605 - asyncio - ERROR - Exception in callback _ProactorBasePipeTransport._call_connection_lost(None)
+handle: <Handle _ProactorBasePipeTransport._call_connection_lost(None)>
+Traceback (most recent call last):
+  File "C:\Users\Mayur\AppData\Local\Programs\Python\Python311\Lib\asyncio\events.py", line 84, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\Users\Mayur\AppData\Local\Programs\Python\Python311\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+    self._sock.shutdown(socket.SHUT_RDWR)
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+2026-01-28 17:21:55,607 - core.mcp_adapter - INFO - MCP Request [predict_1769601115_78]: predict
+2026-01-28 17:21:55,607 - core.mcp_adapter - INFO - [predict_1769601115_78] Predicting AAPL (intraday)
+2026-01-28 17:21:55,610 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:21:55,612 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.7603)
+2026-01-28 17:21:55,614 - core.mcp_adapter - INFO - [predict_1769601115_78] [OK] AAPL: HOLD (confidence: 0.7603)
+2026-01-28 17:21:55,615 - core.mcp_adapter - INFO - [predict_1769601115_78] Predicting GOOGL (intraday)
+2026-01-28 17:21:55,618 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:21:55,620 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.4429)
+2026-01-28 17:21:55,622 - core.mcp_adapter - INFO - [predict_1769601115_78] [OK] GOOGL: LONG (confidence: 0.4429)
+2026-01-28 17:21:55,623 - core.mcp_adapter - INFO - [predict_1769601115_78] Predicting MSFT (intraday)
+2026-01-28 17:21:55,624 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:21:55,628 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.6266)
+2026-01-28 17:21:55,630 - core.mcp_adapter - INFO - [predict_1769601115_78] [OK] MSFT: HOLD (confidence: 0.6266)
+2026-01-28 17:21:55,631 - core.mcp_adapter - INFO - MCP Response [predict_1769601115_78]: 23.44ms
+2026-01-28 17:23:23,237 - core.mcp_adapter - INFO - MCP Request [predict_1769601203_79]: predict
+2026-01-28 17:23:23,238 - core.mcp_adapter - INFO - [predict_1769601203_79] Predicting AAPL (intraday)
+2026-01-28 17:23:23,240 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-28 17:23:23,241 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.7785)
+2026-01-28 17:23:23,243 - core.mcp_adapter - INFO - [predict_1769601203_79] [OK] AAPL: LONG (confidence: 0.7785)
+2026-01-28 17:23:23,243 - core.mcp_adapter - INFO - [predict_1769601203_79] Predicting GOOGL (intraday)
+2026-01-28 17:23:23,246 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-28 17:23:23,250 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.6558)
+2026-01-28 17:23:23,251 - core.mcp_adapter - INFO - [predict_1769601203_79] [OK] GOOGL: SHORT (confidence: 0.6558)
+2026-01-28 17:23:23,252 - core.mcp_adapter - INFO - [predict_1769601203_79] Predicting MSFT (intraday)
+2026-01-28 17:23:23,253 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-28 17:23:23,257 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.7044)
+2026-01-28 17:23:23,259 - core.mcp_adapter - INFO - [predict_1769601203_79] [OK] MSFT: SHORT (confidence: 0.7044)
+2026-01-28 17:23:23,260 - core.mcp_adapter - INFO - MCP Response [predict_1769601203_79]: 22.16ms

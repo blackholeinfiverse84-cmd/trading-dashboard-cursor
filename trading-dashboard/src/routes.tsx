@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import UserProfilePage from './pages/UserProfilePage';
 import TrainModelPage from './pages/TrainModelPage';
+import EducationalDashboardPage from './pages/EducationalDashboardPage';
 
 export const AppRoutes = () => {
   return (
@@ -30,6 +31,7 @@ export const AppRoutes = () => {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/profile" element={<UserProfilePage />} />
       <Route path="/train-model" element={<TrainModelPage />} />
+      <Route path="/education" element={<EducationalDashboardPage />} />
       {/* Add more routes as needed */}
     </Routes>
   );

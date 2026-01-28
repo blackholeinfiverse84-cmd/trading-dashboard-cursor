@@ -10,6 +10,7 @@ import {
   Bell,
   Settings,
   GitCompare,
+  GraduationCap,
   LogOut,
   X,
   Activity,
@@ -44,6 +45,7 @@ const Sidebar = ({ isOpen = true, onClose, isCollapsed = false, onToggleCollapse
     { path: '/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/alerts', icon: Bell, label: 'Alerts' },
     { path: '/compare', icon: GitCompare, label: 'Compare' },
+    { path: '/education', icon: GraduationCap, label: 'Education Center' },
     { path: '/train-model', icon: Brain, label: 'Train Model' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];
