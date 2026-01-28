@@ -50419,3 +50419,504 @@ ConnectionResetError: [WinError 10054] An existing connection was forcibly close
 2026-01-27 17:51:32,002 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.8420)
 2026-01-27 17:51:32,004 - core.mcp_adapter - INFO - [predict_1769516491_62] [OK] MSFT: HOLD (confidence: 0.8420)
 2026-01-27 17:51:32,005 - core.mcp_adapter - INFO - MCP Response [predict_1769516491_62]: 23.04ms
+2026-01-27 17:55:23,090 - api_server - INFO - MCP Adapter initialized successfully
+2026-01-27 17:55:23,091 - core.mcp_adapter - INFO - MCP Request [predict_1769516723_1]: predict
+2026-01-27 17:55:23,091 - core.mcp_adapter - INFO - [predict_1769516723_1] Predicting AAPL (intraday)
+2026-01-27 17:55:23,092 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 17:55:23,093 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.7393)
+2026-01-27 17:55:23,095 - core.mcp_adapter - INFO - [predict_1769516723_1] [OK] AAPL: HOLD (confidence: 0.7393)
+2026-01-27 17:55:23,095 - core.mcp_adapter - INFO - [predict_1769516723_1] Predicting GOOGL (intraday)
+2026-01-27 17:55:23,096 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 17:55:23,099 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.6449)
+2026-01-27 17:55:23,100 - core.mcp_adapter - INFO - [predict_1769516723_1] [OK] GOOGL: HOLD (confidence: 0.6449)
+2026-01-27 17:55:23,100 - core.mcp_adapter - INFO - [predict_1769516723_1] Predicting MSFT (intraday)
+2026-01-27 17:55:23,102 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 17:55:23,105 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.5425)
+2026-01-27 17:55:23,106 - core.mcp_adapter - INFO - [predict_1769516723_1] [OK] MSFT: SHORT (confidence: 0.5425)
+2026-01-27 17:55:23,107 - core.mcp_adapter - INFO - MCP Response [predict_1769516723_1]: 15.97ms
+2026-01-27 17:55:23,213 - core.mcp_adapter - INFO - MCP Request [predict_1769516723_2]: predict
+2026-01-27 17:55:23,213 - core.mcp_adapter - INFO - [predict_1769516723_2] Predicting AAPL (intraday)
+2026-01-27 17:55:23,215 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 17:55:23,217 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.6383)
+2026-01-27 17:55:23,218 - core.mcp_adapter - INFO - [predict_1769516723_2] [OK] AAPL: LONG (confidence: 0.6383)
+2026-01-27 17:55:23,219 - core.mcp_adapter - INFO - [predict_1769516723_2] Predicting GOOGL (intraday)
+2026-01-27 17:55:23,220 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 17:55:23,223 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.5661)
+2026-01-27 17:55:23,224 - core.mcp_adapter - INFO - [predict_1769516723_2] [OK] GOOGL: SHORT (confidence: 0.5661)
+2026-01-27 17:55:23,225 - core.mcp_adapter - INFO - [predict_1769516723_2] Predicting MSFT (intraday)
+2026-01-27 17:55:23,226 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 17:55:23,229 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.6059)
+2026-01-27 17:55:23,230 - core.mcp_adapter - INFO - [predict_1769516723_2] [OK] MSFT: SHORT (confidence: 0.6059)
+2026-01-27 17:55:23,231 - core.mcp_adapter - INFO - MCP Response [predict_1769516723_2]: 17.93ms
+2026-01-27 17:56:13,057 - core.mcp_adapter - INFO - MCP Request [predict_1769516773_3]: predict
+2026-01-27 17:56:13,058 - core.mcp_adapter - INFO - [predict_1769516773_3] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 17:56:13,060 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 17:56:13,062 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.5938)
+2026-01-27 17:56:13,064 - core.mcp_adapter - INFO - [predict_1769516773_3] [OK] TATAMOTORS.NS: LONG (confidence: 0.5938)
+2026-01-27 17:56:13,065 - core.mcp_adapter - INFO - [predict_1769516773_3] Predicting RE (intraday)
+2026-01-27 17:56:13,065 - core.mcp_adapter - INFO - [predict_1769516773_3] Data not found for RE. Fetching...
+2026-01-27 17:56:13,066 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 17:56:15,242 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 17:56:15,243 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 17:56:15,244 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 17:56:15,245 - core.mcp_adapter - INFO - [predict_1769516773_3] Data fetched for RE
+2026-01-27 17:56:15,245 - core.mcp_adapter - INFO - [predict_1769516773_3] Features not found for RE. Calculating...
+2026-01-27 17:56:15,247 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 17:56:15,248 - core.ml.model - INFO - Generated prediction: LONG for RE (confidence: 0.6584)
+2026-01-27 17:56:15,249 - core.mcp_adapter - INFO - [predict_1769516773_3] [OK] RE: LONG (confidence: 0.6584)
+2026-01-27 17:56:15,250 - core.mcp_adapter - INFO - MCP Response [predict_1769516773_3]: 2192.83ms
+2026-01-27 17:56:21,983 - core.mcp_adapter - INFO - MCP Request [predict_1769516781_4]: predict
+2026-01-27 17:56:21,984 - core.mcp_adapter - INFO - [predict_1769516781_4] Predicting AAPL (intraday)
+2026-01-27 17:56:21,986 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 17:56:21,987 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.5665)
+2026-01-27 17:56:21,989 - core.mcp_adapter - INFO - [predict_1769516781_4] [OK] AAPL: HOLD (confidence: 0.5665)
+2026-01-27 17:56:21,989 - core.mcp_adapter - INFO - [predict_1769516781_4] Predicting GOOGL (intraday)
+2026-01-27 17:56:21,991 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 17:56:21,994 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.7046)
+2026-01-27 17:56:21,995 - core.mcp_adapter - INFO - [predict_1769516781_4] [OK] GOOGL: LONG (confidence: 0.7046)
+2026-01-27 17:56:21,996 - core.mcp_adapter - INFO - [predict_1769516781_4] Predicting MSFT (intraday)
+2026-01-27 17:56:21,998 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 17:56:22,001 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.7056)
+2026-01-27 17:56:22,003 - core.mcp_adapter - INFO - [predict_1769516781_4] [OK] MSFT: LONG (confidence: 0.7056)
+2026-01-27 17:56:22,003 - core.mcp_adapter - INFO - MCP Response [predict_1769516781_4]: 20.61ms
+2026-01-27 17:56:32,104 - core.mcp_adapter - INFO - MCP Request [predict_1769516792_5]: predict
+2026-01-27 17:56:32,105 - core.mcp_adapter - INFO - [predict_1769516792_5] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 17:56:32,107 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 17:56:32,108 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.5083)
+2026-01-27 17:56:32,110 - core.mcp_adapter - INFO - [predict_1769516792_5] [OK] TATAMOTORS.NS: SHORT (confidence: 0.5083)
+2026-01-27 17:56:32,111 - core.mcp_adapter - INFO - MCP Response [predict_1769516792_5]: 6.22ms
+2026-01-27 17:57:21,614 - core.mcp_adapter - INFO - MCP Request [predict_1769516841_6]: predict
+2026-01-27 17:57:21,615 - core.mcp_adapter - INFO - [predict_1769516841_6] Predicting AAPL (intraday)
+2026-01-27 17:57:21,617 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 17:57:21,618 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.6288)
+2026-01-27 17:57:21,619 - core.mcp_adapter - INFO - [predict_1769516841_6] [OK] AAPL: SHORT (confidence: 0.6288)
+2026-01-27 17:57:21,620 - core.mcp_adapter - INFO - [predict_1769516841_6] Predicting GOOGL (intraday)
+2026-01-27 17:57:21,621 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 17:57:21,625 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.8743)
+2026-01-27 17:57:21,626 - core.mcp_adapter - INFO - [predict_1769516841_6] [OK] GOOGL: LONG (confidence: 0.8743)
+2026-01-27 17:57:21,627 - core.mcp_adapter - INFO - [predict_1769516841_6] Predicting MSFT (intraday)
+2026-01-27 17:57:21,629 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 17:57:21,631 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.4789)
+2026-01-27 17:57:21,633 - core.mcp_adapter - INFO - [predict_1769516841_6] [OK] MSFT: HOLD (confidence: 0.4789)
+2026-01-27 17:57:21,634 - core.mcp_adapter - INFO - MCP Response [predict_1769516841_6]: 19.36ms
+2026-01-27 17:57:32,090 - core.mcp_adapter - INFO - MCP Request [predict_1769516852_7]: predict
+2026-01-27 17:57:32,090 - core.mcp_adapter - INFO - [predict_1769516852_7] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 17:57:32,092 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 17:57:32,094 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.7061)
+2026-01-27 17:57:32,096 - core.mcp_adapter - INFO - [predict_1769516852_7] [OK] TATAMOTORS.NS: LONG (confidence: 0.7061)
+2026-01-27 17:57:32,097 - core.mcp_adapter - INFO - MCP Response [predict_1769516852_7]: 7.10ms
+2026-01-27 17:58:13,827 - core.mcp_adapter - INFO - MCP Request [predict_1769516893_8]: predict
+2026-01-27 17:58:13,828 - core.mcp_adapter - INFO - [predict_1769516893_8] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 17:58:13,830 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 17:58:13,832 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.8585)
+2026-01-27 17:58:13,834 - core.mcp_adapter - INFO - [predict_1769516893_8] [OK] TATAMOTORS.NS: SHORT (confidence: 0.8585)
+2026-01-27 17:58:13,835 - core.mcp_adapter - INFO - [predict_1769516893_8] Predicting RE (intraday)
+2026-01-27 17:58:13,835 - core.mcp_adapter - INFO - [predict_1769516893_8] Data not found for RE. Fetching...
+2026-01-27 17:58:13,835 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 17:58:14,681 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 17:58:14,682 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 17:58:14,683 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 17:58:14,684 - core.mcp_adapter - INFO - [predict_1769516893_8] Data fetched for RE
+2026-01-27 17:58:14,685 - core.mcp_adapter - INFO - [predict_1769516893_8] Features not found for RE. Calculating...
+2026-01-27 17:58:14,687 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 17:58:14,688 - core.ml.model - INFO - Generated prediction: SHORT for RE (confidence: 0.7351)
+2026-01-27 17:58:14,689 - core.mcp_adapter - INFO - [predict_1769516893_8] [OK] RE: SHORT (confidence: 0.7351)
+2026-01-27 17:58:14,690 - core.mcp_adapter - INFO - MCP Response [predict_1769516893_8]: 863.28ms
+2026-01-27 17:58:14,696 - core.mcp_adapter - INFO - MCP Request [predict_1769516894_9]: predict
+2026-01-27 17:58:14,697 - core.mcp_adapter - INFO - [predict_1769516894_9] Predicting AAPL (intraday)
+2026-01-27 17:58:14,700 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 17:58:14,703 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.5088)
+2026-01-27 17:58:14,705 - core.mcp_adapter - INFO - [predict_1769516894_9] [OK] AAPL: SHORT (confidence: 0.5088)
+2026-01-27 17:58:14,705 - core.mcp_adapter - INFO - [predict_1769516894_9] Predicting GOOGL (intraday)
+2026-01-27 17:58:14,707 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 17:58:14,711 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.8545)
+2026-01-27 17:58:14,714 - core.mcp_adapter - INFO - [predict_1769516894_9] [OK] GOOGL: HOLD (confidence: 0.8545)
+2026-01-27 17:58:14,715 - core.mcp_adapter - INFO - [predict_1769516894_9] Predicting MSFT (intraday)
+2026-01-27 17:58:14,717 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 17:58:14,722 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.5178)
+2026-01-27 17:58:14,723 - core.mcp_adapter - INFO - [predict_1769516894_9] [OK] MSFT: HOLD (confidence: 0.5178)
+2026-01-27 17:58:14,724 - core.mcp_adapter - INFO - MCP Response [predict_1769516894_9]: 29.13ms
+2026-01-27 17:58:14,834 - core.mcp_adapter - INFO - MCP Request [predict_1769516894_10]: predict
+2026-01-27 17:58:14,835 - core.mcp_adapter - INFO - [predict_1769516894_10] Predicting AAPL (intraday)
+2026-01-27 17:58:14,837 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 17:58:14,839 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.8762)
+2026-01-27 17:58:14,841 - core.mcp_adapter - INFO - [predict_1769516894_10] [OK] AAPL: HOLD (confidence: 0.8762)
+2026-01-27 17:58:14,841 - core.mcp_adapter - INFO - [predict_1769516894_10] Predicting GOOGL (intraday)
+2026-01-27 17:58:14,843 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 17:58:14,848 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.8243)
+2026-01-27 17:58:14,852 - core.mcp_adapter - INFO - [predict_1769516894_10] [OK] GOOGL: SHORT (confidence: 0.8243)
+2026-01-27 17:58:14,852 - core.mcp_adapter - INFO - [predict_1769516894_10] Predicting MSFT (intraday)
+2026-01-27 17:58:14,856 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 17:58:14,859 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.4572)
+2026-01-27 17:58:14,860 - core.mcp_adapter - INFO - [predict_1769516894_10] [OK] MSFT: HOLD (confidence: 0.4572)
+2026-01-27 17:58:14,863 - core.mcp_adapter - INFO - MCP Response [predict_1769516894_10]: 28.02ms
+2026-01-27 17:58:32,821 - core.mcp_adapter - INFO - MCP Request [predict_1769516912_11]: predict
+2026-01-27 17:58:32,822 - core.mcp_adapter - INFO - [predict_1769516912_11] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 17:58:32,824 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 17:58:32,826 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.8365)
+2026-01-27 17:58:32,827 - core.mcp_adapter - INFO - [predict_1769516912_11] [OK] TATAMOTORS.NS: SHORT (confidence: 0.8365)
+2026-01-27 17:58:32,830 - core.mcp_adapter - INFO - MCP Response [predict_1769516912_11]: 6.66ms
+2026-01-27 17:59:32,813 - core.mcp_adapter - INFO - MCP Request [predict_1769516972_12]: predict
+2026-01-27 17:59:32,814 - core.mcp_adapter - INFO - [predict_1769516972_12] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 17:59:32,816 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 17:59:32,817 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.4861)
+2026-01-27 17:59:32,819 - core.mcp_adapter - INFO - [predict_1769516972_12] [OK] TATAMOTORS.NS: SHORT (confidence: 0.4861)
+2026-01-27 17:59:32,820 - core.mcp_adapter - INFO - MCP Response [predict_1769516972_12]: 6.02ms
+2026-01-27 18:00:13,831 - core.mcp_adapter - INFO - MCP Request [predict_1769517013_13]: predict
+2026-01-27 18:00:13,831 - core.mcp_adapter - INFO - [predict_1769517013_13] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:00:13,833 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:00:13,837 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.8761)
+2026-01-27 18:00:13,838 - core.mcp_adapter - INFO - [predict_1769517013_13] [OK] TATAMOTORS.NS: LONG (confidence: 0.8761)
+2026-01-27 18:00:13,839 - core.mcp_adapter - INFO - [predict_1769517013_13] Predicting RE (intraday)
+2026-01-27 18:00:13,840 - core.mcp_adapter - INFO - [predict_1769517013_13] Data not found for RE. Fetching...
+2026-01-27 18:00:13,840 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 18:00:14,775 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 18:00:14,775 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 18:00:14,776 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 18:00:14,776 - core.mcp_adapter - INFO - [predict_1769517013_13] Data fetched for RE
+2026-01-27 18:00:14,777 - core.mcp_adapter - INFO - [predict_1769517013_13] Features not found for RE. Calculating...
+2026-01-27 18:00:14,778 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 18:00:14,778 - core.ml.model - INFO - Generated prediction: LONG for RE (confidence: 0.5270)
+2026-01-27 18:00:14,779 - core.mcp_adapter - INFO - [predict_1769517013_13] [OK] RE: LONG (confidence: 0.5270)
+2026-01-27 18:00:14,780 - core.mcp_adapter - INFO - MCP Response [predict_1769517013_13]: 949.67ms
+2026-01-27 18:01:21,620 - core.mcp_adapter - INFO - MCP Request [predict_1769517081_14]: predict
+2026-01-27 18:01:21,620 - core.mcp_adapter - INFO - [predict_1769517081_14] Predicting AAPL (intraday)
+2026-01-27 18:01:21,622 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:01:21,623 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.7616)
+2026-01-27 18:01:21,624 - core.mcp_adapter - INFO - [predict_1769517081_14] [OK] AAPL: LONG (confidence: 0.7616)
+2026-01-27 18:01:21,625 - core.mcp_adapter - INFO - [predict_1769517081_14] Predicting GOOGL (intraday)
+2026-01-27 18:01:21,626 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:01:21,629 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.5665)
+2026-01-27 18:01:21,632 - core.mcp_adapter - INFO - [predict_1769517081_14] [OK] GOOGL: LONG (confidence: 0.5665)
+2026-01-27 18:01:21,632 - core.mcp_adapter - INFO - [predict_1769517081_14] Predicting MSFT (intraday)
+2026-01-27 18:01:21,634 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:01:21,637 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.6672)
+2026-01-27 18:01:21,639 - core.mcp_adapter - INFO - [predict_1769517081_14] [OK] MSFT: HOLD (confidence: 0.6672)
+2026-01-27 18:01:21,640 - core.mcp_adapter - INFO - MCP Response [predict_1769517081_14]: 19.88ms
+2026-01-27 18:01:32,822 - core.mcp_adapter - INFO - MCP Request [predict_1769517092_15]: predict
+2026-01-27 18:01:32,822 - core.mcp_adapter - INFO - [predict_1769517092_15] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:01:32,824 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:01:32,826 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.7034)
+2026-01-27 18:01:32,828 - core.mcp_adapter - INFO - [predict_1769517092_15] [OK] TATAMOTORS.NS: SHORT (confidence: 0.7034)
+2026-01-27 18:01:32,829 - core.mcp_adapter - INFO - MCP Response [predict_1769517092_15]: 6.86ms
+2026-01-27 18:02:13,820 - core.mcp_adapter - INFO - MCP Request [predict_1769517133_16]: predict
+2026-01-27 18:02:13,821 - core.mcp_adapter - INFO - [predict_1769517133_16] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:02:13,822 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:02:13,824 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.7395)
+2026-01-27 18:02:13,826 - core.mcp_adapter - INFO - [predict_1769517133_16] [OK] TATAMOTORS.NS: LONG (confidence: 0.7395)
+2026-01-27 18:02:13,826 - core.mcp_adapter - INFO - [predict_1769517133_16] Predicting RE (intraday)
+2026-01-27 18:02:13,827 - core.mcp_adapter - INFO - [predict_1769517133_16] Data not found for RE. Fetching...
+2026-01-27 18:02:13,827 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 18:02:14,730 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 18:02:14,731 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 18:02:14,732 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 18:02:14,732 - core.mcp_adapter - INFO - [predict_1769517133_16] Data fetched for RE
+2026-01-27 18:02:14,733 - core.mcp_adapter - INFO - [predict_1769517133_16] Features not found for RE. Calculating...
+2026-01-27 18:02:14,734 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 18:02:14,735 - core.ml.model - INFO - Generated prediction: LONG for RE (confidence: 0.7752)
+2026-01-27 18:02:14,736 - core.mcp_adapter - INFO - [predict_1769517133_16] [OK] RE: LONG (confidence: 0.7752)
+2026-01-27 18:02:14,737 - core.mcp_adapter - INFO - MCP Response [predict_1769517133_16]: 917.28ms
+2026-01-27 18:02:32,819 - core.mcp_adapter - INFO - MCP Request [predict_1769517152_17]: predict
+2026-01-27 18:02:32,820 - core.mcp_adapter - INFO - [predict_1769517152_17] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:02:32,821 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:02:32,823 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.4544)
+2026-01-27 18:02:32,824 - core.mcp_adapter - INFO - [predict_1769517152_17] [OK] TATAMOTORS.NS: LONG (confidence: 0.4544)
+2026-01-27 18:02:32,825 - core.mcp_adapter - INFO - MCP Response [predict_1769517152_17]: 5.80ms
+2026-01-27 18:05:21,619 - core.mcp_adapter - INFO - MCP Request [predict_1769517321_18]: predict
+2026-01-27 18:05:21,619 - core.mcp_adapter - INFO - [predict_1769517321_18] Predicting AAPL (intraday)
+2026-01-27 18:05:21,622 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:05:21,623 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.8933)
+2026-01-27 18:05:21,624 - core.mcp_adapter - INFO - [predict_1769517321_18] [OK] AAPL: HOLD (confidence: 0.8933)
+2026-01-27 18:05:21,625 - core.mcp_adapter - INFO - [predict_1769517321_18] Predicting GOOGL (intraday)
+2026-01-27 18:05:21,627 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:05:21,634 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.4215)
+2026-01-27 18:05:21,635 - core.mcp_adapter - INFO - [predict_1769517321_18] [OK] GOOGL: SHORT (confidence: 0.4215)
+2026-01-27 18:05:21,636 - core.mcp_adapter - INFO - [predict_1769517321_18] Predicting MSFT (intraday)
+2026-01-27 18:05:21,637 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:05:21,640 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.8418)
+2026-01-27 18:05:21,641 - core.mcp_adapter - INFO - [predict_1769517321_18] [OK] MSFT: LONG (confidence: 0.8418)
+2026-01-27 18:05:21,642 - core.mcp_adapter - INFO - MCP Response [predict_1769517321_18]: 23.36ms
+2026-01-27 18:05:32,810 - core.mcp_adapter - INFO - MCP Request [predict_1769517332_19]: predict
+2026-01-27 18:05:32,811 - core.mcp_adapter - INFO - [predict_1769517332_19] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:05:32,813 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:05:32,814 - core.ml.model - INFO - Generated prediction: HOLD for TATAMOTORS.NS (confidence: 0.5343)
+2026-01-27 18:05:32,816 - core.mcp_adapter - INFO - [predict_1769517332_19] [OK] TATAMOTORS.NS: HOLD (confidence: 0.5343)
+2026-01-27 18:05:32,816 - core.mcp_adapter - INFO - MCP Response [predict_1769517332_19]: 6.08ms
+2026-01-27 18:06:12,036 - core.mcp_adapter - INFO - MCP Request [predict_1769517372_20]: predict
+2026-01-27 18:06:12,036 - core.mcp_adapter - INFO - [predict_1769517372_20] Predicting AAPL (intraday)
+2026-01-27 18:06:12,038 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:06:12,039 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.5161)
+2026-01-27 18:06:12,040 - core.mcp_adapter - INFO - [predict_1769517372_20] [OK] AAPL: HOLD (confidence: 0.5161)
+2026-01-27 18:06:12,041 - core.mcp_adapter - INFO - [predict_1769517372_20] Predicting GOOGL (intraday)
+2026-01-27 18:06:12,042 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:06:12,047 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.8086)
+2026-01-27 18:06:12,048 - core.mcp_adapter - INFO - [predict_1769517372_20] [OK] GOOGL: SHORT (confidence: 0.8086)
+2026-01-27 18:06:12,049 - core.mcp_adapter - INFO - [predict_1769517372_20] Predicting MSFT (intraday)
+2026-01-27 18:06:12,051 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:06:12,054 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.4804)
+2026-01-27 18:06:12,055 - core.mcp_adapter - INFO - [predict_1769517372_20] [OK] MSFT: LONG (confidence: 0.4804)
+2026-01-27 18:06:12,056 - core.mcp_adapter - INFO - MCP Response [predict_1769517372_20]: 20.48ms
+2026-01-27 18:06:12,058 - core.mcp_adapter - INFO - MCP Request [predict_1769517372_21]: predict
+2026-01-27 18:06:12,059 - core.mcp_adapter - INFO - [predict_1769517372_21] Predicting AAPL (intraday)
+2026-01-27 18:06:12,060 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:06:12,061 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.6865)
+2026-01-27 18:06:12,062 - core.mcp_adapter - INFO - [predict_1769517372_21] [OK] AAPL: HOLD (confidence: 0.6865)
+2026-01-27 18:06:12,063 - core.mcp_adapter - INFO - [predict_1769517372_21] Predicting GOOGL (intraday)
+2026-01-27 18:06:12,064 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:06:12,067 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.7905)
+2026-01-27 18:06:12,068 - core.mcp_adapter - INFO - [predict_1769517372_21] [OK] GOOGL: SHORT (confidence: 0.7905)
+2026-01-27 18:06:12,069 - core.mcp_adapter - INFO - [predict_1769517372_21] Predicting MSFT (intraday)
+2026-01-27 18:06:12,070 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:06:12,073 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.4087)
+2026-01-27 18:06:12,074 - core.mcp_adapter - INFO - [predict_1769517372_21] [OK] MSFT: HOLD (confidence: 0.4087)
+2026-01-27 18:06:12,075 - core.mcp_adapter - INFO - MCP Response [predict_1769517372_21]: 16.34ms
+2026-01-27 18:06:13,841 - core.mcp_adapter - INFO - MCP Request [predict_1769517373_22]: predict
+2026-01-27 18:06:13,841 - core.mcp_adapter - INFO - [predict_1769517373_22] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:06:13,843 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:06:13,846 - core.ml.model - INFO - Generated prediction: HOLD for TATAMOTORS.NS (confidence: 0.8704)
+2026-01-27 18:06:13,848 - core.mcp_adapter - INFO - [predict_1769517373_22] [OK] TATAMOTORS.NS: HOLD (confidence: 0.8704)
+2026-01-27 18:06:13,848 - core.mcp_adapter - INFO - [predict_1769517373_22] Predicting RE (intraday)
+2026-01-27 18:06:13,849 - core.mcp_adapter - INFO - [predict_1769517373_22] Data not found for RE. Fetching...
+2026-01-27 18:06:13,849 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 18:06:14,340 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 18:06:14,344 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 18:06:14,351 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 18:06:14,359 - core.mcp_adapter - INFO - [predict_1769517373_22] Data fetched for RE
+2026-01-27 18:06:14,385 - core.mcp_adapter - INFO - [predict_1769517373_22] Features not found for RE. Calculating...
+2026-01-27 18:06:14,392 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 18:06:14,393 - core.ml.model - INFO - Generated prediction: HOLD for RE (confidence: 0.5242)
+2026-01-27 18:06:14,402 - core.mcp_adapter - INFO - [predict_1769517373_22] [OK] RE: HOLD (confidence: 0.5242)
+2026-01-27 18:06:14,419 - core.mcp_adapter - INFO - MCP Response [predict_1769517373_22]: 578.22ms
+2026-01-27 18:06:32,820 - core.mcp_adapter - INFO - MCP Request [predict_1769517392_23]: predict
+2026-01-27 18:06:32,821 - core.mcp_adapter - INFO - [predict_1769517392_23] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:06:32,822 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:06:32,824 - core.ml.model - INFO - Generated prediction: HOLD for TATAMOTORS.NS (confidence: 0.8208)
+2026-01-27 18:06:32,826 - core.mcp_adapter - INFO - [predict_1769517392_23] [OK] TATAMOTORS.NS: HOLD (confidence: 0.8208)
+2026-01-27 18:06:32,826 - core.mcp_adapter - INFO - MCP Response [predict_1769517392_23]: 6.24ms
+2026-01-27 18:07:32,815 - core.mcp_adapter - INFO - MCP Request [predict_1769517452_24]: predict
+2026-01-27 18:07:32,816 - core.mcp_adapter - INFO - [predict_1769517452_24] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:07:32,818 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:07:32,819 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.7178)
+2026-01-27 18:07:32,821 - core.mcp_adapter - INFO - [predict_1769517452_24] [OK] TATAMOTORS.NS: LONG (confidence: 0.7178)
+2026-01-27 18:07:32,821 - core.mcp_adapter - INFO - MCP Response [predict_1769517452_24]: 6.11ms
+2026-01-27 18:08:11,919 - core.mcp_adapter - INFO - MCP Request [predict_1769517491_25]: predict
+2026-01-27 18:08:11,919 - core.mcp_adapter - INFO - [predict_1769517491_25] Predicting AAPL (intraday)
+2026-01-27 18:08:11,921 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:08:11,923 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.4730)
+2026-01-27 18:08:11,924 - core.mcp_adapter - INFO - [predict_1769517491_25] [OK] AAPL: HOLD (confidence: 0.4730)
+2026-01-27 18:08:11,925 - core.mcp_adapter - INFO - [predict_1769517491_25] Predicting GOOGL (intraday)
+2026-01-27 18:08:11,927 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:08:11,929 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.6738)
+2026-01-27 18:08:11,931 - core.mcp_adapter - INFO - [predict_1769517491_25] [OK] GOOGL: HOLD (confidence: 0.6738)
+2026-01-27 18:08:11,932 - core.mcp_adapter - INFO - [predict_1769517491_25] Predicting MSFT (intraday)
+2026-01-27 18:08:11,933 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:08:11,937 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.7035)
+2026-01-27 18:08:11,939 - core.mcp_adapter - INFO - [predict_1769517491_25] [OK] MSFT: LONG (confidence: 0.7035)
+2026-01-27 18:08:11,940 - core.mcp_adapter - INFO - MCP Response [predict_1769517491_25]: 21.05ms
+2026-01-27 18:08:13,943 - core.mcp_adapter - INFO - MCP Request [predict_1769517493_26]: predict
+2026-01-27 18:08:13,943 - core.mcp_adapter - INFO - [predict_1769517493_26] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:08:13,945 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:08:13,947 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.4126)
+2026-01-27 18:08:13,949 - core.mcp_adapter - INFO - [predict_1769517493_26] [OK] TATAMOTORS.NS: LONG (confidence: 0.4126)
+2026-01-27 18:08:13,950 - core.mcp_adapter - INFO - [predict_1769517493_26] Predicting RE (intraday)
+2026-01-27 18:08:13,950 - core.mcp_adapter - INFO - [predict_1769517493_26] Data not found for RE. Fetching...
+2026-01-27 18:08:13,950 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 18:08:14,736 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 18:08:14,737 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 18:08:14,738 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 18:08:14,738 - core.mcp_adapter - INFO - [predict_1769517493_26] Data fetched for RE
+2026-01-27 18:08:14,739 - core.mcp_adapter - INFO - [predict_1769517493_26] Features not found for RE. Calculating...
+2026-01-27 18:08:14,741 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 18:08:14,741 - core.ml.model - INFO - Generated prediction: LONG for RE (confidence: 0.5782)
+2026-01-27 18:08:14,742 - core.mcp_adapter - INFO - [predict_1769517493_26] [OK] RE: LONG (confidence: 0.5782)
+2026-01-27 18:08:14,743 - core.mcp_adapter - INFO - MCP Response [predict_1769517493_26]: 800.35ms
+2026-01-27 18:08:32,820 - core.mcp_adapter - INFO - MCP Request [predict_1769517512_27]: predict
+2026-01-27 18:08:32,820 - core.mcp_adapter - INFO - [predict_1769517512_27] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:08:32,822 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:08:32,824 - core.ml.model - INFO - Generated prediction: HOLD for TATAMOTORS.NS (confidence: 0.8581)
+2026-01-27 18:08:32,825 - core.mcp_adapter - INFO - [predict_1769517512_27] [OK] TATAMOTORS.NS: HOLD (confidence: 0.8581)
+2026-01-27 18:08:32,826 - core.mcp_adapter - INFO - MCP Response [predict_1769517512_27]: 6.22ms
+2026-01-27 18:09:17,257 - core.mcp_adapter - INFO - MCP Request [predict_1769517557_28]: predict
+2026-01-27 18:09:17,258 - core.mcp_adapter - INFO - [predict_1769517557_28] Predicting AAPL (intraday)
+2026-01-27 18:09:17,259 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:09:17,260 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.4236)
+2026-01-27 18:09:17,262 - core.mcp_adapter - INFO - [predict_1769517557_28] [OK] AAPL: HOLD (confidence: 0.4236)
+2026-01-27 18:09:17,262 - core.mcp_adapter - INFO - [predict_1769517557_28] Predicting GOOGL (intraday)
+2026-01-27 18:09:17,264 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:09:17,267 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.6272)
+2026-01-27 18:09:17,269 - core.mcp_adapter - INFO - [predict_1769517557_28] [OK] GOOGL: LONG (confidence: 0.6272)
+2026-01-27 18:09:17,269 - core.mcp_adapter - INFO - [predict_1769517557_28] Predicting MSFT (intraday)
+2026-01-27 18:09:17,271 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:09:17,274 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.8124)
+2026-01-27 18:09:17,275 - core.mcp_adapter - INFO - [predict_1769517557_28] [OK] MSFT: SHORT (confidence: 0.8124)
+2026-01-27 18:09:17,275 - core.mcp_adapter - INFO - MCP Response [predict_1769517557_28]: 18.18ms
+2026-01-27 18:09:17,381 - core.mcp_adapter - INFO - MCP Request [predict_1769517557_29]: predict
+2026-01-27 18:09:17,382 - core.mcp_adapter - INFO - [predict_1769517557_29] Predicting AAPL (intraday)
+2026-01-27 18:09:17,384 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:09:17,385 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.8650)
+2026-01-27 18:09:17,387 - core.mcp_adapter - INFO - [predict_1769517557_29] [OK] AAPL: LONG (confidence: 0.8650)
+2026-01-27 18:09:17,387 - core.mcp_adapter - INFO - [predict_1769517557_29] Predicting GOOGL (intraday)
+2026-01-27 18:09:17,389 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:09:17,392 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.6783)
+2026-01-27 18:09:17,393 - core.mcp_adapter - INFO - [predict_1769517557_29] [OK] GOOGL: SHORT (confidence: 0.6783)
+2026-01-27 18:09:17,394 - core.mcp_adapter - INFO - [predict_1769517557_29] Predicting MSFT (intraday)
+2026-01-27 18:09:17,395 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:09:17,398 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.8671)
+2026-01-27 18:09:17,400 - core.mcp_adapter - INFO - [predict_1769517557_29] [OK] MSFT: LONG (confidence: 0.8671)
+2026-01-27 18:09:17,400 - core.mcp_adapter - INFO - MCP Response [predict_1769517557_29]: 18.95ms
+2026-01-27 18:09:32,823 - core.mcp_adapter - INFO - MCP Request [predict_1769517572_30]: predict
+2026-01-27 18:09:32,823 - core.mcp_adapter - INFO - [predict_1769517572_30] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:09:32,825 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:09:32,827 - core.ml.model - INFO - Generated prediction: HOLD for TATAMOTORS.NS (confidence: 0.4898)
+2026-01-27 18:09:32,829 - core.mcp_adapter - INFO - [predict_1769517572_30] [OK] TATAMOTORS.NS: HOLD (confidence: 0.4898)
+2026-01-27 18:09:32,829 - core.mcp_adapter - INFO - MCP Response [predict_1769517572_30]: 6.52ms
+2026-01-27 18:10:02,159 - core.mcp_adapter - INFO - MCP Request [predict_1769517602_31]: predict
+2026-01-27 18:10:02,160 - core.mcp_adapter - INFO - [predict_1769517602_31] Predicting AAPL (intraday)
+2026-01-27 18:10:02,161 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:10:02,163 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.8217)
+2026-01-27 18:10:02,164 - core.mcp_adapter - INFO - [predict_1769517602_31] [OK] AAPL: SHORT (confidence: 0.8217)
+2026-01-27 18:10:02,164 - core.mcp_adapter - INFO - [predict_1769517602_31] Predicting GOOGL (intraday)
+2026-01-27 18:10:02,166 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:10:02,169 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.5073)
+2026-01-27 18:10:02,171 - core.mcp_adapter - INFO - [predict_1769517602_31] [OK] GOOGL: SHORT (confidence: 0.5073)
+2026-01-27 18:10:02,171 - core.mcp_adapter - INFO - [predict_1769517602_31] Predicting MSFT (intraday)
+2026-01-27 18:10:02,173 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:10:02,175 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.5300)
+2026-01-27 18:10:02,177 - core.mcp_adapter - INFO - [predict_1769517602_31] [OK] MSFT: HOLD (confidence: 0.5300)
+2026-01-27 18:10:02,177 - core.mcp_adapter - INFO - MCP Response [predict_1769517602_31]: 18.34ms
+2026-01-27 18:10:02,181 - core.mcp_adapter - INFO - MCP Request [predict_1769517602_32]: predict
+2026-01-27 18:10:02,181 - core.mcp_adapter - INFO - [predict_1769517602_32] Predicting AAPL (intraday)
+2026-01-27 18:10:02,182 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:10:02,184 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.8968)
+2026-01-27 18:10:02,185 - core.mcp_adapter - INFO - [predict_1769517602_32] [OK] AAPL: SHORT (confidence: 0.8968)
+2026-01-27 18:10:02,185 - core.mcp_adapter - INFO - [predict_1769517602_32] Predicting GOOGL (intraday)
+2026-01-27 18:10:02,186 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:10:02,189 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.5788)
+2026-01-27 18:10:02,191 - core.mcp_adapter - INFO - [predict_1769517602_32] [OK] GOOGL: HOLD (confidence: 0.5788)
+2026-01-27 18:10:02,191 - core.mcp_adapter - INFO - [predict_1769517602_32] Predicting MSFT (intraday)
+2026-01-27 18:10:02,192 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:10:02,195 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.6312)
+2026-01-27 18:10:02,196 - core.mcp_adapter - INFO - [predict_1769517602_32] [OK] MSFT: LONG (confidence: 0.6312)
+2026-01-27 18:10:02,197 - core.mcp_adapter - INFO - MCP Response [predict_1769517602_32]: 16.53ms
+2026-01-27 18:10:32,005 - core.mcp_adapter - INFO - MCP Request [predict_1769517632_33]: predict
+2026-01-27 18:10:32,005 - core.mcp_adapter - INFO - [predict_1769517632_33] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:10:32,007 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:10:32,009 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.4016)
+2026-01-27 18:10:32,011 - core.mcp_adapter - INFO - [predict_1769517632_33] [OK] TATAMOTORS.NS: SHORT (confidence: 0.4016)
+2026-01-27 18:10:32,011 - core.mcp_adapter - INFO - [predict_1769517632_33] Predicting RE (intraday)
+2026-01-27 18:10:32,012 - core.mcp_adapter - INFO - [predict_1769517632_33] Data not found for RE. Fetching...
+2026-01-27 18:10:32,012 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 18:10:32,726 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 18:10:32,727 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 18:10:32,727 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 18:10:32,728 - core.mcp_adapter - INFO - [predict_1769517632_33] Data fetched for RE
+2026-01-27 18:10:32,729 - core.mcp_adapter - INFO - [predict_1769517632_33] Features not found for RE. Calculating...
+2026-01-27 18:10:32,730 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 18:10:32,731 - core.ml.model - INFO - Generated prediction: LONG for RE (confidence: 0.8411)
+2026-01-27 18:10:32,733 - core.mcp_adapter - INFO - [predict_1769517632_33] [OK] RE: LONG (confidence: 0.8411)
+2026-01-27 18:10:32,734 - core.mcp_adapter - INFO - MCP Response [predict_1769517632_33]: 728.82ms
+2026-01-27 18:10:49,148 - core.mcp_adapter - INFO - MCP Request [predict_1769517649_34]: predict
+2026-01-27 18:10:49,149 - core.mcp_adapter - INFO - [predict_1769517649_34] Predicting AAPL (intraday)
+2026-01-27 18:10:49,152 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:10:49,154 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.5465)
+2026-01-27 18:10:49,155 - core.mcp_adapter - INFO - [predict_1769517649_34] [OK] AAPL: LONG (confidence: 0.5465)
+2026-01-27 18:10:49,156 - core.mcp_adapter - INFO - [predict_1769517649_34] Predicting GOOGL (intraday)
+2026-01-27 18:10:49,158 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:10:49,162 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.5181)
+2026-01-27 18:10:49,164 - core.mcp_adapter - INFO - [predict_1769517649_34] [OK] GOOGL: HOLD (confidence: 0.5181)
+2026-01-27 18:10:49,165 - core.mcp_adapter - INFO - [predict_1769517649_34] Predicting MSFT (intraday)
+2026-01-27 18:10:49,166 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:10:49,169 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.8072)
+2026-01-27 18:10:49,171 - core.mcp_adapter - INFO - [predict_1769517649_34] [OK] MSFT: LONG (confidence: 0.8072)
+2026-01-27 18:10:49,172 - core.mcp_adapter - INFO - MCP Response [predict_1769517649_34]: 23.60ms
+2026-01-27 18:10:49,175 - core.mcp_adapter - INFO - MCP Request [predict_1769517649_35]: predict
+2026-01-27 18:10:49,178 - core.mcp_adapter - INFO - [predict_1769517649_35] Predicting AAPL (intraday)
+2026-01-27 18:10:49,179 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:10:49,181 - core.ml.model - INFO - Generated prediction: SHORT for AAPL (confidence: 0.5742)
+2026-01-27 18:10:49,182 - core.mcp_adapter - INFO - [predict_1769517649_35] [OK] AAPL: SHORT (confidence: 0.5742)
+2026-01-27 18:10:49,183 - core.mcp_adapter - INFO - [predict_1769517649_35] Predicting GOOGL (intraday)
+2026-01-27 18:10:49,184 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:10:49,188 - core.ml.model - INFO - Generated prediction: HOLD for GOOGL (confidence: 0.4081)
+2026-01-27 18:10:49,191 - core.mcp_adapter - INFO - [predict_1769517649_35] [OK] GOOGL: HOLD (confidence: 0.4081)
+2026-01-27 18:10:49,191 - core.mcp_adapter - INFO - [predict_1769517649_35] Predicting MSFT (intraday)
+2026-01-27 18:10:49,193 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:10:49,196 - core.ml.model - INFO - Generated prediction: HOLD for MSFT (confidence: 0.6367)
+2026-01-27 18:10:49,198 - core.mcp_adapter - INFO - [predict_1769517649_35] [OK] MSFT: HOLD (confidence: 0.6367)
+2026-01-27 18:10:49,199 - core.mcp_adapter - INFO - MCP Response [predict_1769517649_35]: 23.35ms
+2026-01-27 18:11:31,877 - core.mcp_adapter - INFO - MCP Request [predict_1769517691_36]: predict
+2026-01-27 18:11:31,877 - core.mcp_adapter - INFO - [predict_1769517691_36] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:11:31,879 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:11:31,881 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.6556)
+2026-01-27 18:11:31,883 - core.mcp_adapter - INFO - [predict_1769517691_36] [OK] TATAMOTORS.NS: LONG (confidence: 0.6556)
+2026-01-27 18:11:31,884 - core.mcp_adapter - INFO - MCP Response [predict_1769517691_36]: 6.94ms
+2026-01-27 18:12:18,245 - core.mcp_adapter - INFO - MCP Request [predict_1769517738_37]: predict
+2026-01-27 18:12:18,246 - core.mcp_adapter - INFO - [predict_1769517738_37] Predicting AAPL (intraday)
+2026-01-27 18:12:18,249 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:12:18,251 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.5243)
+2026-01-27 18:12:18,254 - core.mcp_adapter - INFO - [predict_1769517738_37] [OK] AAPL: LONG (confidence: 0.5243)
+2026-01-27 18:12:18,256 - core.mcp_adapter - INFO - [predict_1769517738_37] Predicting GOOGL (intraday)
+2026-01-27 18:12:18,259 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:12:18,262 - core.ml.model - INFO - Generated prediction: SHORT for GOOGL (confidence: 0.5415)
+2026-01-27 18:12:18,266 - core.mcp_adapter - INFO - [predict_1769517738_37] [OK] GOOGL: SHORT (confidence: 0.5415)
+2026-01-27 18:12:18,266 - core.mcp_adapter - INFO - [predict_1769517738_37] Predicting MSFT (intraday)
+2026-01-27 18:12:18,268 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:12:18,272 - core.ml.model - INFO - Generated prediction: LONG for MSFT (confidence: 0.5273)
+2026-01-27 18:12:18,275 - core.mcp_adapter - INFO - [predict_1769517738_37] [OK] MSFT: LONG (confidence: 0.5273)
+2026-01-27 18:12:18,276 - core.mcp_adapter - INFO - MCP Response [predict_1769517738_37]: 30.93ms
+2026-01-27 18:12:18,278 - core.mcp_adapter - INFO - MCP Request [predict_1769517738_38]: predict
+2026-01-27 18:12:18,279 - core.mcp_adapter - INFO - [predict_1769517738_38] Predicting AAPL (intraday)
+2026-01-27 18:12:18,283 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:12:18,284 - core.ml.model - INFO - Generated prediction: HOLD for AAPL (confidence: 0.4242)
+2026-01-27 18:12:18,286 - core.mcp_adapter - INFO - [predict_1769517738_38] [OK] AAPL: HOLD (confidence: 0.4242)
+2026-01-27 18:12:18,287 - core.mcp_adapter - INFO - [predict_1769517738_38] Predicting GOOGL (intraday)
+2026-01-27 18:12:18,288 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:12:18,291 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.4180)
+2026-01-27 18:12:18,296 - core.mcp_adapter - INFO - [predict_1769517738_38] [OK] GOOGL: LONG (confidence: 0.4180)
+2026-01-27 18:12:18,296 - core.mcp_adapter - INFO - [predict_1769517738_38] Predicting MSFT (intraday)
+2026-01-27 18:12:18,299 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:12:18,302 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.8125)
+2026-01-27 18:12:18,304 - core.mcp_adapter - INFO - [predict_1769517738_38] [OK] MSFT: SHORT (confidence: 0.8125)
+2026-01-27 18:12:18,305 - core.mcp_adapter - INFO - MCP Response [predict_1769517738_38]: 26.01ms
+2026-01-27 18:12:31,891 - core.mcp_adapter - INFO - MCP Request [predict_1769517751_39]: predict
+2026-01-27 18:12:31,891 - core.mcp_adapter - INFO - [predict_1769517751_39] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:12:31,893 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:12:31,895 - core.ml.model - INFO - Generated prediction: HOLD for TATAMOTORS.NS (confidence: 0.6997)
+2026-01-27 18:12:31,896 - core.mcp_adapter - INFO - [predict_1769517751_39] [OK] TATAMOTORS.NS: HOLD (confidence: 0.6997)
+2026-01-27 18:12:31,899 - core.mcp_adapter - INFO - MCP Response [predict_1769517751_39]: 6.29ms
+2026-01-27 18:12:49,137 - core.mcp_adapter - INFO - MCP Request [predict_1769517769_40]: predict
+2026-01-27 18:12:49,145 - core.mcp_adapter - INFO - [predict_1769517769_40] Predicting AAPL (intraday)
+2026-01-27 18:12:49,177 - core.ml.model - INFO - Generating prediction for AAPL (intraday) - Placeholder implementation
+2026-01-27 18:12:49,185 - core.ml.model - INFO - Generated prediction: LONG for AAPL (confidence: 0.7801)
+2026-01-27 18:12:49,193 - core.mcp_adapter - INFO - [predict_1769517769_40] [OK] AAPL: LONG (confidence: 0.7801)
+2026-01-27 18:12:49,194 - core.mcp_adapter - INFO - [predict_1769517769_40] Predicting GOOGL (intraday)
+2026-01-27 18:12:49,195 - core.ml.model - INFO - Generating prediction for GOOGL (intraday) - Placeholder implementation
+2026-01-27 18:12:49,201 - core.ml.model - INFO - Generated prediction: LONG for GOOGL (confidence: 0.5921)
+2026-01-27 18:12:49,203 - core.mcp_adapter - INFO - [predict_1769517769_40] [OK] GOOGL: LONG (confidence: 0.5921)
+2026-01-27 18:12:49,209 - core.mcp_adapter - INFO - [predict_1769517769_40] Predicting MSFT (intraday)
+2026-01-27 18:12:49,215 - core.ml.model - INFO - Generating prediction for MSFT (intraday) - Placeholder implementation
+2026-01-27 18:12:49,219 - core.ml.model - INFO - Generated prediction: SHORT for MSFT (confidence: 0.8338)
+2026-01-27 18:12:49,221 - core.mcp_adapter - INFO - [predict_1769517769_40] [OK] MSFT: SHORT (confidence: 0.8338)
+2026-01-27 18:12:49,222 - core.mcp_adapter - INFO - MCP Response [predict_1769517769_40]: 84.68ms
+2026-01-27 18:14:31,883 - core.mcp_adapter - INFO - MCP Request [predict_1769517871_41]: predict
+2026-01-27 18:14:31,884 - core.mcp_adapter - INFO - [predict_1769517871_41] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:14:31,885 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:14:31,887 - core.ml.model - INFO - Generated prediction: SHORT for TATAMOTORS.NS (confidence: 0.4725)
+2026-01-27 18:14:31,888 - core.mcp_adapter - INFO - [predict_1769517871_41] [OK] TATAMOTORS.NS: SHORT (confidence: 0.4725)
+2026-01-27 18:14:31,889 - core.mcp_adapter - INFO - MCP Response [predict_1769517871_41]: 5.64ms
+2026-01-27 18:14:32,010 - core.mcp_adapter - INFO - MCP Request [predict_1769517871_42]: predict
+2026-01-27 18:14:32,011 - core.mcp_adapter - INFO - [predict_1769517871_42] Predicting TATAMOTORS.NS (intraday)
+2026-01-27 18:14:32,013 - core.ml.model - INFO - Generating prediction for TATAMOTORS.NS (intraday) - Placeholder implementation
+2026-01-27 18:14:32,014 - core.ml.model - INFO - Generated prediction: LONG for TATAMOTORS.NS (confidence: 0.5879)
+2026-01-27 18:14:32,016 - core.mcp_adapter - INFO - [predict_1769517871_42] [OK] TATAMOTORS.NS: LONG (confidence: 0.5879)
+2026-01-27 18:14:32,016 - core.mcp_adapter - INFO - [predict_1769517871_42] Predicting RE (intraday)
+2026-01-27 18:14:32,017 - core.mcp_adapter - INFO - [predict_1769517871_42] Data not found for RE. Fetching...
+2026-01-27 18:14:32,017 - core.ml.data - INFO - Fetching data for RE with period 2y
+2026-01-27 18:14:32,589 - yfinance - ERROR - $RE: possibly delisted; no price data found  (period=2y) (Yahoo error = "No data found, symbol may be delisted")
+2026-01-27 18:14:32,589 - core.ml.data - WARNING - Insufficient data from yfinance, trying NSE Bhav Copy for RE
+2026-01-27 18:14:32,590 - core.ml.data - ERROR - Could not fetch data for RE from any source
+2026-01-27 18:14:32,590 - core.mcp_adapter - INFO - [predict_1769517871_42] Data fetched for RE
+2026-01-27 18:14:32,591 - core.mcp_adapter - INFO - [predict_1769517871_42] Features not found for RE. Calculating...
+2026-01-27 18:14:32,592 - core.ml.model - INFO - Generating prediction for RE (intraday) - Placeholder implementation
+2026-01-27 18:14:32,592 - core.ml.model - INFO - Generated prediction: LONG for RE (confidence: 0.8807)
+2026-01-27 18:14:32,593 - core.mcp_adapter - INFO - [predict_1769517871_42] [OK] RE: LONG (confidence: 0.8807)
+2026-01-27 18:14:32,594 - core.mcp_adapter - INFO - MCP Response [predict_1769517871_42]: 599.92ms
