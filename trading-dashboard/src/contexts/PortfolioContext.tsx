@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { stockAPI } from '../services/api';
 
 // Portfolio Types
 export type PortfolioType = 'seed' | 'tree' | 'sky' | 'scenario';
