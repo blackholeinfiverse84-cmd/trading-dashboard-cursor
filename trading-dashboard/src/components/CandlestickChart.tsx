@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { formatUSDToINR } from '../utils/currencyConverter';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
-import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData, WhitespaceData } from 'lightweight-charts';
 import { stockAPI } from '../services/api';
 import {
   BarChart3,
@@ -54,7 +54,7 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
   const [drawingsLocked, setDrawingsLocked] = useState(false);
   const [drawingsVisible, setDrawingsVisible] = useState(true);
-  const liveUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const liveUpdateIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Timeframe options
   const timeframes = [
@@ -239,13 +239,14 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
               const allData = candlestickSeriesRef.current.data();
               const lastCandle = allData.length > 0 ? allData[allData.length - 1] : null;
 
-              if (lastCandle) {
+              if (lastCandle && 'open' in lastCandle && 'high' in lastCandle && 'low' in lastCandle && 'close' in lastCandle) {
                 // Update last candle with new close price
+                const typedCandle = lastCandle as CandlestickData;
                 candlestickSeriesRef.current.update({
-                  time: lastCandle.time,
-                  open: lastCandle.open,
-                  high: Math.max(lastCandle.high, currentPrice, latest.high || latest.High || currentPrice),
-                  low: Math.min(lastCandle.low, currentPrice, latest.low || latest.Low || currentPrice),
+                  time: typedCandle.time,
+                  open: typedCandle.open,
+                  high: Math.max(typedCandle.high, currentPrice, latest.high || latest.High || currentPrice),
+                  low: Math.min(typedCandle.low, currentPrice, latest.low || latest.Low || currentPrice),
                   close: currentPrice,
                 });
               } else if (allData.length === 0) {

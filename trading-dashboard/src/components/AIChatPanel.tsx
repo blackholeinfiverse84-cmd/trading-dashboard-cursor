@@ -19,10 +19,10 @@ interface Message {
 }
 
 const QUICK_ACTIONS = [
-  { label: 'Market Analysis', icon: BarChart3, prompt: 'Analyze current market trends and provide insights' },
-  { label: 'Trading Strategy', icon: TrendingUp, prompt: 'Suggest a trading strategy for current market conditions' },
-  { label: 'Technical Indicators', icon: Zap, prompt: 'Explain technical indicators and how to use them' },
-  { label: 'Risk Management', icon: HelpCircle, prompt: 'How should I manage risk in my trades?' },
+  { label: 'Market Analysis', icon: BarChart3, prompt: 'Explain market trends and their significance for educational purposes' },
+  { label: 'Strategy Learning', icon: TrendingUp, prompt: 'Describe trading strategies as educational examples' },
+  { label: 'Technical Indicators', icon: Zap, prompt: 'Explain technical indicators and their educational use' },
+  { label: 'Risk Awareness', icon: HelpCircle, prompt: 'How should I approach risk in a learning context?' },
 ];
 
 const AIChatPanel = ({ onClose, onMinimize }: AIChatPanelProps) => {
@@ -127,7 +127,13 @@ const AIChatPanel = ({ onClose, onMinimize }: AIChatPanelProps) => {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Thank you for your message: "${content}". The AI backend is currently being set up. Once ready, I'll be able to provide real-time trading insights, market analysis, and answer your questions about ${context.symbol ? `the ${context.symbol} symbol` : 'trading'}.\n\nFor now, here's a placeholder response demonstrating the chat interface.`,
+        content: `What happened: I received your question about "${content}".
+
+Why it happened: You're seeking educational information about financial markets.
+
+What to learn: As an educational mentor, I'm here to help you understand market concepts, not to provide specific trading advice. The AI backend is currently being set up. Once ready, I'll be able to provide educational insights about ${context.symbol ? `${context.symbol} and its market behavior` : 'financial markets'}.
+
+Remember: This system is for educational purposes only. Never risk more than you can afford to lose.`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -140,7 +146,7 @@ const AIChatPanel = ({ onClose, onMinimize }: AIChatPanelProps) => {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Sorry, I encountered an error: ${error.message || 'Unable to process your request. Please try again.'}`,
+        content: `I apologize, but I encountered an issue processing your request. As an educational mentor, I aim to provide helpful information about financial markets. Please try rephrasing your question: ${error.message || 'Unable to process your request. Please try again.'}`,
         timestamp: new Date(),
         error: true,
       };
@@ -237,7 +243,7 @@ const AIChatPanel = ({ onClose, onMinimize }: AIChatPanelProps) => {
           </div>
           <div>
             <h3 className={`text-sm font-semibold ${themeClasses.text} flex items-center gap-1`}>
-              AI Trading Assistant
+              Financial Education Mentor
               {isSpace && <Sparkles className="w-3 h-3 text-purple-400" />}
             </h3>
             <p className={`text-xs ${themeClasses.textTertiary}`}>
@@ -282,10 +288,10 @@ const AIChatPanel = ({ onClose, onMinimize }: AIChatPanelProps) => {
               )}
             </div>
             <h4 className={`text-base font-semibold ${themeClasses.text} mb-2`}>
-              AI Trading Assistant
+              Financial Education Mentor
             </h4>
             <p className={`text-sm ${themeClasses.textSecondary} max-w-xs mb-6`}>
-              Ask me about market analysis, trading strategies, or get help with your charts.
+              Ask me about market analysis, financial concepts, or get educational insights about market behavior.
             </p>
             
             {/* Quick Actions */}
@@ -410,7 +416,7 @@ const AIChatPanel = ({ onClose, onMinimize }: AIChatPanelProps) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask me anything about trading..."
+            placeholder="Ask me about financial education and market concepts..."
             className={`flex-1 px-4 py-2.5 rounded-lg ${themeClasses.input} focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition-all`}
             disabled={isLoading}
           />

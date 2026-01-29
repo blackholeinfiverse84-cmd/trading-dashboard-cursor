@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import PortfolioSelector from '../components/PortfolioSelector';
 import { usePortfolio } from '../contexts/PortfolioContext';
 import { useNotification } from '../contexts/NotificationContext';
-import { stockAPI, TimeoutError, type PredictionItem } from '../services/api';
+import { stockAPI, riskAPI, tradeAPI, TimeoutError, type PredictionItem } from '../services/api';
 import { TrendingUp, TrendingDown, Plus, AlertTriangle, CheckCircle, BookOpen, RotateCcw, Info } from 'lucide-react';
 import { formatUSDToINR } from '../utils/currencyConverter';
 import testResponsiveDesign from '../utils/testResponsive';

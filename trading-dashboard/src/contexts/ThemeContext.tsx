@@ -24,9 +24,14 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     // Apply theme class to document root
     document.documentElement.classList.remove('light', 'dark', 'space');
     document.documentElement.classList.add(theme);
-    // Force a re-render by updating body class
-    document.body.className = document.body.className.replace(/theme-\w+/g, '');
+    
+    // Also add the theme to body for additional styling
+    document.body.className = document.body.className.replace(/theme-\w+/g, '').trim();
     document.body.classList.add(`theme-${theme}`);
+    
+    // Set a data attribute for more advanced theme targeting
+    document.documentElement.setAttribute('data-theme', theme);
+    
     // Force a re-render by dispatching a custom event
     window.dispatchEvent(new CustomEvent('themechange', { detail: theme }));
   }, [theme]);

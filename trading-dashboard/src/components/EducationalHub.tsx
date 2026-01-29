@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Brain, Lightbulb, Users, Eye, Zap, Trophy, Award, GraduationCap, Target, Shield, TrendingUp, DollarSign, Activity, BarChart3, PieChart, LineChart } from 'lucide-react';
+import { BookOpen, Brain, Lightbulb, Users, Eye, Zap, Trophy, Award, GraduationCap, Target, Shield, TrendingUp, DollarSign, Activity, BarChart3, PieChart, LineChart, Briefcase } from 'lucide-react';
 import { usePortfolio } from '../contexts/PortfolioContext';
 
 interface EducationalResource {
@@ -31,8 +31,8 @@ const EducationalHub: React.FC = () => {
   const learningModules: LearningModule[] = [
     {
       id: 'basics',
-      title: 'Market Basics',
-      description: 'Understanding the fundamentals of financial markets',
+      title: 'Market Fundamentals',
+      description: 'Understanding the basics of financial markets and instruments',
       level: 'seed',
       lessons: 10,
       duration: '2 hours',
@@ -40,9 +40,19 @@ const EducationalHub: React.FC = () => {
       icon: <BookOpen className="w-5 h-5" />
     },
     {
+      id: 'psychology',
+      title: 'Investment Psychology',
+      description: 'Managing emotions and cognitive biases in decision-making',
+      level: 'seed',
+      lessons: 8,
+      duration: '1.5 hours',
+      progress: 30,
+      icon: <Users className="w-5 h-5" />
+    },
+    {
       id: 'analysis',
       title: 'Technical Analysis',
-      description: 'Learning chart patterns and indicators',
+      description: 'Learning chart patterns and indicators for market analysis',
       level: 'tree',
       lessons: 15,
       duration: '4 hours',
@@ -50,9 +60,19 @@ const EducationalHub: React.FC = () => {
       icon: <BarChart3 className="w-5 h-5" />
     },
     {
+      id: 'fundamental',
+      title: 'Fundamental Analysis',
+      description: 'Analyzing company financials and economic indicators',
+      level: 'tree',
+      lessons: 12,
+      duration: '3.5 hours',
+      progress: 15,
+      icon: <PieChart className="w-5 h-5" />
+    },
+    {
       id: 'risk',
       title: 'Risk Management',
-      description: 'Capital preservation and position sizing',
+      description: 'Capital preservation and position sizing strategies',
       level: 'tree',
       lessons: 12,
       duration: '3 hours',
@@ -60,14 +80,34 @@ const EducationalHub: React.FC = () => {
       icon: <Shield className="w-5 h-5" />
     },
     {
+      id: 'portfolio',
+      title: 'Portfolio Theory',
+      description: 'Diversification and asset allocation principles',
+      level: 'sky',
+      lessons: 18,
+      duration: '6 hours',
+      progress: 0,
+      icon: <Briefcase className="w-5 h-5" />
+    },
+    {
       id: 'algo',
       title: 'Algorithmic Trading',
-      description: 'Building automated trading systems',
+      description: 'Building and testing automated trading systems',
       level: 'sky',
       lessons: 20,
       duration: '8 hours',
       progress: 0,
       icon: <Activity className="w-5 h-5" />
+    },
+    {
+      id: 'derivatives',
+      title: 'Derivatives & Options',
+      description: 'Advanced instruments for hedging and speculation',
+      level: 'sky',
+      lessons: 22,
+      duration: '9 hours',
+      progress: 0,
+      icon: <Zap className="w-5 h-5" />
     }
   ];
 
@@ -75,39 +115,75 @@ const EducationalHub: React.FC = () => {
   const educationalResources: EducationalResource[] = [
     {
       id: 'intro-video',
-      title: 'Introduction to Trading',
-      description: 'Video course covering basic concepts',
+      title: 'Introduction to Financial Markets',
+      description: 'Overview of market structures and instruments',
       level: 'seed',
       duration: '30 mins',
       difficulty: 'beginner',
       completed: true
     },
     {
+      id: 'psychology-basics',
+      title: 'Investment Psychology Fundamentals',
+      description: 'Understanding emotional biases in decision-making',
+      level: 'seed',
+      duration: '25 mins',
+      difficulty: 'beginner',
+      completed: false
+    },
+    {
       id: 'chart-patterns',
-      title: 'Chart Patterns Guide',
-      description: 'Comprehensive guide to common patterns',
+      title: 'Technical Analysis Patterns',
+      description: 'Recognizing common chart patterns and formations',
       level: 'tree',
       duration: '45 mins',
       difficulty: 'intermediate',
       completed: false
     },
     {
+      id: 'fundamental-analysis',
+      title: 'Fundamental Analysis Basics',
+      description: 'Reading financial statements and ratios',
+      level: 'tree',
+      duration: '50 mins',
+      difficulty: 'intermediate',
+      completed: false
+    },
+    {
       id: 'risk-strategies',
-      title: 'Risk Management Strategies',
-      description: 'Advanced techniques for capital protection',
-      level: 'sky',
+      title: 'Risk Management Framework',
+      description: 'Strategies for capital preservation and position sizing',
+      level: 'tree',
       duration: '60 mins',
+      difficulty: 'intermediate',
+      completed: false
+    },
+    {
+      id: 'portfolio-theory',
+      title: 'Modern Portfolio Theory',
+      description: 'Principles of diversification and asset allocation',
+      level: 'sky',
+      duration: '75 mins',
       difficulty: 'advanced',
       completed: false
     },
     {
-      id: 'psychology',
-      title: 'Trading Psychology',
-      description: 'Understanding emotions in trading',
-      level: 'tree',
-      duration: '35 mins',
-      difficulty: 'intermediate',
-      completed: true
+      id: 'algorithmic-trading',
+      title: 'Algorithmic Trading Systems',
+      description: 'Building and backtesting automated strategies',
+      level: 'sky',
+      duration: '90 mins',
+      difficulty: 'advanced',
+      completed: false
+    },
+    {
+      id: 'derivatives',
+      title: 'Options and Derivatives',
+      description: 'Advanced instruments for hedging and speculation',
+      level: 'sky',
+      duration: '85 mins',
+      difficulty: 'advanced',
+      completed: false
     }
   ];
 
@@ -458,50 +534,50 @@ const EducationalHub: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
                   <div className="flex items-center gap-2 mb-3">
-                    <Shield className="w-5 h-5 text-yellow-400" />
-                    <h4 className="font-medium text-white">Risk Management Quiz</h4>
+                    <Shield className="w-5 h-5 text-green-400" />
+                    <h4 className="font-medium text-white">Seed Level: Market Fundamentals</h4>
                   </div>
-                  <p className="text-sm text-slate-400 mb-4">Test your understanding of risk management principles</p>
+                  <p className="text-sm text-slate-400 mb-4">Assessment of basic market knowledge and investment principles</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-slate-500">Questions: 15</p>
+                      <p className="text-xs text-slate-500">Time Limit: 20 min</p>
+                    </div>
+                    <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors">
+                      Start Assessment
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BarChart3 className="w-5 h-5 text-blue-400" />
+                    <h4 className="font-medium text-white">Tree Level: Technical Analysis</h4>
+                  </div>
+                  <p className="text-sm text-slate-400 mb-4">Assessment of chart patterns, indicators and market analysis</p>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-slate-500">Questions: 20</p>
-                      <p className="text-xs text-slate-500">Time Limit: 30 min</p>
+                      <p className="text-xs text-slate-500">Time Limit: 35 min</p>
                     </div>
-                    <button className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Start Quiz
+                    <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors">
+                      Start Assessment
                     </button>
                   </div>
                 </div>
                 
                 <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
                   <div className="flex items-center gap-2 mb-3">
-                    <BarChart3 className="w-5 h-5 text-green-400" />
-                    <h4 className="font-medium text-white">Technical Analysis Test</h4>
+                    <PieChart className="w-5 h-5 text-purple-400" />
+                    <h4 className="font-medium text-white">Sky Level: Advanced Portfolio Management</h4>
                   </div>
-                  <p className="text-sm text-slate-400 mb-4">Assess your knowledge of chart patterns and indicators</p>
+                  <p className="text-sm text-slate-400 mb-4">Comprehensive exam on portfolio theory and advanced strategies</p>
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-slate-500">Questions: 25</p>
-                      <p className="text-xs text-slate-500">Time Limit: 45 min</p>
+                      <p className="text-xs text-slate-500">Time Limit: 50 min</p>
                     </div>
-                    <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Start Test
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
-                  <div className="flex items-center gap-2 mb-3">
-                    <PieChart className="w-5 h-5 text-blue-400" />
-                    <h4 className="font-medium text-white">Portfolio Theory Exam</h4>
-                  </div>
-                  <p className="text-sm text-slate-400 mb-4">Evaluate your understanding of diversification and allocation</p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-slate-500">Questions: 30</p>
-                      <p className="text-xs text-slate-500">Time Limit: 60 min</p>
-                    </div>
-                    <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors">
+                    <button className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors">
                       Start Exam
                     </button>
                   </div>
@@ -510,16 +586,16 @@ const EducationalHub: React.FC = () => {
                 <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
                   <div className="flex items-center gap-2 mb-3">
                     <LineChart className="w-5 h-5 text-purple-400" />
-                    <h4 className="font-medium text-white">Advanced Strategies Quiz</h4>
+                    <h4 className="font-medium text-white">Sky Level: Algorithmic Strategies</h4>
                   </div>
-                  <p className="text-sm text-slate-400 mb-4">Challenge your knowledge of complex trading strategies</p>
+                  <p className="text-sm text-slate-400 mb-4">Advanced quiz on algorithmic trading and quantitative methods</p>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-slate-500">Questions: 35</p>
-                      <p className="text-xs text-slate-500">Time Limit: 75 min</p>
+                      <p className="text-xs text-slate-500">Questions: 30</p>
+                      <p className="text-xs text-slate-500">Time Limit: 60 min</p>
                     </div>
                     <button className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Start Quiz
+                      Start Assessment
                     </button>
                   </div>
                 </div>

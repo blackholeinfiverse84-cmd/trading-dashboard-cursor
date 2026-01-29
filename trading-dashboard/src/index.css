@@ -2,6 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme-specific base styles */
+:root {
+  /* Light theme variables */
+  --light-bg-primary: #ffffff;
+  --light-bg-secondary: #f8fafc;
+  --light-text-primary: #1e293b;
+  --light-text-secondary: #64748b;
+  --light-border: #e2e8f0;
+}
+
+/* Apply theme-specific styles */
+.light {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity)); /* text-gray-900 */
+}
+
+/* Light theme overrides for dark-specific classes */
+.light .dark\:bg-slate-800\/80 { background-color: rgb(243 244 246 / 0.8) !important; }
+.light .dark\:bg-slate-900\/80 { background-color: rgb(255 255 255 / 0.8) !important; }
+.light .dark\:bg-slate-800\/50 { background-color: rgb(243 244 246 / 0.5) !important; }
+.light .dark\:bg-slate-900\/50 { background-color: rgb(255 255 255 / 0.5) !important; }
+.light .dark\:bg-slate-900\/95 { background-color: rgb(255 255 255 / 0.95) !important; }
+.light .dark\:bg-slate-900 { background-color: rgb(255 255 255) !important; }
+.light .dark\:bg-gray-100 { background-color: rgb(243 244 246) !important; }
+.light .dark\:bg-gray-200 { background-color: rgb(229 231 235) !important; }
+.light .dark\:text-white { color: rgb(17 24 39) !important; }
+.light .dark\:text-gray-300 { color: rgb(209 213 219) !important; }
+.light .dark\:text-gray-400 { color: rgb(156 163 175) !important; }
+.light .dark\:text-gray-900 { color: rgb(17 24 39) !important; }
+.light .dark\:border-slate-700 { border-color: rgb(226 232 240) !important; }
+.light .dark\:border-slate-700\/50 { border-color: rgb(226 232 240 / 0.5) !important; }
+.light .dark\:border-slate-600\/50 { border-color: rgb(209 213 219 / 0.5) !important; }
+.light .dark\:border-slate-800 { border-color: rgb(226 232 240) !important; }
+.light .dark\:border-gray-200 { border-color: rgb(234 237 243) !important; }
+.light .dark\:backdrop-blur-sm { backdrop-filter: blur(4px) !important; }
+
+/* Additional light theme overrides for common dark mode patterns */
+.light .bg-slate-800\/80 { background-color: rgb(243 244 246 / 0.8) !important; }
+.light .bg-slate-900\/80 { background-color: rgb(255 255 255 / 0.8) !important; }
+.light .bg-slate-800\/50 { background-color: rgb(243 244 246 / 0.5) !important; }
+.light .bg-slate-900\/50 { background-color: rgb(255 255 255 / 0.5) !important; }
+.light .bg-slate-900\/95 { background-color: rgb(255 255 255 / 0.95) !important; }
+.light .bg-slate-900 { background-color: rgb(255 255 255) !important; }
+.light .bg-slate-700\/50 { background-color: rgb(241 245 249 / 0.5) !important; }
+.light .bg-slate-600\/50 { background-color: rgb(241 245 249 / 0.5) !important; }
+.light .text-gray-300 { color: rgb(209 213 219) !important; }
+.light .text-gray-400 { color: rgb(156 163 175) !important; }
+.light .text-gray-900 { color: rgb(17 24 39) !important; }
+.light .text-white { color: rgb(17 24 39) !important; }
+.light .border-slate-700 { border-color: rgb(226 232 240) !important; }
+.light .border-slate-700\/50 { border-color: rgb(226 232 240 / 0.5) !important; }
+.light .border-slate-600\/50 { border-color: rgb(209 213 219 / 0.5) !important; }
+.light .border-slate-800 { border-color: rgb(226 232 240) !important; }
+.light .border-gray-200 { border-color: rgb(229 231 235) !important; }
+.light .border-gray-300 { border-color: rgb(209 213 219) !important; }
+.light .placeholder-gray-400 { color: rgb(156 163 175) !important; }
+.light .placeholder-gray-500 { color: rgb(107 114 128) !important; }
+.light .hover\:border-blue-400:hover { border-color: rgb(96 165 250) !important; }
+.light .hover\:border-blue-500\/50:hover { border-color: rgb(59 130 246 / 0.5) !important; }
+
+.dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+}
+
+.space {
+  --tw-bg-opacity: 1;
+  background-color: rgb(15 23 42 / var(--tw-bg-opacity));
+}
+
 * {
   margin: 0;
   padding: 0;

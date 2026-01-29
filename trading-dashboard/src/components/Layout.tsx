@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AssetTypeProvider, useAssetType } from '../contexts/AssetTypeContext';
 import { useTheme } from '../contexts/ThemeContext';
 import UniGuruBackground from './UniGuruBackground';
@@ -15,9 +15,13 @@ const LayoutContent = ({ children }: LayoutProps) => {
   const { assetType, setAssetType } = useAssetType();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [, forceUpdate] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Determine if we're on the market scan page
+  const isOnMarketScan = location.pathname === '/market-scan' || location.pathname.startsWith('/market-scan');
 
   // Close sidebar when route changes on mobile
   useEffect(() => {
@@ -75,6 +79,7 @@ const LayoutContent = ({ children }: LayoutProps) => {
           activeTab={assetType} 
           onTabChange={handleTabChange}
           onMenuClick={() => setSidebarOpen(true)}
+          showAssetTabs={isOnMarketScan}
         />
         <main className="flex-1 overflow-y-auto px-2 py-2 sm:px-3 sm:py-3 md:px-4 md:py-4 lg:px-6 lg:py-6 relative z-10 w-full h-full" style={{ paddingTop: '0' }}>
           <div className="w-full h-full min-h-0">

@@ -29,6 +29,7 @@ export default {
       },
     },
   },
+  darkMode: 'class', // Enable class-based dark mode - Tailwind will look for 'dark' class by default
   plugins: [],
 }
 

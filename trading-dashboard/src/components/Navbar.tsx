@@ -13,9 +13,10 @@ interface NavbarProps {
   activeTab: 'stocks' | 'crypto' | 'commodities';
   onTabChange: (tab: 'stocks' | 'crypto' | 'commodities') => void;
   onMenuClick?: () => void;
+  showAssetTabs?: boolean;
 }
 
-const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick }: NavbarProps) => {
+const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick, showAssetTabs = false }: NavbarProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredSymbols, setFilteredSymbols] = useState<string[]>([]);
@@ -212,32 +213,34 @@ const Navbar = ({ onSearch, activeTab, onTabChange, onMenuClick }: NavbarProps) 
           {/* Server Status Indicator - Hidden on very small screens */}
           <ServerStatusIndicator className="hidden lg:block" />
           
-          {/* Tab Switcher - Responsive with tooltips */}
-          <div className={`hidden sm:flex gap-0.5 sm:gap-1 rounded p-0.5 ${
-            isLight ? 'bg-gray-100' : isSpace ? 'bg-slate-800/60 backdrop-blur-sm' : 'bg-slate-700'
-          }`}>
-            {(['stocks', 'crypto', 'commodities'] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onTabChange(tab);
-                }}
-                className={`px-2 sm:px-2.5 md:px-3 py-1 rounded text-xs sm:text-xs md:text-sm font-medium transition-colors cursor-pointer relative z-10 whitespace-nowrap ${
-                  activeTab === tab
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : isLight
-                      ? 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
-                      : 'text-gray-300 hover:text-white hover:bg-slate-600'
-                }`}
-                title={tab.charAt(0).toUpperCase() + tab.slice(1)}
-              >
-                <span className="hidden sm:inline">{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
-              </button>
-            ))}
-          </div>
+          {/* Tab Switcher - Responsive with tooltips - Only show when showAssetTabs is true */}
+          {showAssetTabs && (
+            <div className={`hidden sm:flex gap-0.5 sm:gap-1 rounded p-0.5 ${
+              isLight ? 'bg-gray-100' : isSpace ? 'bg-slate-800/60 backdrop-blur-sm' : 'bg-slate-700'
+            }`}>
+              {(['stocks', 'crypto', 'commodities'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onTabChange(tab);
+                  }}
+                  className={`px-2 sm:px-2.5 md:px-3 py-1 rounded text-xs sm:text-xs md:text-sm font-medium transition-colors cursor-pointer relative z-10 whitespace-nowrap ${
+                    activeTab === tab
+                      ? 'bg-blue-500 text-white shadow-lg'
+                      : isLight
+                        ? 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
+                        : 'text-gray-300 hover:text-white hover:bg-slate-600'
+                  }`}
+                  title={tab.charAt(0).toUpperCase() + tab.slice(1)}
+                >
+                  <span className="hidden sm:inline">{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Notification Center - Hidden on mobile */}
           <div className="hidden md:block">

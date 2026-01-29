@@ -5,7 +5,7 @@ import { stockAPI, POPULAR_STOCKS, TimeoutError, type PredictionItem } from '../
 import { useConnection } from '../contexts/ConnectionContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { usePortfolio } from '../contexts/PortfolioContext';
-import { TrendingUp, TrendingDown, IndianRupee, Activity, RefreshCw, AlertCircle, Sparkles, Plus, X, Search, Loader2, Trash2, CheckCircle2, BookOpen } from 'lucide-react';
+import { TrendingUp, TrendingDown, IndianRupee, Activity, RefreshCw, AlertCircle, Sparkles, Plus, X, Search, Loader2, Trash2, CheckCircle2, BookOpen, Shield, Target, Eye, Info } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { formatUSDToINR } from '../utils/currencyConverter';
 
@@ -662,29 +662,30 @@ const DashboardPage = () => {
   // Calculate real stats from actual data
   const stats = [
     {
-      label: 'Portfolio Value',
+      label: 'Capital Protection',
       value: formatUSDToINR(portfolioValue),
-      icon: IndianRupee,
+      icon: Shield,
       change: dailyChangePercent >= 0 ? `+${dailyChangePercent.toFixed(2)}%` : `${dailyChangePercent.toFixed(2)}%`,
       changeColor: dailyChangePercent >= 0 ? 'text-green-400' : 'text-red-400',
-      bgGradient: 'from-blue-500/20 to-cyan-500/10',
-      subtitle: 'Educational Portfolio'
+      bgGradient: 'from-green-500/20 to-emerald-500/10',
+      subtitle: 'Educational Simulation'
     },
     {
-      label: 'Daily Change',
-      value: formatUSDToINR(dailyChange),
-      icon: Activity,
-      change: dailyChangePercent >= 0 ? `+${dailyChangePercent.toFixed(2)}%` : `${dailyChangePercent.toFixed(2)}%`,
+      label: 'Daily Risk',
+      value: formatUSDToINR(Math.abs(dailyChange)),
+      icon: AlertCircle,
+      change: dailyChangePercent >= 0 ? `+${Math.abs(dailyChangePercent).toFixed(2)}%` : `${Math.abs(dailyChangePercent).toFixed(2)}%`,
       changeColor: dailyChange >= 0 ? 'text-green-400' : 'text-red-400',
       bgGradient: 'from-blue-500/20 to-cyan-500/10'
     },
     {
-      label: 'Total Gain',
-      value: formatUSDToINR(totalGain),
-      icon: TrendingUp,
-      change: totalGainPercent >= 0 ? `+${totalGainPercent.toFixed(2)}%` : `${totalGainPercent.toFixed(2)}%`,
+      label: 'Learning Progress',
+      value: formatUSDToINR(Math.abs(totalGain)),
+      icon: BookOpen,
+      change: totalGainPercent >= 0 ? `+${Math.abs(totalGainPercent).toFixed(2)}%` : `${Math.abs(totalGainPercent).toFixed(2)}%`,
       changeColor: totalGain >= 0 ? 'text-green-400' : 'text-red-400',
-      bgGradient: 'from-purple-500/20 to-pink-500/10'
+      bgGradient: 'from-purple-500/20 to-pink-500/10',
+      subtitle: 'Knowledge Growth'
     },
   ];
 
@@ -692,10 +693,13 @@ const DashboardPage = () => {
     <Layout>
       <div className="space-y-3 md:space-y-4 animate-fadeIn w-full relative">
         {/* Added relative for modal positioning */}
+        
+
+        
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <h1 className={`text-xl md:text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Dashboard</h1>
+              <h1 className={`text-xl md:text-2xl font-bold ${isLight ? 'text-gray-900' : 'text-white'}`}>Learning Dashboard</h1>
               <div className="flex items-center gap-2">
                 {connectionState.isConnected ? (
                   <div className="flex items-center gap-1 px-2 py-0.5 bg-green-500/20 border border-green-500/50 rounded-lg">
@@ -717,7 +721,7 @@ const DashboardPage = () => {
               <PortfolioSelector />
             </div>
             <p className={`text-xs md:text-sm ${isLight ? 'text-gray-600' : 'text-gray-400'}`}>
-              {lastUpdated ? `Updated ${currentTime.toLocaleTimeString()}` : 'Overview of your trading portfolio'}
+              {lastUpdated ? `Updated ${currentTime.toLocaleTimeString()}` : 'Educational portfolio overview - for learning purposes only'}
             </p>
           </div>
           <button
@@ -840,8 +844,8 @@ const DashboardPage = () => {
           <div className={`${isLight ? 'bg-white border border-gray-200' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50'} rounded-lg p-3 md:p-4 shadow-sm w-full`}>
             <div className="flex items-center justify-between mb-3">
               <h2 className={`text-base md:text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-2`}>
-                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 flex-shrink-0" />
-                <span>Portfolio Performance</span>
+                <Eye className="w-4 h-4 md:w-5 md:h-5 text-blue-400 flex-shrink-0" />
+                <span>Risk & Learning Portfolio Analysis</span>
               </h2>
             </div>
             {loading ? (
@@ -923,12 +927,12 @@ const DashboardPage = () => {
             )}
           </div>
 
-          {/* Top Performers */}
+          {/* Learning Assets */}
           <div className={`${isLight ? 'bg-white border border-gray-200' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50'} rounded-lg p-3 shadow-sm card-hover`}>
             <div className="flex items-center justify-between mb-3">
               <h2 className={`text-base md:text-lg font-semibold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-2`}>
-                <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
-                Top Performers
+                <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
+                Stability Learning Assets
                 <span className={`text-xs font-normal px-1.5 py-0.5 rounded ${isLight ? 'bg-gray-200 text-gray-700' : 'bg-slate-700 text-slate-300'}`}>
                   {allTopStocks.length}
                 </span>
@@ -939,7 +943,7 @@ const DashboardPage = () => {
                   setAddTradeError(null);
                 }}
                 className="flex items-center gap-1.5 px-3 py-2 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg text-xs md:text-sm font-semibold transition-all active:scale-95 min-h-[36px]"
-                title="Add trade to Top Performers"
+                title="Add asset to learning portfolio"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add</span>
@@ -1109,12 +1113,12 @@ const DashboardPage = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <Plus className={`w-12 h-12 ${isLight ? 'text-blue-400' : 'text-blue-400'} mx-auto mb-4`} />
+                <BookOpen className={`w-12 h-12 ${isLight ? 'text-blue-400' : 'text-blue-400'} mx-auto mb-4`} />
                 <p className={`${isLight ? 'text-gray-700' : 'text-gray-300'} text-base font-semibold mb-2`}>
-                  No stocks selected yet
+                  No assets selected yet
                 </p>
                 <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-sm mb-6`}>
-                  Add stocks to your dashboard to view predictions and portfolio performance
+                  Add stable assets to your learning portfolio to develop long-term investment understanding
                 </p>
                 <button
                   onClick={() => {
@@ -1125,7 +1129,7 @@ const DashboardPage = () => {
                   className="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg font-semibold transition-all active:scale-95 inline-flex items-center gap-2 min-h-[44px]"
                 >
                   <Plus className="w-5 h-5" />
-                  <span>Add Your First Stock</span>
+                  <span>Add Your First Asset</span>
                 </button>
               </div>
             )}
@@ -1139,7 +1143,7 @@ const DashboardPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-2`}>
                   <Trash2 className="w-5 h-5 text-red-400" />
-                  {deleteConfirm.isUserAdded ? 'Delete Trade' : 'Hide Trade'}
+                  {deleteConfirm.isUserAdded ? 'Remove Asset' : 'Hide Asset'}
                 </h3>
                 <button
                   onClick={() => setDeleteConfirm(null)}
@@ -1152,8 +1156,8 @@ const DashboardPage = () => {
               <div className="space-y-4">
                 <p className={isLight ? 'text-gray-700' : 'text-gray-300'}>
                   {deleteConfirm.isUserAdded
-                    ? `Are you sure you want to permanently delete "${deleteConfirm.symbol}" from Top Performers?`
-                    : `Are you sure you want to hide "${deleteConfirm.symbol}" from Top Performers? It will reappear after refresh.`
+                    ? `Are you sure you want to remove "${deleteConfirm.symbol}" from your learning portfolio?`
+                    : `Are you sure you want to hide "${deleteConfirm.symbol}" from your learning portfolio? It will reappear after refresh.`
                   }
                 </p>
 
@@ -1163,7 +1167,7 @@ const DashboardPage = () => {
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-all hover:scale-105"
                   >
                     <Trash2 className="w-4 h-4" />
-                    <span>{deleteConfirm.isUserAdded ? 'Delete' : 'Hide'}</span>
+                    <span>{deleteConfirm.isUserAdded ? 'Remove' : 'Hide'}</span>
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(null)}
@@ -1184,7 +1188,7 @@ const DashboardPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-bold ${isLight ? 'text-gray-900' : 'text-white'} flex items-center gap-2`}>
                   <Plus className="w-5 h-5 text-blue-400" />
-                  Add Trade to Top Performers
+                  Add Asset to Learning Portfolio
                 </h3>
                 <button
                   onClick={() => {
@@ -1202,7 +1206,7 @@ const DashboardPage = () => {
                 <div className="space-y-4">
                   <div>
                     <label className={`block text-sm font-medium ${isLight ? 'text-gray-700' : 'text-gray-300'} mb-2`}>
-                      Stock Symbol
+                      Asset Symbol
                     </label>
                     <div className="relative" ref={suggestionsRef}>
                       <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isLight ? 'text-gray-500' : 'text-gray-400'} z-10`} />
@@ -1231,7 +1235,7 @@ const DashboardPage = () => {
                             setShowSuggestions(false);
                           }
                         }}
-                        placeholder="e.g., AAPL, TSLA, GOOGL"
+                        placeholder="e.g., AAPL, TSLA, GOOGL, etc."
                         className={`w-full pl-10 pr-4 py-2.5 ${isLight
                           ? 'bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500'
                           : 'bg-slate-700/50 border border-slate-600 text-white placeholder-gray-400'
@@ -1271,7 +1275,7 @@ const DashboardPage = () => {
                       )}
                     </div>
                     <p className={`text-xs ${isLight ? 'text-gray-600' : 'text-gray-400'} mt-1`}>
-                      Enter a stock symbol to fetch its prediction and add it to Top Performers
+                      Enter an asset symbol to fetch its educational prediction and add it to your learning portfolio
                     </p>
                   </div>
                 </div>
@@ -1299,7 +1303,7 @@ const DashboardPage = () => {
                     ) : (
                       <React.Fragment>
                         <Plus className="w-4 h-4" />
-                        <span>Add Trade</span>
+                        <span>Add Asset</span>
                       </React.Fragment>
                     )}
                   </button>
@@ -1319,11 +1323,11 @@ const DashboardPage = () => {
           </div>
         )}
 
-        {/* Recent Activity */}
+        {/* Learning Activity */}
         <div className={`${isLight ? 'bg-white border border-gray-200' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50'} rounded-lg p-3 shadow-sm`}>
           <h2 className={`text-sm font-semibold ${isLight ? 'text-gray-900' : 'text-white'} mb-3 flex items-center gap-2`}>
             <Activity className="w-4 h-4 text-blue-400" />
-            Recent Activity
+            Stability Learning Activity
           </h2>
           <div className="space-y-2">
             {allTopStocks.slice(0, 3).map((stock, index) => {
@@ -1352,11 +1356,10 @@ const DashboardPage = () => {
                     </div>
                     <div>
                       <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-semibold text-sm`}>
-                        {actionType} {stock.symbol}
+                        {stock.symbol} Analysis
                       </p>
                       <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-xs`}>
-                        {formatUSDToINR(stock.predicted_price || stock.current_price || 0, stock.symbol)} •
-                        Confidence: {((stock.confidence || 0) * 100).toFixed(0)}%
+                        Educational prediction • Confidence: {((stock.confidence || 0) * 100).toFixed(0)}%
                       </p>
                     </div>
                   </div>
@@ -1374,7 +1377,7 @@ const DashboardPage = () => {
             {topStocks.length === 0 && (
               <div className={`text-center py-8 ${isLight ? 'text-gray-500' : 'text-gray-400'}`}>
                 <Activity className={`w-12 h-12 mx-auto mb-3 opacity-50 ${isLight ? 'text-gray-400' : 'text-gray-500'}`} />
-                <p>No recent activity</p>
+                <p>No stability learning activity yet</p>
               </div>
             )}
           </div>

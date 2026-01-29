@@ -211,7 +211,7 @@ export class EndpointVerifier {
     await this.testEndpoint(
       'POST /api/risk/assess',
       'POST',
-      () => riskAPI.assess('AAPL', 1000, 150.00, 145.00),
+      () => riskAPI.assess({ symbol: 'AAPL', position_size: 1000, entry_price: 150.00, stop_loss_price: 145.00 }),
       ['risk_level']
     );
   }
