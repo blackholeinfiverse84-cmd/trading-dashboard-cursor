@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Star, Plus, X, TrendingUp, TrendingDown } from 'lucide-react';
 import { stockAPI, POPULAR_STOCKS } from '../services/api';
+import { formatUSDToINR } from '../utils/currencyConverter';
 
 const WatchListPage = () => {
   const [watchlist, setWatchlist] = useState<string[]>(() => {
@@ -38,10 +39,10 @@ const WatchListPage = () => {
   const handleSymbolInput = (value: string) => {
     const upperValue = value.toUpperCase();
     setNewSymbol(upperValue);
-    
+
     // Filter suggestions based on input
     if (upperValue.length > 0) {
-      const filtered = availableStocks.filter(stock => 
+      const filtered = availableStocks.filter(stock =>
         stock.includes(upperValue) && !watchlist.includes(stock)
       );
       setSuggestions(filtered.slice(0, 8)); // Show max 8 suggestions
@@ -69,12 +70,12 @@ const WatchListPage = () => {
     setLoading(true);
     try {
       const response = await stockAPI.predict(watchlist, 'intraday');
-      
+
       // Check for errors in metadata
       if (response.metadata?.error) {
         throw new Error(response.metadata.error);
       }
-      
+
       if (response.predictions) {
         // Filter out predictions with errors
         const validPredictions = response.predictions.filter((p: any) => !p.error);
@@ -121,7 +122,7 @@ const WatchListPage = () => {
                 placeholder="e.g., AAPL, TCS.NS"
                 className="w-full px-3 py-1.5 text-sm bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
-              
+
               {/* Suggestions Dropdown */}
               {suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg z-10">
@@ -159,11 +160,10 @@ const WatchListPage = () => {
                     }
                   }}
                   disabled={watchlist.includes(symbol)}
-                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                    watchlist.includes(symbol)
-                      ? 'bg-slate-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${watchlist.includes(symbol)
+                    ? 'bg-slate-600 text-gray-400 cursor-not-allowed'
+                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                    }`}
                 >
                   {symbol}
                 </button>
@@ -196,7 +196,7 @@ const WatchListPage = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Price</span>
                       <span className="text-white font-semibold">
-                        ${pred.predicted_price?.toFixed(2) || pred.current_price?.toFixed(2) || 'N/A'}
+                        {formatUSDToINR(pred.predicted_price || pred.current_price || 0, pred.symbol)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -208,13 +208,12 @@ const WatchListPage = () => {
                           <TrendingDown className="w-4 h-4 text-red-400" />
                         ) : null}
                         <span
-                          className={`font-semibold ${
-                            pred.action === 'LONG' || pred.action === 'BUY'
-                              ? 'text-green-400'
-                              : pred.action === 'SHORT' || pred.action === 'SELL'
+                          className={`font-semibold ${pred.action === 'LONG' || pred.action === 'BUY'
+                            ? 'text-green-400'
+                            : pred.action === 'SHORT' || pred.action === 'SELL'
                               ? 'text-red-400'
                               : 'text-yellow-400'
-                          }`}
+                            }`}
                         >
                           {pred.action === 'LONG' ? 'BUY' : pred.action === 'SHORT' ? 'SELL' : pred.action || 'HOLD'}
                         </span>

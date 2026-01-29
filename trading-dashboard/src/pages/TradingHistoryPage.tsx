@@ -98,9 +98,9 @@ const TradingHistoryPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">{transaction.symbol}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-300">{transaction.shares}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">${transaction.price?.toFixed(2) || '0.00'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">{formatUSDToINR(transaction.price || 0, transaction.symbol)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
-                        {formatUSDToINR(transaction.total || 0)}
+                        {formatUSDToINR(transaction.total || 0, transaction.symbol)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">

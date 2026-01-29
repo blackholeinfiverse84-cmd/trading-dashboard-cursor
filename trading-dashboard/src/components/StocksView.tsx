@@ -33,8 +33,8 @@ const StocksView = ({ onSearch, onAnalyze, predictions, loading, error, horizon 
   useEffect(() => {
     if (searchQuery && searchQuery.length > 0) {
       const query = searchQuery.toUpperCase();
-      const filtered = POPULAR_STOCKS.filter(symbol => 
-        symbol.toUpperCase().includes(query) || 
+      const filtered = POPULAR_STOCKS.filter(symbol =>
+        symbol.toUpperCase().includes(query) ||
         symbol.replace('.NS', '').toUpperCase().includes(query)
       ).slice(0, 8); // Show max 8 suggestions
       setSuggestions(filtered);
@@ -89,7 +89,7 @@ const StocksView = ({ onSearch, onAnalyze, predictions, loading, error, horizon 
               placeholder="Enter stock symbol (e.g., AAPL, GOOGL, MSFT)"
               className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-700/50 border border-slate-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-            
+
             {/* Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 max-h-64 overflow-y-auto">
@@ -196,7 +196,7 @@ const StocksView = ({ onSearch, onAnalyze, predictions, loading, error, horizon 
             {predictions.map((pred, index) => {
               const confidence = (pred.confidence || 0) * 100;
               const isPositive = (pred.predicted_return || 0) > 0;
-              
+
               return (
                 <div
                   key={index}
@@ -205,17 +205,16 @@ const StocksView = ({ onSearch, onAnalyze, predictions, loading, error, horizon 
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <p className="text-white font-bold text-lg">{pred.symbol}</p>
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${
-                        pred.action === 'LONG' ? 'bg-green-500/20 text-green-400' :
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${pred.action === 'LONG' ? 'bg-green-500/20 text-green-400' :
                         pred.action === 'SHORT' ? 'bg-red-500/20 text-red-400' :
-                        'bg-yellow-500/20 text-yellow-400'
-                      }`}>
+                          'bg-yellow-500/20 text-yellow-400'
+                        }`}>
                         {pred.action || 'HOLD'}
                       </span>
                     </div>
                     {getActionIcon(pred.action)}
                   </div>
-                  
+
                   <div className="space-y-2">
                     {pred.current_price && (
                       <div className="flex justify-between">
@@ -239,16 +238,15 @@ const StocksView = ({ onSearch, onAnalyze, predictions, loading, error, horizon 
                     )}
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 text-sm">Confidence:</span>
-                      <span className={`font-semibold ${
-                        confidence > 70 ? 'text-green-400' :
+                      <span className={`font-semibold ${confidence > 70 ? 'text-green-400' :
                         confidence > 50 ? 'text-yellow-400' :
-                        'text-red-400'
-                      }`}>
+                          'text-red-400'
+                        }`}>
                         {confidence.toFixed(0)}%
                       </span>
                     </div>
                   </div>
-                  
+
                   {pred.reason && (
                     <div className="mt-3 pt-3 border-t border-slate-600/50">
                       <p className="text-gray-300 text-xs leading-relaxed">{pred.reason}</p>

@@ -42,79 +42,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuthStatus = useCallback(async () => {
     try {
-      // Use fetch with better error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-      
-      try {
-        const response = await fetch(`${config.API_BASE_URL}/`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          signal: controller.signal,
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
-          const data = await response.json();
-          // Backend specifies auth_status: 'disabled' when auth is off
-          if (data.auth_status === 'disabled') {
-            setAuthEnabled(false);
-            // Auto-login as anonymous user when auth is disabled
-            const anonymousUser = { username: 'anonymous', token: 'no-auth-required' };
-            setUser(anonymousUser);
-            localStorage.setItem('token', 'no-auth-required');
-            localStorage.setItem('username', 'anonymous');
-          } else {
-            // Auth is enabled
-            setAuthEnabled(true);
-            const currentToken = localStorage.getItem('token');
-            const currentUsername = localStorage.getItem('username');
-            
-            if (currentToken === 'no-auth-required') {
-              // Clear invalid token (auth is enabled but we have no-auth token)
-              localStorage.removeItem('token');
-              localStorage.removeItem('username');
-              setUser(null);
-            } else if (currentToken && currentUsername && currentToken !== 'no-auth-required') {
-              // We have a valid token - restore user
-              setUser({ username: currentUsername, token: currentToken });
-            }
-          }
-        } else {
-          // Non-200 response - assume auth is required
-          setAuthEnabled(true);
-        }
-      } catch (fetchError: any) {
-        clearTimeout(timeoutId);
-        
-        // If it's an abort (timeout), try to use cached auth status
-        if (fetchError.name === 'AbortError') {
-          // Check if we have a cached auth status
-          const cachedToken = localStorage.getItem('token');
-          if (cachedToken === 'no-auth-required') {
-            // We've been in no-auth mode before, assume it's still disabled
-            setAuthEnabled(false);
-            const anonymousUser = { username: 'anonymous', token: 'no-auth-required' };
-            setUser(anonymousUser);
-            return;
-          }
-        }
-        
-        // For other errors, assume auth is required but don't log as warning
-        // This is normal if backend is starting up
+      const data = await authAPI.checkStatus();
+
+      // Backend specifies auth_status: 'disabled' when auth is off
+      if (data.auth_status === 'disabled') {
+        setAuthEnabled(false);
+        // Auto-login as anonymous user when auth is disabled
+        const anonymousUser = { username: 'anonymous', token: 'no-auth-required' };
+        setUser(anonymousUser);
+        localStorage.setItem('token', 'no-auth-required');
+        localStorage.setItem('username', 'anonymous');
+      } else {
+        // Auth is enabled
         setAuthEnabled(true);
+        const currentToken = localStorage.getItem('token');
+        const currentUsername = localStorage.getItem('username');
+
+        if (currentToken === 'no-auth-required') {
+          // Clear invalid token (auth is enabled but we have no-auth token)
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+          setUser(null);
+        } else if (currentToken && currentUsername && currentToken !== 'no-auth-required') {
+          // We have a valid token - restore user
+          setUser({ username: currentUsername, token: currentToken });
+        }
       }
     } catch (error) {
-      // Fallback: check localStorage for previous auth status
+      // Fallback logic on error
       const cachedToken = localStorage.getItem('token');
       if (cachedToken === 'no-auth-required') {
-        // We've been in no-auth mode before, assume it's still disabled
         setAuthEnabled(false);
         const anonymousUser = { username: 'anonymous', token: 'no-auth-required' };
         setUser(anonymousUser);
       } else {
-        // Assume auth is required
         setAuthEnabled(true);
       }
     }
@@ -131,10 +92,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (authEnabled !== true) {
       return;
     }
-    
+
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    
+
     // No auto-login - users must explicitly login via the login form
     // This prevents security issues with hardcoded credentials
     // Users will be redirected to /login if they try to access protected routes without a token
@@ -143,25 +104,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = useCallback(async (username: string, password: string) => {
     // If auth is disabled, allow any login or skip login
     if (authEnabled === false) {
-      const userData = { 
-        username: username || 'anonymous', 
-        token: 'no-auth-required' 
+      const userData = {
+        username: username || 'anonymous',
+        token: 'no-auth-required'
       };
       setUser(userData);
       localStorage.setItem('token', 'no-auth-required');
       localStorage.setItem('username', userData.username);
       return;
     }
-    
+
     // Only try to login via API if auth is enabled
     if (authEnabled === true) {
       try {
         const response = await authAPI.login(username, password);
-        
+
         if (response.success && response.token) {
-          const userData = { 
-            username: response.username || username, 
-            token: response.token 
+          const userData = {
+            username: response.username || username,
+            token: response.token
           };
           setUser(userData);
           localStorage.setItem('token', response.token);
@@ -185,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await login(username, password);
       return;
     }
-    
+
     // Backend doesn't have signup endpoint, so we'll use the authAPI signup which simulates it
     // In production, you'd add a signup endpoint to the backend
     try {

@@ -27,7 +27,10 @@ class FeatureEngineer:
     def __init__(self):
         # Import pandas_ta if available, otherwise use basic indicators
         try:
-            import pandas_ta as ta
+            try:
+                import pandas_ta as ta
+            except ImportError:
+                import pandas_ta_classic as ta
             self.ta_available = True
             self.ta = ta
         except ImportError:

@@ -5,7 +5,7 @@ import { stockAPI, POPULAR_STOCKS, TimeoutError, type PredictionItem } from '../
 import { useConnection } from '../contexts/ConnectionContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { usePortfolio } from '../contexts/PortfolioContext';
-import { TrendingUp, TrendingDown, DollarSign, Activity, RefreshCw, AlertCircle, Sparkles, Plus, X, Search, Loader2, Trash2, CheckCircle2, BookOpen } from 'lucide-react';
+import { TrendingUp, TrendingDown, IndianRupee, Activity, RefreshCw, AlertCircle, Sparkles, Plus, X, Search, Loader2, Trash2, CheckCircle2, BookOpen } from 'lucide-react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { formatUSDToINR } from '../utils/currencyConverter';
 
@@ -14,12 +14,12 @@ const DashboardPage = () => {
   const { theme } = useTheme();
   const { portfolioState } = usePortfolio();
   const isLight = theme === 'light';
-  
+
   // Use portfolio context values instead of local state
   const portfolioValue = portfolioState.totalValue;
   const totalGain = portfolioState.totalGain;
   const totalGainPercent = portfolioState.totalGainPercent;
-  
+
   // Calculate daily change from portfolio movements
   const [dailyChange, setDailyChange] = useState(0);
   const [dailyChangePercent, setDailyChangePercent] = useState(0);
@@ -32,7 +32,7 @@ const DashboardPage = () => {
   const [addTradeSymbol, setAddTradeSymbol] = useState('');
   const [addTradeLoading, setAddTradeLoading] = useState(false);
   const [addTradeError, setAddTradeError] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{symbol: string, isUserAdded: boolean} | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ symbol: string, isUserAdded: boolean } | null>(null);
   const [healthStatus, setHealthStatus] = useState<any>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
@@ -56,7 +56,7 @@ const DashboardPage = () => {
         console.error('Failed to load user-added trades:', err);
       }
     }
-    
+
     const savedHidden = localStorage.getItem('hiddenTrades');
     if (savedHidden) {
       try {
@@ -87,24 +87,24 @@ const DashboardPage = () => {
     let loadingInProgress = false;
     let lastRefreshTime = 0;
     const REFRESH_INTERVAL = 120000; // 120 seconds (2 minutes) in milliseconds
-    
+
     // Load data without duplicate connection check
     const loadData = async () => {
       // Prevent multiple simultaneous loads
       if (loadingInProgress) {
         return;
       }
-      
+
       // Prevent refreshes more frequent than 120 seconds
       const now = Date.now();
       if (now - lastRefreshTime < REFRESH_INTERVAL) {
         console.log(`[Dashboard] Skipping refresh - only ${Math.round((now - lastRefreshTime) / 1000)}s since last refresh`);
         return;
       }
-      
+
       loadingInProgress = true;
       lastRefreshTime = now;
-      
+
       // Use connection state from context instead of checking again
       if (!connectionState.isConnected) {
         setError(connectionState.error || 'Backend server is not reachable');
@@ -112,7 +112,7 @@ const DashboardPage = () => {
         loadingInProgress = false;
         return;
       }
-      
+
       // Clear any connection errors if we're connected
       setError((prevError) => {
         if (prevError && (prevError.includes('Unable to connect') || prevError.includes('not reachable') || prevError.includes('not running'))) {
@@ -120,7 +120,7 @@ const DashboardPage = () => {
         }
         return prevError;
       });
-      
+
       // If connected, load data directly (no connection check needed)
       try {
         await loadDashboardData();
@@ -133,22 +133,22 @@ const DashboardPage = () => {
         loadingInProgress = false;
       }
     };
-    
+
     // Only re-run if connection state changes from disconnected to connected
     // This prevents unnecessary re-runs when connection state updates but stays the same
     const connectionChanged = prevConnectionStateRef.current !== connectionState.isConnected;
     prevConnectionStateRef.current = connectionState.isConnected;
-    
+
     // Clear any existing interval
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
     }
-    
+
     // Initial load only if connected or if connection just changed to connected
     if (connectionState.isConnected && (connectionChanged || !refreshIntervalRef.current)) {
       loadData();
     }
-    
+
     // Refresh every 120 seconds (2 minutes) - only if connected
     if (connectionState.isConnected) {
       refreshIntervalRef.current = setInterval(() => {
@@ -157,7 +157,7 @@ const DashboardPage = () => {
         }
       }, REFRESH_INTERVAL);
     }
-    
+
     return () => {
       isMounted = false;
       if (refreshIntervalRef.current) {
@@ -172,7 +172,7 @@ const DashboardPage = () => {
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000); // Update every 1 second
-    
+
     return () => clearInterval(timeInterval);
   }, []);
 
@@ -187,15 +187,15 @@ const DashboardPage = () => {
         // Don't show error - health check is not critical
       }
     };
-    
+
     // Load once on mount
     loadHealthStatus();
-    
+
     // Then check every 5 minutes (300000ms) instead of every refresh
     const healthInterval = setInterval(() => {
       loadHealthStatus();
     }, 300000); // 5 minutes = 300000ms
-    
+
     return () => clearInterval(healthInterval);
   }, []); // Only run once on mount
 
@@ -207,18 +207,18 @@ const DashboardPage = () => {
     try {
       // REMOVED: Duplicate connection check - already checked in useEffect
       // This was causing extra API calls and hitting rate limits
-      
+
       // Load user-added trades, or use default symbols if none exist
       let symbols: string[] = userAddedTrades.map(t => t.symbol);
-      
+
       // If no user-added trades, load some popular stocks by default
       if (symbols.length === 0) {
         symbols = ['AAPL', 'GOOGL', 'MSFT']; // Default popular stocks
         console.log('[Dashboard] No user-added trades, loading default symbols:', symbols);
       }
-      
+
       console.log('[Dashboard] Loading predictions for symbols:', symbols);
-      
+
       // Try predict endpoint with single symbol
       let response;
       try {
@@ -232,44 +232,44 @@ const DashboardPage = () => {
           console.log('[Dashboard] Request timed out but backend is still processing:', predictError.message);
           return; // Don't clear loading, don't show error
         }
-        
+
         // Handle actual errors
         const error = predictError instanceof Error ? predictError : new Error(String(predictError));
         console.error('[Dashboard] Predict error:', error);
-        
+
         // If connection error, show that
         if (error.message?.includes('Unable to connect') || error.message?.includes('ECONNREFUSED')) {
           setError('Cannot connect to backend server. Please ensure the backend is running on http://127.0.0.1:8000');
           setLoading(false);
           return;
         }
-        
+
         // For other errors, show error but don't treat as fatal
         setError(error.message || 'Failed to load predictions. Please try again.');
         setLoading(false);
         return;
       }
-      
+
       // Check for errors in metadata
       if (response.metadata?.error) {
         throw new Error(response.metadata.error);
       }
-      
+
       // Backend returns: { metadata, predictions }
       // Filter out predictions with errors
       const validPredictions = (response.predictions || []).filter((p: PredictionItem) => !p.error);
-      
+
       console.log('[Dashboard] API Response:', {
         metadata: response.metadata,
         totalPredictions: response.predictions?.length || 0,
         validPredictions: validPredictions.length,
         firstPrediction: validPredictions[0],
       });
-      
+
       if (validPredictions.length > 0) {
         // Set initial prediction immediately (fast loading)
         setTopStocks(validPredictions);
-        
+
         // REMOVED: Background loading of additional symbols to prevent rate limit issues
         // Dashboard now loads only AAPL initially to avoid hitting rate limits
         // User can manually refresh or wait for next auto-refresh to get more symbols
@@ -288,10 +288,10 @@ const DashboardPage = () => {
                 // Only try to train if not rate limited
                 const symbolToTrain = symbols[0]; // Train the first symbol
                 console.log(`[Dashboard] Attempting to train model for ${symbolToTrain}...`);
-                
+
                 // Show training message
                 setError(`Training model for ${symbolToTrain}... This will take 60-90 seconds. The dashboard will refresh automatically when complete.`);
-                
+
                 stockAPI.trainRL(symbolToTrain, 'intraday', 10)
                   .then((trainResult) => {
                     console.log('[Dashboard] Model training completed:', trainResult);
@@ -313,11 +313,11 @@ const DashboardPage = () => {
                       }, 90000); // Retry after 90 seconds
                       return;
                     }
-                    
+
                     // Handle actual errors
                     const error = trainError instanceof Error ? trainError : new Error(String(trainError));
                     console.error('[Dashboard] Training failed:', error);
-                    
+
                     // If rate limited, don't retry immediately
                     if (error.message?.includes('Rate limit') || error.message?.includes('429')) {
                       setError('Rate limit reached. Please wait 60 seconds before training models. Use the Market Scan page to train models.');
@@ -339,7 +339,7 @@ const DashboardPage = () => {
           }
         }
       }
-      
+
       // Calculate real portfolio metrics from predictions
       if (validPredictions.length > 0) {
         // Calculate total portfolio value (sum of all current prices)
@@ -348,7 +348,7 @@ const DashboardPage = () => {
           const price = pred.current_price || 0;
           return sum + price;
         }, 0);
-        
+
         // Calculate total gain/loss from predicted returns
         const totalReturn = validPredictions.reduce((sum: number, pred: PredictionItem) => {
           const currentPrice = pred.current_price || 0;
@@ -356,7 +356,7 @@ const DashboardPage = () => {
           const returnValue = (returnPercent / 100) * currentPrice; // Convert percentage to absolute value
           return sum + returnValue;
         }, 0);
-        
+
         // Calculate daily change (difference from previous portfolio value)
         if (previousPortfolioValue !== null && previousPortfolioValue > 0) {
           const change = totalValue - previousPortfolioValue;
@@ -372,10 +372,10 @@ const DashboardPage = () => {
           setDailyChange(estimatedChange);
           setDailyChangePercent(avgReturn);
         }
-        
+
         // Portfolio context handles these calculations now
         // setPortfolioValue, setTotalGain, setTotalGainPercent are managed by PortfolioContext
-        
+
         console.log('[Dashboard] Portfolio Metrics:', {
           totalValue,
           totalReturn,
@@ -385,7 +385,7 @@ const DashboardPage = () => {
       } else {
         // Portfolio context handles resetting values
       }
-      
+
       setLastUpdated(new Date());
       setLoading(false); // Clear loading state after successful data load
     } catch (error: unknown) {
@@ -397,11 +397,11 @@ const DashboardPage = () => {
         // Don't clear loading state - backend is still working
         return;
       }
-      
+
       // Handle actual errors
       const err = error instanceof Error ? error : new Error(String(error));
       console.error('Failed to load dashboard data:', err);
-      
+
       if (err.message?.includes('Unable to connect') || err.message?.includes('ECONNREFUSED') || err.message?.includes('Network Error')) {
         // Connection error
         setError(err.message || 'Backend server is not reachable. Please ensure the backend is running.');
@@ -451,17 +451,17 @@ const DashboardPage = () => {
   // Check if symbol exists in either user-added or backend stocks (case-insensitive)
   const symbolExistsInTopPerformers = (checkSymbol: string): boolean => {
     const normalized = normalizeSymbolForComparison(checkSymbol);
-    
+
     // Check in user-added trades
-    const inUserTrades = userAddedTrades.some(t => 
+    const inUserTrades = userAddedTrades.some(t =>
       normalizeSymbolForComparison(t.symbol) === normalized
     );
-    
+
     // Check in backend stocks
-    const inBackendStocks = topStocks.some(t => 
+    const inBackendStocks = topStocks.some(t =>
       normalizeSymbolForComparison(t.symbol) === normalized
     );
-    
+
     return inUserTrades || inBackendStocks;
   };
 
@@ -469,8 +469,8 @@ const DashboardPage = () => {
   useEffect(() => {
     if (addTradeSymbol && addTradeSymbol.length > 0) {
       const query = addTradeSymbol.toUpperCase();
-      const filtered = POPULAR_STOCKS.filter(symbol => 
-        symbol.toUpperCase().includes(query) || 
+      const filtered = POPULAR_STOCKS.filter(symbol =>
+        symbol.toUpperCase().includes(query) ||
         symbol.replace('.NS', '').toUpperCase().includes(query)
       ).slice(0, 8); // Show max 8 suggestions
       setFilteredSymbols(filtered);
@@ -486,7 +486,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current && 
+        suggestionsRef.current &&
         !suggestionsRef.current.contains(event.target as Node) &&
         addTradeInputRef.current &&
         !addTradeInputRef.current.contains(event.target as Node)
@@ -509,10 +509,10 @@ const DashboardPage = () => {
     }
 
     const symbol = addTradeSymbol.trim().toUpperCase();
-    
+
     // Check if the symbol exactly matches a valid symbol from popular stocks
     const exactMatch = POPULAR_STOCKS.find(s => s.toUpperCase() === symbol);
-    
+
     // If no exact match and there are filtered suggestions, the input is likely incomplete
     // Check if the input is a substring of any suggestion (like "TATA" for "TATAMOTORS.NS")
     if (!exactMatch && filteredSymbols.length > 0) {
@@ -521,7 +521,7 @@ const DashboardPage = () => {
         const sWithoutSuffix = sUpper.replace('.NS', '');
         return sUpper.includes(symbol) || sWithoutSuffix.includes(symbol) || symbol.includes(sWithoutSuffix);
       });
-      
+
       if (isPartialMatch) {
         // Input is a partial match - require user to select from suggestions
         setAddTradeError(`Please select a complete symbol from the suggestions below. "${symbol}" is incomplete.`);
@@ -543,7 +543,7 @@ const DashboardPage = () => {
         topStockSymbols: topStocks.map(t => t.symbol),
         hiddenTrades: hiddenTrades,
       });
-      
+
       // Check if trade already exists in BOTH user-added trades AND backend stocks (case-insensitive)
       if (symbolExistsInTopPerformers(symbol)) {
         console.log('[DashboardPage] Duplicate found for symbol:', symbol);
@@ -566,13 +566,13 @@ const DashboardPage = () => {
 
       // Fetch prediction for the symbol
       const response = await stockAPI.predict([symbol], 'intraday');
-      
+
       if (response.metadata?.error) {
         throw new Error(response.metadata.error);
       }
 
       const validPredictions = (response.predictions || []).filter((p: PredictionItem) => !p.error);
-      
+
       if (validPredictions.length === 0) {
         // No predictions found - provide helpful error message with suggestions if available
         if (filteredSymbols.length > 0) {
@@ -587,7 +587,7 @@ const DashboardPage = () => {
       }
 
       const prediction = validPredictions[0];
-      
+
       // Add to user-added trades
       const newTrade = {
         ...prediction,
@@ -604,7 +604,7 @@ const DashboardPage = () => {
       setAddTradeError(null);
     } catch (error: any) {
       console.error('Failed to add trade:', error);
-      
+
       // Handle TimeoutError gracefully - request is still being processed
       if (error instanceof TimeoutError) {
         setAddTradeError('Request is taking longer than expected. The backend is still processing your request. This is normal when models need training (60-90 seconds). Please wait a moment and try again, or check the backend logs.');
@@ -632,10 +632,10 @@ const DashboardPage = () => {
 
   // Filter out hidden trades
   const visibleTopStocks = topStocks.filter(stock => !hiddenTrades.includes(stock.symbol));
-  
+
   // Combine backend stocks and user-added trades
   const allTopStocks = [...visibleTopStocks, ...userAddedTrades];
-  
+
   // Debug logging for data consistency
   React.useEffect(() => {
     if (userAddedTrades.length > 0 || visibleTopStocks.length > 0) {
@@ -661,27 +661,27 @@ const DashboardPage = () => {
 
   // Calculate real stats from actual data
   const stats = [
-    { 
-      label: 'Portfolio Value', 
-      value: formatUSDToINR(portfolioValue), 
-      icon: BookOpen, 
+    {
+      label: 'Portfolio Value',
+      value: formatUSDToINR(portfolioValue),
+      icon: IndianRupee,
       change: dailyChangePercent >= 0 ? `+${dailyChangePercent.toFixed(2)}%` : `${dailyChangePercent.toFixed(2)}%`,
       changeColor: dailyChangePercent >= 0 ? 'text-green-400' : 'text-red-400',
       bgGradient: 'from-blue-500/20 to-cyan-500/10',
       subtitle: 'Educational Portfolio'
     },
-    { 
-      label: 'Daily Change', 
-      value: formatUSDToINR(dailyChange), 
-      icon: Activity, 
+    {
+      label: 'Daily Change',
+      value: formatUSDToINR(dailyChange),
+      icon: Activity,
       change: dailyChangePercent >= 0 ? `+${dailyChangePercent.toFixed(2)}%` : `${dailyChangePercent.toFixed(2)}%`,
       changeColor: dailyChange >= 0 ? 'text-green-400' : 'text-red-400',
       bgGradient: 'from-blue-500/20 to-cyan-500/10'
     },
-    { 
-      label: 'Total Gain', 
-      value: formatUSDToINR(totalGain), 
-      icon: TrendingUp, 
+    {
+      label: 'Total Gain',
+      value: formatUSDToINR(totalGain),
+      icon: TrendingUp,
       change: totalGainPercent >= 0 ? `+${totalGainPercent.toFixed(2)}%` : `${totalGainPercent.toFixed(2)}%`,
       changeColor: totalGain >= 0 ? 'text-green-400' : 'text-red-400',
       bgGradient: 'from-purple-500/20 to-pink-500/10'
@@ -777,12 +777,12 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           {loading && topStocks.length === 0 && !error ? (
             [1, 2, 3].map((i) => (
-              <div 
-                key={i} 
-                className={`${isLight 
-                  ? 'bg-gray-100 md:bg-gradient-to-br md:from-gray-100 md:to-gray-50 border border-gray-200' 
+              <div
+                key={i}
+                className={`${isLight
+                  ? 'bg-gray-100 md:bg-gradient-to-br md:from-gray-100 md:to-gray-50 border border-gray-200'
                   : 'bg-slate-800/80 md:bg-gradient-to-br md:from-slate-800/80 md:to-slate-700/50 border border-slate-700/50'
-                } rounded-lg p-4 md:p-6 animate-pulse`}
+                  } rounded-lg p-4 md:p-6 animate-pulse`}
               >
                 <div className="flex items-center justify-between mb-3 md:mb-4">
                   <div className={`w-10 h-10 md:w-12 md:h-12 ${isLight ? 'bg-gray-300' : 'bg-slate-700'} rounded-lg`}></div>
@@ -794,8 +794,8 @@ const DashboardPage = () => {
             ))
           ) : error && error.includes('Unable to connect to backend') ? (
             [1, 2, 3].map((i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`${isLight ? 'bg-gray-100 border border-gray-200' : 'bg-slate-800/80 border border-slate-700/50'} rounded-lg p-4 md:p-6 opacity-50`}
               >
                 <div className="flex items-center justify-center h-full">
@@ -807,12 +807,12 @@ const DashboardPage = () => {
             stats.map((stat) => {
               const Icon = stat.icon;
               return (
-                <div 
-                  key={stat.label} 
-                  className={`${isLight 
-                    ? 'bg-white md:bg-gradient-to-br md:from-blue-50 md:to-indigo-50 border border-gray-200' 
+                <div
+                  key={stat.label}
+                  className={`${isLight
+                    ? 'bg-white md:bg-gradient-to-br md:from-blue-50 md:to-indigo-50 border border-gray-200'
                     : 'bg-slate-800/80 md:bg-gradient-to-br md:from-green-500/20 md:to-emerald-500/10 border border-slate-700/50'
-                  } rounded-lg p-4 md:p-6 shadow-sm`}
+                    } rounded-lg p-4 md:p-6 shadow-sm`}
                 >
                   <div className="flex items-center justify-between mb-2 md:mb-3">
                     <div className={`p-2 ${isLight ? 'bg-blue-100' : 'bg-slate-700/50 md:bg-white/5'} rounded`}>
@@ -856,30 +856,30 @@ const DashboardPage = () => {
                   <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                     <defs>
                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
+                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid 
-                      strokeDasharray="3 3" 
-                      stroke={isLight ? "#E5E7EB" : "#374151"} 
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={isLight ? "#E5E7EB" : "#374151"}
                       opacity={isLight ? 0.5 : 0.15}
                     />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke={isLight ? "#6B7280" : "#9CA3AF"} 
+                    <XAxis
+                      dataKey="name"
+                      stroke={isLight ? "#6B7280" : "#9CA3AF"}
                       tick={{ fill: isLight ? '#6B7280' : '#9CA3AF', fontSize: 11 }}
                       interval="preserveStartEnd"
                     />
-                    <YAxis 
+                    <YAxis
                       stroke={isLight ? "#6B7280" : "#9CA3AF"}
                       tick={{ fill: isLight ? '#6B7280' : '#9CA3AF', fontSize: 11 }}
-                      tickFormatter={(value) => formatUSDToINR(value > 999 ? value/1000 : value).replace(/₹/, '₹').slice(0, -3) + (value > 999 ? 'k' : '')}
+                      tickFormatter={(value) => formatUSDToINR(value > 999 ? value / 1000 : value).replace(/₹/, '₹').slice(0, -3) + (value > 999 ? 'k' : '')}
                       width={55}
                     />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: isLight ? '#FFFFFF' : '#1E293B', 
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: isLight ? '#FFFFFF' : '#1E293B',
                         border: isLight ? '1px solid #E5E7EB' : '1px solid #475569',
                         borderRadius: '8px',
                         padding: '10px',
@@ -890,10 +890,10 @@ const DashboardPage = () => {
                       formatter={(value: any) => [formatUSDToINR(Number(value)), 'Value']}
                       cursor={{ stroke: '#3B82F6', strokeWidth: 1 }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#3B82F6" 
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#3B82F6"
                       strokeWidth={2.5}
                       fillOpacity={1}
                       fill="url(#colorValue)"
@@ -969,22 +969,21 @@ const DashboardPage = () => {
                   const confidence = (stock.confidence || 0) * 100;
                   const isUserAdded = stock.isUserAdded || false;
                   return (
-                    <div 
-                      key={`${stock.symbol}-${index}`} 
-                      className={`${isLight 
-                        ? 'bg-gray-50 border border-gray-200 hover:border-blue-400 active:border-blue-500' 
+                    <div
+                      key={`${stock.symbol}-${index}`}
+                      className={`${isLight
+                        ? 'bg-gray-50 border border-gray-200 hover:border-blue-400 active:border-blue-500'
                         : 'bg-slate-700/50 border border-slate-600/50 hover:border-blue-500/50 active:border-blue-600/50'
-                      } rounded-lg transition-all touch-manipulation shadow-sm`}
+                        } rounded-lg transition-all touch-manipulation shadow-sm`}
                     >
                       {/* Mobile: Stacked layout */}
                       <div className="md:hidden p-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className={`w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-bold ${isLight ? 'text-gray-900' : 'text-white'} text-sm ${
-                              stock.action === 'LONG' ? (isLight ? 'bg-green-100 border border-green-300' : 'bg-green-500/20 border border-green-500/50') :
+                            <div className={`w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-bold ${isLight ? 'text-gray-900' : 'text-white'} text-sm ${stock.action === 'LONG' ? (isLight ? 'bg-green-100 border border-green-300' : 'bg-green-500/20 border border-green-500/50') :
                               stock.action === 'SHORT' ? (isLight ? 'bg-red-100 border border-red-300' : 'bg-red-500/20 border border-red-500/50') :
-                              (isLight ? 'bg-yellow-100 border border-yellow-300' : 'bg-yellow-500/20 border border-yellow-500/50')
-                            }`}>
+                                (isLight ? 'bg-yellow-100 border border-yellow-300' : 'bg-yellow-500/20 border border-yellow-500/50')
+                              }`}>
                               {stock.symbol.slice(0, 2)}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -993,18 +992,29 @@ const DashboardPage = () => {
                                 {isUserAdded && (
                                   <span className="text-xs text-blue-400 bg-blue-500/20 px-1.5 py-0.5 rounded">★</span>
                                 )}
-                                <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-                                  stock.action === 'LONG' ? 'bg-green-500/20 text-green-400' :
+                                <span className={`text-xs font-semibold px-2 py-0.5 rounded ${stock.action === 'LONG' ? 'bg-green-500/20 text-green-400' :
                                   stock.action === 'SHORT' ? 'bg-red-500/20 text-red-400' :
-                                  'bg-yellow-500/20 text-yellow-400'
-                                }`}>
+                                    'bg-yellow-500/20 text-yellow-400'
+                                  }`}>
                                   {stock.action === 'LONG' ? 'BUY' : stock.action === 'SHORT' ? 'SELL' : stock.action || 'HOLD'}
                                 </span>
                               </div>
-                              <div className="flex items-center justify-between">
-                                <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-lg`}>
-                                  {formatUSDToINR(stock.predicted_price || stock.current_price || 0)}
-                                </p>
+                              <div className="grid grid-cols-2 gap-4 mt-1">
+                                <div>
+                                  <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-[10px] uppercase font-bold mb-0.5`}>Current</p>
+                                  <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-sm`}>
+                                    {formatUSDToINR(stock.current_price || 0, stock.symbol)}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-[10px] uppercase font-bold mb-0.5`}>Predicted</p>
+                                  <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-sm`}>
+                                    {formatUSDToINR(stock.predicted_price || stock.current_price || 0, stock.symbol)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-700/30">
+                                <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-xs font-medium`}>Confidence: {confidence.toFixed(0)}%</p>
                                 {stock.predicted_return !== undefined && (
                                   <p className={`text-base font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                                     {isPositive ? '+' : ''}{(stock.predicted_return || 0).toFixed(2)}%
@@ -1022,15 +1032,14 @@ const DashboardPage = () => {
                           </button>
                         </div>
                       </div>
-                      
+
                       {/* Desktop: Horizontal layout */}
                       <div className="hidden md:flex items-center justify-between p-3">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className={`w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-bold ${isLight ? 'text-gray-900' : 'text-white'} text-sm ${
-                            stock.action === 'LONG' ? (isLight ? 'bg-green-100 border border-green-300' : 'bg-green-500/20 border border-green-500/50') :
+                          <div className={`w-12 h-12 flex-shrink-0 rounded-lg flex items-center justify-center font-bold ${isLight ? 'text-gray-900' : 'text-white'} text-sm ${stock.action === 'LONG' ? (isLight ? 'bg-green-100 border border-green-300' : 'bg-green-500/20 border border-green-500/50') :
                             stock.action === 'SHORT' ? (isLight ? 'bg-red-100 border border-red-300' : 'bg-red-500/20 border border-red-500/50') :
-                            (isLight ? 'bg-yellow-100 border border-yellow-300' : 'bg-yellow-500/20 border border-yellow-500/50')
-                          }`}>
+                              (isLight ? 'bg-yellow-100 border border-yellow-300' : 'bg-yellow-500/20 border border-yellow-500/50')
+                            }`}>
                             {stock.symbol.slice(0, 2)}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -1039,11 +1048,10 @@ const DashboardPage = () => {
                               {isUserAdded && (
                                 <span className="text-xs text-blue-400 bg-blue-500/20 px-1.5 py-0.5 rounded">★</span>
                               )}
-                              <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-                                stock.action === 'LONG' ? 'bg-green-500/20 text-green-400' :
+                              <span className={`text-xs font-semibold px-2 py-0.5 rounded ${stock.action === 'LONG' ? 'bg-green-500/20 text-green-400' :
                                 stock.action === 'SHORT' ? 'bg-red-500/20 text-red-400' :
-                                'bg-yellow-500/20 text-yellow-400'
-                              }`}>
+                                  'bg-yellow-500/20 text-yellow-400'
+                                }`}>
                                 {stock.action === 'LONG' ? 'BUY' : stock.action === 'SHORT' ? 'SELL' : stock.action || 'HOLD'}
                               </span>
                               {stock.horizon && (
@@ -1060,32 +1068,40 @@ const DashboardPage = () => {
                         </div>
                         <div className="flex items-center gap-4 flex-shrink-0">
                           <div className="text-right">
+                            <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-[9px] uppercase font-bold tracking-wider`}>Current</p>
                             <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-sm`}>
-                              {formatUSDToINR(stock.predicted_price || stock.current_price || 0)}
+                              {formatUSDToINR(stock.current_price || 0, stock.symbol)}
                             </p>
-                            <div className="flex items-center gap-1.5 justify-end mt-0.5">
-                              <div className={`w-1.5 h-1.5 rounded-full ${
-                                confidence > 70 ? 'bg-green-400' :
+                          </div>
+                          <div className="text-right border-l border-slate-700/50 pl-4 min-w-[90px]">
+                            <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-[9px] uppercase font-bold tracking-wider`}>Predicted</p>
+                            <p className={`${isLight ? 'text-gray-900' : 'text-white'} font-bold text-sm text-blue-400`}>
+                              {formatUSDToINR(stock.predicted_price || stock.current_price || 0, stock.symbol)}
+                            </p>
+                          </div>
+                          <div className="text-right border-l border-slate-700/50 pl-4 min-w-[70px]">
+                            <p className={`${isLight ? 'text-gray-500' : 'text-gray-400'} text-[9px] uppercase font-bold tracking-wider mb-0.5`}>Confidence</p>
+                            <div className="flex items-center gap-1.5 justify-end">
+                              <div className={`w-1.5 h-1.5 rounded-full ${confidence > 70 ? 'bg-green-400' :
                                 confidence > 50 ? 'bg-yellow-400' :
-                                'bg-red-400'
-                              }`}></div>
-                              <p className={`text-xs font-semibold ${
-                                confidence > 70 ? 'text-green-400' :
+                                  'bg-red-400'
+                                }`}></div>
+                              <p className={`text-xs font-semibold ${confidence > 70 ? 'text-green-400' :
                                 confidence > 50 ? 'text-yellow-400' :
-                                'text-red-400'
-                              }`}>
+                                  'text-red-400'
+                                }`}>
                                 {(confidence || 0).toFixed(0)}%
                               </p>
                             </div>
                           </div>
-                          <button
-                            onClick={() => setDeleteConfirm({ symbol: stock.symbol, isUserAdded })}
-                            className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 rounded-lg transition-all hover:scale-110 flex-shrink-0"
-                            title={isUserAdded ? "Delete" : "Hide"}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
                         </div>
+                        <button
+                          onClick={() => setDeleteConfirm({ symbol: stock.symbol, isUserAdded })}
+                          className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 rounded-lg transition-all hover:scale-110 flex-shrink-0"
+                          title={isUserAdded ? "Delete" : "Hide"}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   );
@@ -1135,7 +1151,7 @@ const DashboardPage = () => {
 
               <div className="space-y-4">
                 <p className={isLight ? 'text-gray-700' : 'text-gray-300'}>
-                  {deleteConfirm.isUserAdded 
+                  {deleteConfirm.isUserAdded
                     ? `Are you sure you want to permanently delete "${deleteConfirm.symbol}" from Top Performers?`
                     : `Are you sure you want to hide "${deleteConfirm.symbol}" from Top Performers? It will reappear after refresh.`
                   }
@@ -1216,19 +1232,19 @@ const DashboardPage = () => {
                           }
                         }}
                         placeholder="e.g., AAPL, TSLA, GOOGL"
-                        className={`w-full pl-10 pr-4 py-2.5 ${isLight 
-                          ? 'bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500' 
+                        className={`w-full pl-10 pr-4 py-2.5 ${isLight
+                          ? 'bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500'
                           : 'bg-slate-700/50 border border-slate-600 text-white placeholder-gray-400'
-                        } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                          } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                         disabled={addTradeLoading}
                       />
-                      
+
                       {/* Suggestions Dropdown - positioned relative to input, will show above if needed */}
                       {showSuggestions && filteredSymbols.length > 0 && (
-                        <div className={`absolute top-full left-0 right-0 mt-1 ${isLight 
-                          ? 'bg-white border-2 border-gray-300' 
+                        <div className={`absolute top-full left-0 right-0 mt-1 ${isLight
+                          ? 'bg-white border-2 border-gray-300'
                           : 'bg-slate-700 border-2 border-slate-600'
-                        } rounded-lg shadow-2xl max-h-60 overflow-y-auto z-[9999]`}>
+                          } rounded-lg shadow-2xl max-h-60 overflow-y-auto z-[9999]`}>
                           {filteredSymbols.map((suggestionSymbol) => {
                             const isExactMatch = suggestionSymbol.toUpperCase() === addTradeSymbol.toUpperCase();
                             return (
@@ -1241,11 +1257,10 @@ const DashboardPage = () => {
                                   setShowSuggestions(false);
                                   setAddTradeError(null);
                                 }}
-                                className={`w-full px-3 py-2 text-sm text-left transition-colors ${
-                                  isExactMatch 
-                                    ? (isLight ? 'bg-blue-100 text-blue-900 font-semibold' : 'bg-blue-600/50 text-white font-semibold')
-                                    : (isLight ? 'text-gray-900 hover:bg-gray-100' : 'text-white hover:bg-slate-600')
-                                }`}
+                                className={`w-full px-3 py-2 text-sm text-left transition-colors ${isExactMatch
+                                  ? (isLight ? 'bg-blue-100 text-blue-900 font-semibold' : 'bg-blue-600/50 text-white font-semibold')
+                                  : (isLight ? 'text-gray-900 hover:bg-gray-100' : 'text-white hover:bg-slate-600')
+                                  }`}
                               >
                                 {suggestionSymbol}
                                 {isExactMatch && ' ✓'}
@@ -1276,7 +1291,7 @@ const DashboardPage = () => {
                     disabled={addTradeLoading || !addTradeSymbol.trim()}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg font-semibold transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 min-h-[44px] touch-manipulation"
                   >
-                    {addTradeLoading ? (     
+                    {addTradeLoading ? (
                       <React.Fragment>
                         <Loader2 className="w-4 h-4 animate-spin" />
                         <span>Fetching...</span>
@@ -1315,19 +1330,18 @@ const DashboardPage = () => {
               const isPositive = (stock.predicted_return || 0) > 0;
               const actionType = stock.action === 'LONG' ? 'BUY' : stock.action === 'SHORT' ? 'SELL' : 'HOLD';
               return (
-                <div 
+                <div
                   key={index}
-                  className={`flex items-center justify-between p-2 ${isLight 
-                    ? 'bg-gray-50 border border-gray-200 hover:border-blue-400' 
+                  className={`flex items-center justify-between p-2 ${isLight
+                    ? 'bg-gray-50 border border-gray-200 hover:border-blue-400'
                     : 'bg-gradient-to-r from-slate-700/50 to-slate-600/30 border border-slate-600/50 hover:border-blue-500/50'
-                  } rounded transition-all group shadow-sm`}
+                    } rounded transition-all group shadow-sm`}
                 >
                   <div className="flex items-center gap-2">
-                    <div className={`p-1.5 rounded ${
-                      stock.action === 'LONG' ? (isLight ? 'bg-green-100' : 'bg-green-500/20') :
+                    <div className={`p-1.5 rounded ${stock.action === 'LONG' ? (isLight ? 'bg-green-100' : 'bg-green-500/20') :
                       stock.action === 'SHORT' ? (isLight ? 'bg-red-100' : 'bg-red-500/20') :
-                      (isLight ? 'bg-yellow-100' : 'bg-yellow-500/20')
-                    }`}>
+                        (isLight ? 'bg-yellow-100' : 'bg-yellow-500/20')
+                      }`}>
                       {stock.action === 'LONG' ? (
                         <TrendingUp className={`w-4 h-4 ${stock.action === 'LONG' ? (isLight ? 'text-green-600' : 'text-green-400') : (isLight ? 'text-yellow-600' : 'text-yellow-400')}`} />
                       ) : stock.action === 'SHORT' ? (
@@ -1341,7 +1355,7 @@ const DashboardPage = () => {
                         {actionType} {stock.symbol}
                       </p>
                       <p className={`${isLight ? 'text-gray-600' : 'text-gray-400'} text-xs`}>
-                        ${(stock.predicted_price || stock.current_price || 0).toFixed(2)} • 
+                        {formatUSDToINR(stock.predicted_price || stock.current_price || 0, stock.symbol)} •
                         Confidence: {((stock.confidence || 0) * 100).toFixed(0)}%
                       </p>
                     </div>
@@ -1366,7 +1380,7 @@ const DashboardPage = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </Layout >
   );
 };
 

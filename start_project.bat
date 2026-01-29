@@ -20,16 +20,14 @@ if not exist "trading-dashboard" (
 )
 
 echo Starting Backend Server...
-echo.
-start "Backend Server" cmd /k "cd backend && python api_server.py"
+start /B "Backend Server" cmd /c "cd backend && python api_server.py"
 
 echo Waiting for backend to start...
 timeout /t 5 /nobreak >nul
 
 echo.
 echo Starting Frontend Development Server...
-echo.
-start "Frontend Server" cmd /k "cd trading-dashboard && npm run dev"
+start /B "Frontend Server" cmd /c "cd trading-dashboard && npm run dev"
 
 echo.
 echo ========================================

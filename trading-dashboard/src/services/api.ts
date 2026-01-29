@@ -64,7 +64,7 @@ api.interceptors.response.use(
     if (!error.response && error.request) {
       // Check if it's a timeout vs connection error
       const isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout') || error.message?.includes('Timeout');
-      
+
       if (isTimeout) {
         // Timeout - server is running but request took too long
         // Check if this is a long-running request (predict, scanAll, analyze, trainRL)
@@ -73,7 +73,7 @@ api.interceptors.response.use(
           url.includes('/tools/scan_all') ||
           url.includes('/tools/analyze') ||
           url.includes('/tools/train_rl');
-        
+
         if (isLongRunningRequest) {
           // For long-running requests, timeout means "still processing", not failure
           // Throw special TimeoutError that components can handle gracefully
@@ -88,24 +88,24 @@ api.interceptors.response.use(
           ));
         }
       }
-      
+
       // Real connection error
       isBackendOnline = false;
-      
+
       // Retry logic for connection errors (only once)
       if (!originalRequest._retry && originalRequest) {
         originalRequest._retry = true;
-        
+
         // Wait a bit before retrying
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         try {
           return await api(originalRequest);
         } catch (retryError) {
           // Retry failed, return original error
         }
       }
-      
+
       const baseURL = config.API_BASE_URL;
       return Promise.reject(new Error(
         `Unable to connect to backend server at ${baseURL}. ` +
@@ -117,7 +117,7 @@ api.interceptors.response.use(
     if (error.response) {
       const status = error.response.status;
       const data = error.response.data as any;
-      
+
       // Extract error message
       let message = 'An error occurred';
       if (data?.detail) {
@@ -127,13 +127,13 @@ api.interceptors.response.use(
       } else if (data?.message) {
         message = data.message;
       }
-      
+
       // Handle specific error codes
       if (status === 401) {
         // Unauthorized - try to auto-login if credentials are available
         const storedUsername = localStorage.getItem('username');
         const storedToken = localStorage.getItem('token');
-        
+
         // Only clear if token was invalid (not if it's missing)
         if (storedToken && storedToken !== 'no-auth-required') {
           localStorage.removeItem('token');
@@ -158,7 +158,7 @@ api.interceptors.response.use(
         const retryAfter = data?.detail?.retry_after || data?.retry_after || 60;
         const detailMsg = data?.detail?.message || data?.message || '';
         message = detailMsg || `Rate limit exceeded. Please wait ${retryAfter} seconds before trying again.`;
-        
+
         // Don't retry rate limit errors automatically - let the user handle it
         // Clear any pending retries
         if (originalRequest) {
@@ -169,7 +169,7 @@ api.interceptors.response.use(
       } else if (status >= 500) {
         message = `Server error (${status}). Please try again later.`;
       }
-      
+
       return Promise.reject(new Error(message));
     }
 
@@ -219,49 +219,55 @@ export const authAPI = {
       throw error;
     }
   },
+  checkStatus: async () => {
+    try {
+      const response = await api.get('/auth/status');
+      return response.data;
+    } catch (error) {
+      // Return unauthenticated on error
+      return { authenticated: false, auth_status: 'enabled' };
+    }
+  },
 };
 
 // Stock Data API
 export const stockAPI = {
   predict: async (
-    symbols: string | string[], 
-    horizon: string = 'intraday', 
+    symbols: string[],
+    horizon: string = 'intraday',
     riskProfile?: string,
     stopLossPct?: number,
     capitalRiskPct?: number,
     drawdownLimitPct?: number
   ) => {
-    // Handle both single symbol (string) and multiple symbols (array)
-    const symbolArray = Array.isArray(symbols) ? symbols : [symbols];
-    
     const payload: any = {
-      symbols: symbolArray,
+      symbols,
       horizon,
     };
     if (riskProfile) payload.risk_profile = riskProfile;
     if (stopLossPct !== undefined) payload.stop_loss_pct = stopLossPct;
     if (capitalRiskPct !== undefined) payload.capital_risk_pct = capitalRiskPct;
     if (drawdownLimitPct !== undefined) payload.drawdown_limit_pct = drawdownLimitPct;
-    
+
     log('Calling /tools/predict with:', payload);
     try {
       const response = await api.post('/tools/predict', payload);
       log('Predict response received:', { status: response.status, hasPredictions: 'predictions' in response.data });
       return response.data;
     } catch (error: any) {
-      log('Predict error:', { 
-        message: error.message, 
-        code: error.code, 
+      log('Predict error:', {
+        message: error.message,
+        code: error.code,
         status: error.response?.status,
-        hasResponse: !!error.response 
+        hasResponse: !!error.response
       });
       throw error;
     }
   },
-  
+
   scanAll: async (
-    symbols: string[], 
-    horizon: string = 'intraday', 
+    symbols: string[],
+    horizon: string = 'intraday',
     minConfidence: number = 0.3,
     stopLossPct?: number,
     capitalRiskPct?: number
@@ -273,14 +279,14 @@ export const stockAPI = {
     };
     if (stopLossPct !== undefined) payload.stop_loss_pct = stopLossPct;
     if (capitalRiskPct !== undefined) payload.capital_risk_pct = capitalRiskPct;
-    
+
     const response = await api.post('/tools/scan_all', payload);
     return response.data;
   },
-  
+
   analyze: async (
-    symbol: string, 
-    horizons: string[] = ['intraday'], 
+    symbol: string,
+    horizons: string[] = ['intraday'],
     stopLossPct: number = 2.0,
     capitalRiskPct: number = 1.0,
     drawdownLimitPct: number = 5.0
@@ -294,10 +300,10 @@ export const stockAPI = {
     });
     return response.data;
   },
-  
+
   fetchData: async (
-    symbols: string[], 
-    period: string = '2y', 
+    symbols: string[],
+    period: string = '2y',
     includeFeatures: boolean = false,
     refresh: boolean = false
   ) => {
@@ -309,7 +315,7 @@ export const stockAPI = {
     });
     return response.data;
   },
-  
+
   feedback: async (
     symbol: string,
     predictedAction: string,
@@ -317,7 +323,7 @@ export const stockAPI = {
     actualReturn?: number | null
   ) => {
     console.log('[API] Feedback request:', { symbol, predictedAction, userFeedback, actualReturn });
-    
+
     // Normalize symbol (1-20 characters, uppercase)
     const normalizedSymbol = symbol.trim().toUpperCase();
     if (normalizedSymbol.length < 1 || normalizedSymbol.length > 20) {
@@ -362,9 +368,9 @@ export const stockAPI = {
       payload.actual_return = null;
     }
     // If undefined, omit the field entirely (backend will use default None)
-    
+
     console.log('[API] Sending feedback payload:', JSON.stringify(payload, null, 2));
-    
+
     try {
       const response = await api.post('/tools/feedback', payload);
       console.log('[API] Feedback response:', response.data);
@@ -375,7 +381,7 @@ export const stockAPI = {
       throw error;
     }
   },
-  
+
   trainRL: async (
     symbol: string,
     horizon: string = 'intraday',
@@ -390,12 +396,12 @@ export const stockAPI = {
     });
     return response.data;
   },
-  
+
   health: async () => {
     const response = await api.get('/tools/health');
     return response.data;
   },
-  
+
   checkConnection: async (retries: number = 3): Promise<{ connected: boolean; data?: any; error?: string }> => {
     // Prevent multiple simultaneous connection checks
     if (connectionCheckInProgress) {
@@ -403,13 +409,13 @@ export const stockAPI = {
     }
 
     connectionCheckInProgress = true;
-    
+
     try {
       // Use the api instance for consistency - this ensures CORS and other configs are applied
       const response = await api.get('/', {
         timeout: 10000, // 10 seconds for connection check (increased from 5)
       });
-      
+
       isBackendOnline = true;
       connectionCheckInProgress = false;
       return { connected: true, data: response.data };
@@ -420,27 +426,27 @@ export const stockAPI = {
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
         return stockAPI.checkConnection(retries - 1);
       }
-      
+
       // If we got a response, server is reachable (even if error)
       if (error.response) {
         isBackendOnline = true;
         connectionCheckInProgress = false;
         return { connected: true, data: error.response.data };
       }
-      
+
       isBackendOnline = false;
       connectionCheckInProgress = false;
-      
-      const errorMessage = error.code === 'ECONNREFUSED' 
+
+      const errorMessage = error.code === 'ECONNREFUSED'
         ? 'Backend server is not running. Please start the backend server.'
         : error.code === 'ECONNABORTED' || error.message?.includes('timeout')
-        ? 'Backend server is not responding. It may be starting up or overloaded.'
-        : error.message || 'Unable to connect to backend server';
-      
+          ? 'Backend server is not responding. It may be starting up or overloaded.'
+          : error.message || 'Unable to connect to backend server';
+
       return { connected: false, error: errorMessage };
     }
   },
-  
+
   getRateLimitStatus: async () => {
     const response = await api.get('/auth/status');
     return response.data;
@@ -465,20 +471,20 @@ export const riskAPI = {
    * 
    * Response: { risk_score: number, risk_level: string, recommendation: string }
    */
-  assess: async (
-    symbol: string,
-    positionSize: number,
-    entryPrice: number,
-    stopLoss: number,
-    capitalAtRiskPct: number = 1.0
-  ) => {
+  assess: async (data: {
+    symbol: string;
+    position_size: number;
+    entry_price: number;
+    stop_loss_price: number;
+    capital_at_risk_pct?: number;
+  }) => {
     try {
       const response = await api.post('/api/risk/assess', {
-        symbol,
-        position_size: positionSize,
-        entry_price: entryPrice,
-        stop_loss: stopLoss,
-        capital_at_risk_pct: capitalAtRiskPct,
+        symbol: data.symbol,
+        position_size: data.position_size,
+        entry_price: data.entry_price,
+        stop_loss_price: data.stop_loss_price,
+        capital_at_risk: data.capital_at_risk_pct || 0.01,
       });
       return response.data;
     } catch (error: any) {
@@ -565,10 +571,11 @@ export const tradeAPI = {
     try {
       const response = await api.post('/tools/execute', {
         symbol,
-        action,
+        side: action,
         quantity,
-        price,
-        stop_loss: stopLoss,
+        entry_price: price,
+        stop_loss_price: stopLoss,
+        order_type: 'market'
       });
       return response.data;
     } catch (error: any) {

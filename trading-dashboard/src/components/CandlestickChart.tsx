@@ -3,12 +3,12 @@ import { formatUSDToINR } from '../utils/currencyConverter';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from 'lightweight-charts';
 import { stockAPI } from '../services/api';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Settings, 
-  ZoomIn, 
-  ZoomOut, 
+import {
+  BarChart3,
+  TrendingUp,
+  Settings,
+  ZoomIn,
+  ZoomOut,
   Type,
   X,
   Shield,
@@ -40,7 +40,7 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
   const macdSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
   const macdSignalSeriesRef = useRef<ISeriesApi<'Line'> | null>(null);
   const macdHistogramSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
-  
+
   const [timeframe, setTimeframe] = useState<string>('5m');
   const [chartType, setChartType] = useState<'candlestick' | 'line' | 'area'>('candlestick');
   const [ohlc, setOhlc] = useState({ open: 0, high: 0, low: 0, close: 0, change: 0, changePercent: 0 });
@@ -80,7 +80,7 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
   // Calculate SuperTrend indicator
   const calculateSuperTrend = (data: CandlestickData[], period: number = 10, multiplier: number = 3): LineData[] => {
     if (data.length < period) return [];
-    
+
     const result: LineData[] = [];
     let prevATR = 0;
     let prevSuperTrend = 0;
@@ -92,7 +92,7 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
       const high = data[i].high;
       const low = data[i].low;
       const close = data[i].close;
-      
+
       // Calculate ATR (Average True Range)
       let trueRange = high - low;
       if (i > 0) {
@@ -102,24 +102,24 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
           Math.abs(low - data[i - 1].close)
         );
       }
-      
-      const ATR = prevATR === 0 
-        ? trueRange 
+
+      const ATR = prevATR === 0
+        ? trueRange
         : (prevATR * (period - 1) + trueRange) / period;
-      
+
       // Calculate basic bands
       const hl2 = (high + low) / 2;
       const upperBand = hl2 + (multiplier * ATR);
       const lowerBand = hl2 - (multiplier * ATR);
-      
+
       // Adjust bands
-      const finalUpperBand = upperBand < prevUpperBand || data[i - 1].close > prevUpperBand 
-        ? upperBand 
+      const finalUpperBand = upperBand < prevUpperBand || data[i - 1].close > prevUpperBand
+        ? upperBand
         : prevUpperBand;
-      const finalLowerBand = lowerBand > prevLowerBand || data[i - 1].close < prevLowerBand 
-        ? lowerBand 
+      const finalLowerBand = lowerBand > prevLowerBand || data[i - 1].close < prevLowerBand
+        ? lowerBand
         : prevLowerBand;
-      
+
       // Determine SuperTrend
       let superTrend = 0;
       if (close <= finalLowerBand) {
@@ -131,30 +131,30 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
       } else {
         superTrend = trend === 1 ? finalLowerBand : finalUpperBand;
       }
-      
+
       result.push({
         time: data[i].time,
         value: superTrend,
       });
-      
+
       prevATR = ATR;
       prevSuperTrend = superTrend;
       prevUpperBand = finalUpperBand;
       prevLowerBand = finalLowerBand;
     }
-    
+
     return result;
   };
 
   // Calculate MACD indicator
   const calculateMACD = (data: CandlestickData[], fastPeriod: number = 12, slowPeriod: number = 26, signalPeriod: number = 9) => {
     if (data.length < slowPeriod) return { macd: [], signal: [], histogram: [] };
-    
+
     // Calculate EMAs
     const calculateEMA = (period: number) => {
       const multiplier = 2 / (period + 1);
       const ema: number[] = [];
-      
+
       for (let i = 0; i < data.length; i++) {
         if (i === 0) {
           ema.push(data[i].close);
@@ -164,10 +164,10 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
       }
       return ema;
     };
-    
+
     const fastEMA = calculateEMA(fastPeriod);
     const slowEMA = calculateEMA(slowPeriod);
-    
+
     // Calculate MACD line
     const macdLine: LineData[] = [];
     for (let i = 0; i < data.length; i++) {
@@ -176,12 +176,12 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
         value: fastEMA[i] - slowEMA[i],
       });
     }
-    
+
     // Calculate Signal line (EMA of MACD)
     const signalLine: LineData[] = [];
     const macdValues = macdLine.map(m => m.value);
     const signalMultiplier = 2 / (signalPeriod + 1);
-    
+
     for (let i = 0; i < macdValues.length; i++) {
       if (i === 0) {
         signalLine.push({ time: data[i].time, value: macdValues[i] });
@@ -191,32 +191,32 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
         signalLine.push({ time: data[i].time, value: newSignal });
       }
     }
-    
+
     // Calculate Histogram
     const histogram = macdLine.map((macd, i) => ({
       time: macd.time,
       value: macd.value - signalLine[i].value,
       color: (macd.value - signalLine[i].value) >= 0 ? '#10b981' : '#ef4444',
     }));
-    
+
     return { macd: macdLine, signal: signalLine, histogram };
   };
 
   // Fetch live price data
   const fetchLivePrice = useCallback(async () => {
     if (!symbol) return;
-    
+
     try {
       // Use fetchData for live updates - lighter and faster than predict
       const response = await stockAPI.fetchData([symbol], '1d', false, false);
-      
+
       if (response.data && response.data[symbol] && response.data[symbol].history) {
         const history = response.data[symbol].history;
         if (history.length > 0) {
           // Get the latest data point
           const latest = history[history.length - 1];
           const currentPrice = latest.close || latest.Close || 0;
-          
+
           if (currentPrice > 0) {
             // Update OHLC (using current price as close)
             setOhlc(prev => ({
@@ -227,18 +227,18 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
               change: currentPrice - prev.close,
               changePercent: prev.close > 0 ? ((currentPrice - prev.close) / prev.close) * 100 : 0,
             }));
-            
+
             // Notify parent of price update
             if (onPriceUpdate) {
               onPriceUpdate(currentPrice);
             }
-            
+
             // Update chart with latest candle if we have a series
             if (candlestickSeriesRef.current && chartRef.current) {
               const now = Math.floor(Date.now() / 1000) as Time;
               const allData = candlestickSeriesRef.current.data();
               const lastCandle = allData.length > 0 ? allData[allData.length - 1] : null;
-              
+
               if (lastCandle) {
                 // Update last candle with new close price
                 candlestickSeriesRef.current.update({
@@ -402,8 +402,8 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
     const handleResize = () => {
       if (chartContainerRef.current && chartRef.current) {
         chartRef.current.applyOptions({
-      width: chartContainerRef.current.clientWidth,
-      height: isFullscreen ? window.innerHeight - 120 : 500,
+          width: chartContainerRef.current.clientWidth,
+          height: isFullscreen ? window.innerHeight - 120 : 500,
         });
       }
     };
@@ -426,13 +426,13 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
     const fetchChartData = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         const response = await stockAPI.fetchData([symbol], '1mo', false, false);
-        
+
         if (response.data && response.data[symbol] && response.data[symbol].history) {
           const history = response.data[symbol].history;
-          
+
           // Convert to candlestick format
           const candlestickData: CandlestickData[] = history.map((item: any, index: number) => ({
             time: (index + 1) as Time,
@@ -470,7 +470,7 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
           if (candlestickData.length > 0) {
             const latest = candlestickData[candlestickData.length - 1];
             const previous = candlestickData.length > 1 ? candlestickData[candlestickData.length - 2] : latest;
-            
+
             setOhlc({
               open: latest.open,
               high: latest.high,
@@ -528,19 +528,19 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
             <div className="flex items-center gap-4 px-3 py-1.5 bg-slate-800 rounded border border-slate-700">
               <div>
                 <span className="text-xs text-gray-400">O</span>
-                <p className="text-sm font-semibold text-white">{ohlc.open.toFixed(2)}</p>
+                <p className="text-sm font-semibold text-white">{formatUSDToINR(ohlc.open, symbol)}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-400">H</span>
-                <p className="text-sm font-semibold text-white">{ohlc.high.toFixed(2)}</p>
+                <p className="text-sm font-semibold text-white">{formatUSDToINR(ohlc.high, symbol)}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-400">L</span>
-                <p className="text-sm font-semibold text-white">{ohlc.low.toFixed(2)}</p>
+                <p className="text-sm font-semibold text-white">{formatUSDToINR(ohlc.low, symbol)}</p>
               </div>
               <div>
                 <span className="text-xs text-gray-400">C</span>
-                <p className="text-sm font-semibold text-white">{ohlc.close.toFixed(2)}</p>
+                <p className="text-sm font-semibold text-white">{formatUSDToINR(ohlc.close, symbol)}</p>
               </div>
               <div className="border-l border-slate-700 pl-4">
                 <span className="text-xs text-gray-400">Change</span>
@@ -553,7 +553,7 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
             {crosshairPrice && crosshairTime && (
               <div className="px-3 py-1.5 bg-slate-800 rounded border border-slate-700">
                 <p className="text-xs text-gray-400">Price</p>
-                <p className="text-sm font-semibold text-white">${crosshairPrice.toFixed(2)}</p>
+                <p className="text-sm font-semibold text-white">{formatUSDToINR(crosshairPrice, symbol)}</p>
                 <p className="text-xs text-gray-500">{crosshairTime}</p>
               </div>
             )}
@@ -585,11 +585,10 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
               <button
                 key={tf.value}
                 onClick={() => setTimeframe(tf.value)}
-                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                  timeframe === tf.value
+                className={`px-2 py-1 rounded text-xs font-medium transition-colors ${timeframe === tf.value
                     ? 'bg-blue-500 text-white'
                     : 'text-gray-300 hover:text-white hover:bg-slate-700'
-                }`}
+                  }`}
               >
                 {tf.label}
               </button>
@@ -600,22 +599,20 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
           <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 border border-slate-700">
             <button
               onClick={() => setChartType('candlestick')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                chartType === 'candlestick'
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${chartType === 'candlestick'
                   ? 'bg-blue-500 text-white'
                   : 'text-gray-300 hover:text-white hover:bg-slate-700'
-              }`}
+                }`}
               title="Candlestick"
             >
               <BarChart3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setChartType('line')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                chartType === 'line'
+              className={`px-2 py-1 rounded text-xs font-medium transition-colors ${chartType === 'line'
                   ? 'bg-blue-500 text-white'
                   : 'text-gray-300 hover:text-white hover:bg-slate-700'
-              }`}
+                }`}
               title="Line"
             >
               <TrendingUp className="w-4 h-4" />
@@ -625,11 +622,10 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
           {/* Indicators Button */}
           <button
             onClick={() => setShowIndicators(!showIndicators)}
-            className={`px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 border ${
-              showIndicators
+            className={`px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 border ${showIndicators
                 ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
                 : 'bg-slate-800 border-slate-700 text-gray-300 hover:text-white hover:bg-slate-700'
-            }`}
+              }`}
           >
             <Settings className="w-4 h-4" />
             <span>Indicators</span>
@@ -651,11 +647,10 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
             <button
               key={tool.id}
               onClick={() => setSelectedTool(selectedTool === tool.id ? null : tool.id)}
-              className={`p-2 rounded transition-colors ${
-                selectedTool === tool.id
+              className={`p-2 rounded transition-colors ${selectedTool === tool.id
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
                   : 'text-gray-400 hover:text-white hover:bg-slate-800'
-              }`}
+                }`}
               title={tool.label}
             >
               <tool.icon className="w-4 h-4" />
@@ -664,22 +659,20 @@ const CandlestickChart = ({ symbol, exchange = 'NSE', onClose, onPriceUpdate }: 
           <div className="border-t border-slate-800 my-1 w-full"></div>
           <button
             onClick={() => setDrawingsLocked(!drawingsLocked)}
-            className={`p-2 rounded transition-colors ${
-              drawingsLocked
+            className={`p-2 rounded transition-colors ${drawingsLocked
                 ? 'bg-yellow-500/20 text-yellow-400'
                 : 'text-gray-400 hover:text-white hover:bg-slate-800'
-            }`}
+              }`}
             title={drawingsLocked ? "Unlock Drawings" : "Lock Drawings"}
           >
             {drawingsLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
           </button>
           <button
             onClick={() => setDrawingsVisible(!drawingsVisible)}
-            className={`p-2 rounded transition-colors ${
-              !drawingsVisible
+            className={`p-2 rounded transition-colors ${!drawingsVisible
                 ? 'bg-gray-500/20 text-gray-400'
                 : 'text-gray-400 hover:text-white hover:bg-slate-800'
-            }`}
+              }`}
             title={drawingsVisible ? "Hide Drawings" : "Show Drawings"}
           >
             {drawingsVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}

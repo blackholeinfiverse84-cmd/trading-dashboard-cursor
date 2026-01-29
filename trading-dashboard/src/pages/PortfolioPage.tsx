@@ -11,22 +11,22 @@ import { config } from '../config';
 
 const PortfolioPage = () => {
   const { showNotification } = useNotification();
-  const { 
-    portfolioState, 
-    availablePortfolios, 
-    isLoading, 
-    error, 
-    addHolding, 
-    removeHolding, 
+  const {
+    portfolioState,
+    availablePortfolios,
+    isLoading,
+    error,
+    addHolding,
+    removeHolding,
     refreshPortfolio,
     clearPortfolio,
     updateHoldingStopLoss
   } = usePortfolio();
-  
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPosition, setNewPosition] = useState({ symbol: '', shares: 0, avgPrice: 0 });
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  
+
   // Risk assessment state
   const [riskAssessment, setRiskAssessment] = useState<any>(null);
   const [showRiskModal, setShowRiskModal] = useState(false);
@@ -37,7 +37,7 @@ const PortfolioPage = () => {
   // Stop-loss state
   const [stopLossPrice, setStopLossPrice] = useState<number>(0);
   const [stopLossError, setStopLossError] = useState<string | null>(null);
-  
+
   // Calculate risk percentage
   const calculateRiskPercentage = (entryPrice: number, stopLossPrice: number, quantity: number, portfolioValue: number) => {
     const riskPerUnit = Math.abs(entryPrice - stopLossPrice);
@@ -71,10 +71,10 @@ const PortfolioPage = () => {
   const handleSymbolInput = (value: string) => {
     const upperValue = value.toUpperCase();
     setNewPosition({ ...newPosition, symbol: upperValue });
-    
+
     // Filter suggestions based on input
     if (upperValue.length > 0) {
-      const filtered = availableStocks.filter(stock => 
+      const filtered = availableStocks.filter(stock =>
         stock.includes(upperValue)
       );
       setSuggestions(filtered.slice(0, 6)); // Show max 6 suggestions
@@ -93,15 +93,15 @@ const PortfolioPage = () => {
     // No need to manually load here since context handles it
     // Just trigger a refresh to ensure fresh data
     refreshPortfolio();
-    
+
     // Run responsive design tests
     testResponsiveDesign();
-    
+
     // Refresh every 120 seconds (2 minutes) to reduce API calls and avoid rate limits
     const interval = setInterval(() => {
       refreshPortfolio();
     }, 120000);
-    
+
     return () => clearInterval(interval);
   }, [refreshPortfolio]);
 
@@ -127,7 +127,7 @@ const PortfolioPage = () => {
           shares: newPosition.shares,
           avgPrice: newPosition.avgPrice
         });
-        
+
         setNewPosition({ symbol: '', shares: 0, avgPrice: 0 });
         setShowAddModal(false);
         showNotification('success', 'Position Added', `Added ${newPosition.shares} shares of ${newPosition.symbol}`);
@@ -162,28 +162,24 @@ const PortfolioPage = () => {
     setRiskError(null);
     setStopLossError(null);
     setPendingTrade({ holding, action });
-    
+
     // Initialize stop-loss price (5% below current price for long positions)
     const initialStopLoss = holding.currentPrice * 0.95;
     setStopLossPrice(initialStopLoss);
-    
+
     try {
-      // Call risk assessment endpoint
-      const riskResult = await fetch(`${config.API_BASE_URL}/api/risk/assess`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symbol: holding.symbol,
-          quantity: holding.shares,
-          entry_price: holding.currentPrice,
-          stop_loss: initialStopLoss,
-          risk_percent: 1.0 // 1% capital at risk
-        })
-      }).then(res => res.json());
-      
+      // Call risk assessment endpoint via API service
+      const riskResult = await riskAPI.assess({
+        symbol: holding.symbol,
+        position_size: holding.shares * holding.currentPrice,
+        entry_price: holding.currentPrice,
+        stop_loss_price: initialStopLoss,
+        capital_at_risk_pct: 0.01 // 1% capital at risk
+      });
+
       setRiskAssessment(riskResult);
       setShowRiskModal(true);
-      
+
       // Check if risk is acceptable
       const riskScore = riskResult.risk_score || 0;
       if (riskScore > 5) {
@@ -203,7 +199,7 @@ const PortfolioPage = () => {
     if (price <= 0) {
       return 'Stop-loss price must be greater than 0';
     }
-    
+
     // For long positions (ADD)
     if (action === 'ADD') {
       if (price >= currentPrice) {
@@ -213,7 +209,7 @@ const PortfolioPage = () => {
         return 'Stop-loss should be below entry price for long positions (recommended)';
       }
     }
-    
+
     // For short positions (REDUCE) - we need to be careful here
     // For a REDUCE action, typically you want to sell if price goes down (for long positions)
     // Or cover if price goes up (for short positions)
@@ -231,38 +227,34 @@ const PortfolioPage = () => {
         }
       }
     }
-    
+
     return null;
   };
 
   // Update risk assessment when stop-loss changes
   const updateRiskAssessment = async (newStopLoss: number) => {
     if (!pendingTrade) return;
-    
+
     const { holding, action } = pendingTrade;
     const error = validateStopLoss(newStopLoss, holding.currentPrice, action, holding.avgPrice);
-          
+
     if (error) {
       setStopLossError(error);
       return;
     }
-          
+
     setStopLossError(null);
-    
+
     try {
-      // Recalculate risk assessment with new stop-loss
-      const riskResult = await fetch(`${config.API_BASE_URL}/api/risk/assess`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symbol: holding.symbol,
-          quantity: holding.shares,
-          entry_price: holding.currentPrice,
-          stop_loss: newStopLoss,
-          risk_percent: 1.0
-        })
-      }).then(res => res.json());
-      
+      // Recalculate risk assessment with new stop-loss using riskAPI
+      const riskResult = await riskAPI.assess({
+        symbol: holding.symbol,
+        position_size: holding.shares * holding.currentPrice,
+        entry_price: holding.currentPrice,
+        stop_loss_price: newStopLoss,
+        capital_at_risk_pct: 0.01
+      });
+
       setRiskAssessment(riskResult);
     } catch (error) {
       console.error('Failed to update risk assessment:', error);
@@ -272,46 +264,52 @@ const PortfolioPage = () => {
   // Execute trade after confirmation
   const handleExecuteTrade = async () => {
     if (!pendingTrade) return;
-    
+
     const { holding, action } = pendingTrade;
-    
+
     // Validate stop-loss before execution
     const error = validateStopLoss(stopLossPrice, holding.currentPrice, action, holding.avgPrice);
     if (error) {
       showNotification('error', 'Invalid Stop-Loss', error);
       return;
     }
-    
+
     setRiskChecking(true);
-    
+
     try {
-      // Block trade if risk is too high (> 8 for extreme risk)
-      if (riskAssessment?.risk_score > 8) {
-        const msg = `Action blocked: Risk score ${riskAssessment.risk_score.toFixed(1)} is too high.`;
+      // Assess risk via API service
+      const riskRes = await riskAPI.assess({
+        symbol: pendingTrade.holding.symbol,
+        position_size: pendingTrade.holding.shares * (pendingTrade.holding.currentPrice || 0),
+        entry_price: pendingTrade.holding.avgPrice,
+        stop_loss_price: stopLossPrice,
+        capital_at_risk_pct: 0.05 // 5% risk threshold example
+      });
+
+      // If risk is too high and blocking is enabled, stop here
+      if (riskRes.recommendation === 'HIGH_RISK') {
+        const msg = `Action blocked: Risk level is too high (${riskRes.risk_percentage?.toFixed(1) || 'N/A'}%).`;
         showNotification('error', 'Action Blocked', msg);
+        setRiskChecking(false);
         return;
       }
-      
-      // Execute simulated action
-      const result = await fetch(`${config.API_BASE_URL}/api/trade/execute`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symbol: holding.symbol,
-          action: action,
-          quantity: holding.shares,
-          price: holding.currentPrice,
-          stop_loss: stopLossPrice
-        })
-      }).then(res => res.json());
-      
+
+      // Execute trade via API service
+      const result = await tradeAPI.execute(
+        pendingTrade.holding.symbol,
+        action,
+        pendingTrade.holding.shares,
+        pendingTrade.holding.currentPrice || 0,
+        stopLossPrice
+      );
+
       if (result.success) {
-        showNotification('success', `Portfolio Action Executed`, 
-          `${holding.symbol} ${action === 'ADD' ? 'added to' : 'reduced from'} portfolio. Stop-Loss: $${stopLossPrice.toFixed(2)}. ID: ${result.order_id || 'simulated'}`);
-        
+        showNotification('success', `Portfolio Action Executed`,
+          `${holding.symbol} ${action === 'ADD' ? 'added to' : 'reduced from'} portfolio. Stop-Loss: ₹${stopLossPrice.toFixed(2)}. ID: ${result.order_id || 'simulated'}`);
+
         // Update the holding with the new stop-loss
         await updateHoldingStopLoss(pendingTrade.holding.symbol, stopLossPrice);
-        
+
         // Close modals and reset state
         setShowConfirmModal(false);
         setShowRiskModal(false);
@@ -339,7 +337,7 @@ const PortfolioPage = () => {
             <p className="text-gray-400 text-xs sm:text-sm">Educational portfolio management</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <button 
+            <button
               onClick={handleRefresh}
               disabled={isLoading}
               className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 text-white text-xs sm:text-sm font-semibold rounded transition-colors flex items-center justify-center sm:justify-start gap-1.5"
@@ -348,7 +346,7 @@ const PortfolioPage = () => {
               <span className="hidden sm:inline">Refresh</span>
               <span className="sm:hidden">Refresh</span>
             </button>
-            <button 
+            <button
               onClick={() => setShowAddModal(true)}
               className="flex-1 sm:flex-none px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs sm:text-sm font-semibold rounded transition-colors flex items-center justify-center sm:justify-start gap-1.5"
             >
@@ -358,7 +356,7 @@ const PortfolioPage = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="mb-4">
           <PortfolioSelector />
         </div>
@@ -386,8 +384,8 @@ const PortfolioPage = () => {
           <div className="bg-slate-800 rounded-lg p-3 sm:p-4 border border-slate-700">
             <p className="text-gray-400 text-xs mb-1">Last Updated</p>
             <p className="text-white text-sm font-medium truncate">
-              {portfolioState.lastUpdated 
-                ? portfolioState.lastUpdated.toLocaleTimeString() 
+              {portfolioState.lastUpdated
+                ? portfolioState.lastUpdated.toLocaleTimeString()
                 : 'Never'}
             </p>
             <p className="text-gray-500 text-xs mt-1">Simulation Data</p>
@@ -398,7 +396,7 @@ const PortfolioPage = () => {
           <div className="p-3 sm:p-4 border-b border-slate-700 flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-sm sm:text-base font-semibold text-white">Holdings</h2>
             {portfolioState.holdings.length > 0 && (
-              <button 
+              <button
                 onClick={handleClearPortfolio}
                 className="text-xs text-red-400 hover:text-red-300 px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
               >
@@ -412,7 +410,7 @@ const PortfolioPage = () => {
             <div className="p-8 text-center text-red-400">
               <AlertTriangle className="w-8 h-8 mx-auto mb-2" />
               <p className="text-xs sm:text-sm">{error}</p>
-              <button 
+              <button
                 onClick={handleRefresh}
                 className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs sm:text-sm"
               >
@@ -443,12 +441,12 @@ const PortfolioPage = () => {
                           <span className="text-white font-semibold text-xs sm:text-sm">{holding.symbol}</span>
                         </td>
                         <td className="px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-gray-300">{holding.shares}</td>
-                        <td className="px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-gray-300 hidden sm:table-cell">${(holding.avgPrice || 0).toFixed(2)}</td>
-                        <td className="px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-white hidden md:table-cell">${(holding.currentPrice || 0).toFixed(2)}</td>
+                        <td className="px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-gray-300 hidden sm:table-cell">{formatUSDToINR(holding.avgPrice || 0, holding.symbol)}</td>
+                        <td className="px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-white hidden md:table-cell">{formatUSDToINR(holding.currentPrice || 0, holding.symbol)}</td>
                         <td className="px-2 sm:px-3 py-2 sm:py-3 whitespace-nowrap text-white hidden lg:table-cell">
                           {holding.stopLossPrice ? (
                             <div className="flex flex-col">
-                              <span>${holding.stopLossPrice.toFixed(2)}</span>
+                              <span>{formatUSDToINR(holding.stopLossPrice, holding.symbol)}</span>
                               <span className="text-xs text-gray-400">({((holding.stopLossPrice - holding.avgPrice) / holding.avgPrice * 100).toFixed(1)}%)</span>
                             </div>
                           ) : (
@@ -464,13 +462,13 @@ const PortfolioPage = () => {
                               <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 flex-shrink-0" />
                             )}
                             <span className={gain >= 0 ? 'text-green-400' : 'text-red-400'}>
-                              ${(gain || 0).toFixed(2)} ({gainPercent >= 0 ? '+' : ''}{(gainPercent || 0).toFixed(2)}%)
+                              {formatUSDToINR(gain || 0, holding.symbol)} ({gainPercent >= 0 ? '+' : ''}{(gainPercent || 0).toFixed(2)}%)
                             </span>
                           </div>
                         </td>
                         <td className="px-1 sm:px-3 py-2 sm:py-3 whitespace-nowrap">
                           <div className="flex gap-0.5 sm:gap-1 justify-end">
-                            <button 
+                            <button
                               onClick={() => handleAssessRisk(holding, 'ADD')}
                               disabled={riskChecking}
                               className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white text-xs rounded transition-colors flex-shrink-0"
@@ -478,7 +476,7 @@ const PortfolioPage = () => {
                             >
                               Add
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleAssessRisk(holding, 'REDUCE')}
                               disabled={riskChecking}
                               className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white text-xs rounded transition-colors flex-shrink-0"
@@ -487,7 +485,7 @@ const PortfolioPage = () => {
                               <span className="hidden sm:inline">Reduce</span>
                               <span className="sm:hidden">Red</span>
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleRemovePosition(holding.symbol)}
                               className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 bg-slate-600 hover:bg-slate-700 text-white text-xs rounded transition-colors flex-shrink-0"
                               title="Remove from Portfolio"
@@ -508,7 +506,7 @@ const PortfolioPage = () => {
               <BookOpen className="w-12 h-12 sm:w-12 sm:h-12 mx-auto mb-3 text-slate-600" />
               <p className="mb-2 text-sm sm:text-base">No holdings in this portfolio</p>
               <p className="text-xs sm:text-sm text-gray-500 mb-4">Add positions to start learning about portfolio management</p>
-              <button 
+              <button
                 onClick={() => setShowAddModal(true)}
                 className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs sm:text-sm font-medium"
               >
@@ -532,7 +530,7 @@ const PortfolioPage = () => {
                     placeholder="e.g., AAPL, TCS.NS"
                     className="w-full px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-xs sm:text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  
+
                   {/* Suggestions Dropdown */}
                   {suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-slate-700 border border-slate-600 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
@@ -588,7 +586,7 @@ const PortfolioPage = () => {
                     Cancel
                   </button>
                 </div>
-                
+
                 <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-2 sm:p-3 mt-4">
                   <div className="flex items-start gap-2">
                     <Info className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
@@ -623,9 +621,8 @@ const PortfolioPage = () => {
               <div className="space-y-3 sm:space-y-4">
                 <div className="bg-slate-700/50 rounded-lg p-3 sm:p-4">
                   <p className="text-gray-300 text-xs sm:text-sm mb-1">Risk Score</p>
-                  <p className={`text-xl sm:text-2xl font-bold ${
-                    riskAssessment.risk_score > 5 ? 'text-red-400' : 'text-green-400'
-                  }`}>
+                  <p className={`text-xl sm:text-2xl font-bold ${riskAssessment.risk_score > 5 ? 'text-red-400' : 'text-green-400'
+                    }`}>
                     {(riskAssessment.risk_score || 0).toFixed(1)} / 10
                   </p>
                   <p className="text-gray-400 text-xs mt-2">
@@ -667,7 +664,7 @@ const PortfolioPage = () => {
                     <p className="text-red-400 text-xs mt-1">{stopLossError}</p>
                   )}
                   <p className="text-gray-400 text-xs mt-1">
-                    Current: ${pendingTrade?.holding.currentPrice.toFixed(2)}
+                    Current: ₹{pendingTrade?.holding.currentPrice.toFixed(2)}
                   </p>
                 </div>
 
@@ -723,9 +720,8 @@ const PortfolioPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-300">Action:</span>
-                  <span className={`font-semibold ${
-                    pendingTrade.action === 'ADD' ? 'text-green-400' : 'text-orange-400'
-                  }`}>
+                  <span className={`font-semibold ${pendingTrade.action === 'ADD' ? 'text-green-400' : 'text-orange-400'
+                    }`}>
                     {pendingTrade.action === 'ADD' ? 'Add to Portfolio' : 'Reduce Exposure'}
                   </span>
                 </div>
@@ -735,12 +731,12 @@ const PortfolioPage = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-300">Price:</span>
-                  <span className="text-white">${(pendingTrade.holding.currentPrice || 0).toFixed(2)}</span>
+                  <span className="text-white">₹{(pendingTrade.holding.currentPrice || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t border-slate-700 pt-2 sm:pt-3">
                   <span className="text-gray-300 font-semibold">Total:</span>
                   <span className="text-white font-bold">
-                    ${(pendingTrade.holding.shares * (pendingTrade.holding.currentPrice || 0)).toFixed(2)}
+                    ₹{(pendingTrade.holding.shares * (pendingTrade.holding.currentPrice || 0)).toFixed(2)}
                   </span>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import { useNotification } from '../contexts/NotificationContext';
 
 const TrainModelPage = () => {
   const { showNotification } = useNotification();
-  
+
   // Phase 6 - Train Model State
   const [trainSymbol, setTrainSymbol] = useState('AAPL');
   const [trainHorizon, setTrainHorizon] = useState<'intraday' | 'short' | 'long'>('intraday');
@@ -58,7 +58,7 @@ const TrainModelPage = () => {
 
       if (progressInterval) clearInterval(progressInterval);
       setTrainingProgress(100);
-      
+
       // Generate realistic training results
       const mockResults = {
         training_metrics: {
@@ -95,7 +95,7 @@ const TrainModelPage = () => {
       setTrainingStatus('error');
       const msg = 'Backend service unavailable. Showing demo data instead.';
       setTrainingMessage(msg);
-      
+
       // Show demo results even on "error" for demonstration
       const demoResults = {
         training_metrics: {
@@ -112,7 +112,7 @@ const TrainModelPage = () => {
           n_actions: 3
         }
       };
-      
+
       setTrainingResults(demoResults);
       showNotification('warning', 'Demo Mode', 'Backend unavailable. Showing sample data.');
     } finally {
@@ -133,22 +133,22 @@ const TrainModelPage = () => {
     try {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Generate contextual AI response based on user input
       let aiResponse = '';
-      
+
       const lowerMsg = userMessage.toLowerCase();
-      
+
       if (lowerMsg.includes('price') || lowerMsg.includes('current')) {
-        aiResponse = `The current price of ${selectedSymbol} is $${(Math.random() * 200 + 100).toFixed(2)}. Based on recent trends and your selected ${selectedTimeframe} timeframe, I recommend monitoring RSI and MACD indicators for entry signals.`;
+        aiResponse = `The current price of ${selectedSymbol} is ₹${(Math.random() * 200 + 100).toFixed(2)}. Based on recent trends and your selected ${selectedTimeframe} timeframe, I recommend monitoring RSI and MACD indicators for entry signals.`;
       } else if (lowerMsg.includes('buy') || lowerMsg.includes('sell')) {
         aiResponse = `For ${selectedSymbol}, my analysis suggests a ${Math.random() > 0.5 ? 'BUY' : 'SELL'} signal. The ${activeIndicators.join(', ')} indicators show ${Math.random() > 0.5 ? 'bullish' : 'bearish'} momentum. Consider setting stop-loss at ${(Math.random() * 5 + 2).toFixed(2)}%.`;
       } else if (lowerMsg.includes('rsi') || lowerMsg.includes('macd')) {
         aiResponse = `Technical Analysis for ${selectedSymbol}:
 • RSI: ${(Math.random() * 40 + 30).toFixed(1)} (${Math.random() > 0.5 ? 'Oversold - Potential Buy' : 'Neutral'})
 • MACD: ${Math.random() > 0.5 ? 'Bullish crossover detected' : 'Bearish divergence observed'}
-• Support: $${(Math.random() * 50 + 150).toFixed(2)}
-• Resistance: $${(Math.random() * 50 + 180).toFixed(2)}`;
+• Support: ₹${(Math.random() * 50 + 150).toFixed(2)}
+• Resistance: ₹${(Math.random() * 50 + 180).toFixed(2)}`;
       } else if (lowerMsg.includes('risk') || lowerMsg.includes('volatility')) {
         aiResponse = `Risk Assessment for ${selectedSymbol}:
 • Volatility: ${(Math.random() * 15 + 10).toFixed(1)}%
@@ -171,7 +171,7 @@ Recommended position size: ${(Math.random() * 5 + 2).toFixed(1)}% of portfolio`;
     } catch (error: any) {
       const msg = 'AI service temporarily unavailable. Showing simulated response.';
       const fallbackResponse = `Hello! I'm your AI trading assistant. While the backend is offline, I can provide general trading guidance. You've selected ${selectedSymbol} with ${activeIndicators.join(', ')} indicators on ${selectedTimeframe} timeframe. How can I help with your trading strategy today?`;
-      
+
       setChatMessages(prev => [...prev, { role: 'assistant', message: fallbackResponse }]);
       showNotification('warning', 'Demo Mode', 'AI chat in simulation mode');
     } finally {
@@ -269,11 +269,10 @@ Recommended position size: ${(Math.random() * 5 + 2).toFixed(1)}% of portfolio`;
 
               {/* Status Message */}
               {trainingMessage && (
-                <div className={`flex items-start space-x-2 p-3 rounded ${
-                  trainingStatus === 'complete' ? 'bg-green-900 border border-green-700' :
-                  trainingStatus === 'error' ? 'bg-red-900 border border-red-700' :
-                  'bg-blue-900 border border-blue-700'
-                }`}>
+                <div className={`flex items-start space-x-2 p-3 rounded ${trainingStatus === 'complete' ? 'bg-green-900 border border-green-700' :
+                    trainingStatus === 'error' ? 'bg-red-900 border border-red-700' :
+                      'bg-blue-900 border border-blue-700'
+                  }`}>
                   {trainingStatus === 'complete' ? (
                     <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                   ) : trainingStatus === 'error' ? (
@@ -320,7 +319,7 @@ Recommended position size: ${(Math.random() * 5 + 2).toFixed(1)}% of portfolio`;
                       <p className="text-xl font-bold text-white">{Number(trainingResults.training_metrics.final_epsilon)?.toFixed(3)}</p>
                     </div>
                   </div>
-                  
+
                   <div className="mt-4 pt-3 border-t border-slate-600">
                     <p className="text-sm text-gray-300">
                       <span className="font-medium">Model:</span> {trainingResults.model_info?.model_type}
@@ -388,11 +387,10 @@ Recommended position size: ${(Math.random() * 5 + 2).toFixed(1)}% of portfolio`;
                           onClick={() => setActiveIndicators(prev =>
                             prev.includes(indicator) ? prev.filter(i => i !== indicator) : [...prev, indicator]
                           )}
-                          className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            activeIndicators.includes(indicator)
+                          className={`px-2 py-1 rounded text-xs font-medium transition-colors ${activeIndicators.includes(indicator)
                               ? 'bg-purple-600 text-white'
                               : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                          }`}
+                            }`}
                         >
                           {indicator}
                         </button>
@@ -405,11 +403,10 @@ Recommended position size: ${(Math.random() * 5 + 2).toFixed(1)}% of portfolio`;
                     {chatMessages.map((msg, idx) => (
                       <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div
-                          className={`max-w-xs px-3 py-2 rounded text-sm ${
-                            msg.role === 'user'
+                          className={`max-w-xs px-3 py-2 rounded text-sm ${msg.role === 'user'
                               ? 'bg-blue-600 text-white'
                               : 'bg-slate-600 text-gray-200'
-                          }`}
+                            }`}
                         >
                           {msg.message}
                         </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatUSDToINR } from '../utils/currencyConverter';
 import { stockAPI } from '../services/api';
 import { AlertTriangle, Shield, TrendingDown, DollarSign, Calculator, Loader2, CheckCircle2, XCircle, ChevronDown, ChevronUp, X, Minus } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
@@ -93,7 +94,7 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
    */
   const calculateStopLoss = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation - block calculation if invalid
     if (!symbol || !entryPrice || !capital || !riskPercentage) {
       setError('Please fill in all required fields');
@@ -128,7 +129,7 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
       const stopLossPrice = entry * (1 - riskPct / 100);
       const riskAmount = (cap * riskPct) / 100;
       const positionSize = cap / entry;
-      
+
       // Determine risk level
       let riskLevel: 'safe' | 'warning' | 'danger';
       if (riskPct <= 2) {
@@ -179,7 +180,7 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
       };
 
       setResult(stopLossResult);
-      
+
       // Notify parent component if callback provided
       if (onStopLossCalculated) {
         onStopLossCalculated(stopLossPrice, symbol.toUpperCase());
@@ -304,15 +305,14 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
                   }}
                   readOnly={isSymbolFromChart}
                   placeholder="AAPL"
-                  className={`w-full px-2 py-1.5 text-sm bg-slate-700/50 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                    isSymbolFromChart ? 'cursor-not-allowed opacity-75' : ''
-                  }`}
+                  className={`w-full px-2 py-1.5 text-sm bg-slate-700/50 border border-slate-600 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${isSymbolFromChart ? 'cursor-not-allowed opacity-75' : ''
+                    }`}
                   required
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-400 mb-1">
-                  Entry ($) <span className="text-red-400">*</span>
+                  Entry Price <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="number"
@@ -328,7 +328,7 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-gray-400 mb-1">
-                  Capital ($) <span className="text-red-400">*</span>
+                  Capital <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="number"
@@ -409,11 +409,10 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
       {result && (
         <div className={`border-t border-slate-700/50 p-3 space-y-2 animate-fadeIn ${!isExpanded ? 'max-h-0 overflow-hidden' : ''}`}>
           {/* Compact Results */}
-          <div className={`p-2 rounded border ${
-            result.riskLevel === 'safe' ? 'bg-green-500/10 border-green-500/30' :
+          <div className={`p-2 rounded border ${result.riskLevel === 'safe' ? 'bg-green-500/10 border-green-500/30' :
             result.riskLevel === 'warning' ? 'bg-yellow-500/10 border-yellow-500/30' :
-            'bg-red-500/10 border-red-500/30'
-          }`}>
+              'bg-red-500/10 border-red-500/30'
+            }`}>
             <div className="flex items-center gap-1.5 mb-2">
               {result.riskLevel === 'safe' ? (
                 <CheckCircle2 className="w-3 h-3 text-green-400" />
@@ -422,11 +421,10 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
               ) : (
                 <XCircle className="w-3 h-3 text-red-400" />
               )}
-              <span className={`text-xs font-bold ${
-                result.riskLevel === 'safe' ? 'text-green-400' :
+              <span className={`text-xs font-bold ${result.riskLevel === 'safe' ? 'text-green-400' :
                 result.riskLevel === 'warning' ? 'text-yellow-400' :
-                'text-red-400'
-              }`}>
+                  'text-red-400'
+                }`}>
                 {result.riskLevel.toUpperCase()}
               </span>
             </div>
@@ -439,17 +437,17 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
                   <span className="text-xs text-gray-400">Stop-Loss</span>
                 </div>
                 <p className="text-xs font-bold text-white">
-                  ${result.stopLossPrice.toFixed(2)}
+                  {formatUSDToINR(result.stopLossPrice, symbol)}
                 </p>
               </div>
 
               <div className="bg-slate-900/50 rounded p-1.5">
                 <div className="flex items-center gap-1 mb-0.5">
-                  <DollarSign className="w-2.5 h-2.5 text-yellow-400" />
+                  <IndianRupee className="w-2.5 h-2.5 text-yellow-400" />
                   <span className="text-xs text-gray-400">Risk</span>
                 </div>
                 <p className="text-xs font-bold text-white">
-                  ${result.riskAmount.toFixed(0)}
+                  {formatUSDToINR(result.riskAmount, symbol)}
                 </p>
               </div>
 
@@ -469,7 +467,7 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
                   <span className="text-xs text-gray-400">Entry</span>
                 </div>
                 <p className="text-xs font-bold text-white">
-                  ${result.entryPrice.toFixed(2)}
+                  ₹{result.entryPrice.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -499,69 +497,69 @@ const StopLoss = ({ chartSymbol, chartPrice, onStopLossCalculated, onClose }: St
               </div>
               <div style={{ width: '100%', height: 100, minWidth: 0, minHeight: 100 }}>
                 <ResponsiveContainer width="100%" height={100} minWidth={0}>
-                <LineChart
-                  data={[
-                    { name: 'Entry', price: result.entryPrice },
-                    { name: 'Current', price: result.entryPrice },
-                  ]}
-                  margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#9CA3AF" 
-                    tick={{ fill: '#9CA3AF', fontSize: 9 }}
-                  />
-                  <YAxis 
-                    stroke="#9CA3AF"
-                    tick={{ fill: '#9CA3AF', fontSize: 9 }}
-                    domain={[result.stopLossPrice * 0.98, result.entryPrice * 1.02]}
-                    tickFormatter={(value) => `$${value.toFixed(0)}`}
-                    width={40}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1E293B', 
-                      border: '1px solid #475569',
-                      borderRadius: '4px',
-                      padding: '4px',
-                      fontSize: '10px'
-                    }}
-                    labelStyle={{ color: '#E2E8F0', fontWeight: 'bold', fontSize: '10px' }}
-                    formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'Price']}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="price" 
-                    stroke="#3B82F6" 
-                    strokeWidth={1.5}
-                    dot={{ fill: '#3B82F6', r: 2 }}
-                  />
-                  <ReferenceLine 
-                    y={result.stopLossPrice} 
-                    stroke="#EF4444" 
-                    strokeWidth={1.5}
-                    strokeDasharray="4 4"
-                    label={{ 
-                      value: `SL: $${result.stopLossPrice.toFixed(0)}`, 
-                      position: 'right',
-                      fill: '#EF4444',
-                      fontSize: 8
-                    }}
-                  />
-                  <ReferenceLine 
-                    y={result.entryPrice} 
-                    stroke="#22C55E" 
-                    strokeWidth={1.5}
-                    strokeDasharray="3 3"
-                    label={{ 
-                      value: `$${result.entryPrice.toFixed(0)}`, 
-                      position: 'left',
-                      fill: '#22C55E',
-                      fontSize: 8
-                    }}
-                  />
-                </LineChart>
+                  <LineChart
+                    data={[
+                      { name: 'Entry', price: result.entryPrice },
+                      { name: 'Current', price: result.entryPrice },
+                    ]}
+                    margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.2} />
+                    <XAxis
+                      dataKey="name"
+                      stroke="#9CA3AF"
+                      tick={{ fill: '#9CA3AF', fontSize: 9 }}
+                    />
+                    <YAxis
+                      stroke="#9CA3AF"
+                      tick={{ fill: '#9CA3AF', fontSize: 9 }}
+                      domain={[result.stopLossPrice * 0.98, result.entryPrice * 1.02]}
+                      tickFormatter={(value) => `₹${value.toFixed(0)}`}
+                      width={40}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#1E293B',
+                        border: '1px solid #475569',
+                        borderRadius: '4px',
+                        padding: '4px',
+                        fontSize: '10px'
+                      }}
+                      labelStyle={{ color: '#E2E8F0', fontWeight: 'bold', fontSize: '10px' }}
+                      formatter={(value: any) => [`₹${Number(value).toFixed(2)}`, 'Price']}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="price"
+                      stroke="#3B82F6"
+                      strokeWidth={1.5}
+                      dot={{ fill: '#3B82F6', r: 2 }}
+                    />
+                    <ReferenceLine
+                      y={result.stopLossPrice}
+                      stroke="#EF4444"
+                      strokeWidth={1.5}
+                      strokeDasharray="4 4"
+                      label={{
+                        value: `SL: ₹${result.stopLossPrice.toFixed(0)}`,
+                        position: 'right',
+                        fill: '#EF4444',
+                        fontSize: 8
+                      }}
+                    />
+                    <ReferenceLine
+                      y={result.entryPrice}
+                      stroke="#22C55E"
+                      strokeWidth={1.5}
+                      strokeDasharray="3 3"
+                      label={{
+                        value: `₹${result.entryPrice.toFixed(0)}`,
+                        position: 'left',
+                        fill: '#22C55E',
+                        fontSize: 8
+                      }}
+                    />
+                  </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>

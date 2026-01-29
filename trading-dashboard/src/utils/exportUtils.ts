@@ -22,11 +22,11 @@ export const exportToCSV = (data: any[], filename: string = 'export.csv'): void 
 
   // Get headers from first object
   const headers = Object.keys(data[0]);
-  
+
   // Create CSV content
   const csvContent = [
     headers.join(','),
-    ...data.map(row => 
+    ...data.map(row =>
       headers.map(header => {
         const value = row[header];
         // Handle values that might contain commas or quotes
@@ -80,20 +80,20 @@ export const exportToPDF = async (
 
   try {
     const doc = new jsPDF();
-    
+
     // Add title
     doc.setFontSize(18);
     doc.text(title, 14, 20);
-    
+
     // Add date
     doc.setFontSize(10);
     doc.text(`Generated: ${format(new Date(), 'PPpp')}`, 14, 30);
-    
+
     // Get headers
     const headers = columns || Object.keys(data[0]);
-    
+
     // Prepare table data
-    const tableData = data.map(row => 
+    const tableData = data.map(row =>
       headers.map(header => {
         const value = row[header];
         if (value === null || value === undefined) return '';
@@ -103,7 +103,7 @@ export const exportToPDF = async (
         return String(value);
       })
     );
-    
+
     // Add table
     autoTable(doc, {
       head: [headers],
@@ -112,7 +112,7 @@ export const exportToPDF = async (
       styles: { fontSize: 8 },
       headStyles: { fillColor: [37, 99, 235] }, // Blue color
     });
-    
+
     // Save PDF
     doc.save(filename);
   } catch (error) {
@@ -135,22 +135,22 @@ export const exportHTMLToPDF = async (
       alert('Element not found');
       return;
     }
-    
+
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
       logging: false,
     });
-    
+
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const imgWidth = 210;
     const pageHeight = 295;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
-    
+
     let position = 0;
-    
+
     // Add title if provided
     if (title) {
       pdf.setFontSize(18);
@@ -158,17 +158,17 @@ export const exportHTMLToPDF = async (
       position = 30;
       heightLeft = imgHeight - 10;
     }
-    
+
     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
-    
+
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
-    
+
     pdf.save(filename);
   } catch (error) {
     console.error('Failed to export HTML to PDF:', error);
@@ -189,7 +189,7 @@ export const exportViaEmail = (data: any[], subject: string = 'Trading Data Expo
   const headers = Object.keys(data[0]);
   const csvContent = [
     headers.join(','),
-    ...data.map(row => 
+    ...data.map(row =>
       headers.map(header => {
         const value = row[header];
         if (value === null || value === undefined) return '';
@@ -205,7 +205,7 @@ export const exportViaEmail = (data: any[], subject: string = 'Trading Data Expo
   // Create mailto link
   const body = encodeURIComponent(`Please find the attached trading data export.\n\n${csvContent}`);
   const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
-  
+
   window.location.href = mailtoLink;
 };
 
@@ -218,14 +218,14 @@ export const scheduleExport = (
   label: string = 'Scheduled Export'
 ): void => {
   const scheduledExports = JSON.parse(localStorage.getItem('scheduledExports') || '[]');
-  
+
   scheduledExports.push({
     id: Date.now().toString(),
     label,
     executeAt: scheduleTime.toISOString(),
     functionName: exportFunction.name,
   });
-  
+
   localStorage.setItem('scheduledExports', JSON.stringify(scheduledExports));
   alert(`Export scheduled for ${format(scheduleTime, 'PPpp')}`);
 };

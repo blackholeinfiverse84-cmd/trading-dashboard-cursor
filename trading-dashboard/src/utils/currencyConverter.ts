@@ -46,8 +46,9 @@ export const formatINR = (
 };
 
 /**
- * Convert USD to INR and format
- * @param usdAmount - Amount in USD
+ * Convert USD to INR and format, with smart detection for Indian stocks
+ * @param amount - Amount to format
+ * @param symbol - Optonal symbol to detect if conversion is needed
  * @param options - Formatting options
  * @returns Formatted INR string
  */
