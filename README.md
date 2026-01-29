@@ -1,147 +1,183 @@
-# Trading Dashboard - Multi-Asset Trading Platform
+# Multi-Asset Trading Dashboard
 
 A modern, responsive trading dashboard built with React, TypeScript, and Vite. Features real-time stock predictions, portfolio management, market scanning, and comprehensive analytics.
 
-## Features
+## 🚀 Features
 
-- 🔐 **Authentication**: Login and Signup pages with JWT token management
-- 📊 **Dashboard**: Overview of portfolio performance and top performers
-- 🔍 **Market Scan**: Search and analyze stocks with AI-powered predictions
-- 💼 **Portfolio**: Manage holdings with real-time price updates
-- 📈 **Analytics**: Detailed charts and insights
-- ⭐ **Watch List**: Monitor favorite stocks
-- 📜 **Trading History**: View all past transactions
-- 🎨 **Responsive Design**: Works on desktop, tablet, and mobile
+- **🔐 Authentication**: JWT-based authentication with secure session management
+- **📊 Dashboard**: Real-time portfolio performance and market overview
+- **🔍 Market Scan**: AI-powered stock analysis and prediction engine
+- **💼 Portfolio**: Backend-authoritative portfolio management with real-time updates
+- **📈 Analytics**: Advanced charting and performance metrics
+- **⭐ Watch List**: Custom stock monitoring with alerts
+- **🔔 Alerts**: Price and performance-based notification system
+- **🤖 AI Assistant**: Intelligent trading insights and recommendations
+- **🛡️ Risk Management**: Stop-loss and position sizing tools
 
-## Tech Stack
+## 🏗️ Architecture
 
-- **Frontend**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Routing**: React Router DOM
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **Icons**: Lucide React
-- **HTTP Client**: Axios
+### Frontend (React 19 + TypeScript + Vite)
+- **Backend-Authoritative Design**: All financial data sourced exclusively from backend
+- **No Client-Side Calculations**: Portfolio values, PnL, and totals calculated server-side
+- **Error-First Approach**: Shows errors instead of fallback data when backend unavailable
+- **Real-Time Updates**: Polling-based data refresh with intelligent rate limiting
 
-## Project Structure
+### Backend (FastAPI + Python)
+- **Secure API**: JWT authentication with rate limiting and validation
+- **ML-Powered Predictions**: Ensemble models for stock price forecasting
+- **Risk Engine**: Advanced risk assessment and management tools
+- **Data Validation**: Strict input validation and error handling
 
-```
-trading-dashboard/
-├── src/
-│   ├── components/          # Reusable components
-│   │   ├── Layout.tsx      # Main layout wrapper
-│   │   ├── Navbar.tsx      # Top navigation bar
-│   │   └── Sidebar.tsx     # Side navigation menu
-│   ├── contexts/           # React contexts
-│   │   └── AuthContext.tsx # Authentication context
-│   ├── pages/              # Page components
-│   │   ├── LoginPage.tsx
-│   │   ├── SignupPage.tsx
-│   │   ├── DashboardPage.tsx
-│   │   ├── MarketScanPage.tsx
-│   │   ├── PortfolioPage.tsx
-│   │   ├── TradingHistoryPage.tsx
-│   │   ├── WatchListPage.tsx
-│   │   └── AnalyticsPage.tsx
-│   ├── services/           # API services
-│   │   └── api.ts         # Backend API integration
-│   ├── routes.tsx         # Route configuration
-│   ├── App.tsx            # Main app component
-│   └── main.tsx           # Entry point
-├── public/                # Static assets
-├── index.html            # HTML template
-└── package.json          # Dependencies
+## 🛠️ Technology Stack
 
-```
+### Frontend
+- **React 19** - Modern UI library
+- **TypeScript** - Type-safe development
+- **Vite** - Lightning-fast build tool
+- **Tailwind CSS** - Utility-first styling
+- **Axios** - HTTP client
+- **React Router** - Client-side routing
 
-## Getting Started
+### Backend
+- **FastAPI** - High-performance Python web framework
+- **PyTorch** - Machine learning framework
+- **scikit-learn** - Traditional ML algorithms
+- **pandas** - Data manipulation and analysis
+- **JWT** - Secure authentication
+- **Uvicorn** - ASGI server
+
+## 🚀 Quick Start
 
 ### Prerequisites
+- Node.js 16+
+- Python 3.8+
+- npm or yarn
 
-- Node.js 16+ and npm
-- Backend API running on http://127.0.0.1:8000
-
-### Installation
-
-1. Install dependencies:
+### Backend Setup
 ```bash
-npm install
+cd backend
+pip install -r requirements.txt
+python api_server.py
 ```
 
-2. Start the development server:
+### Frontend Setup
 ```bash
+cd trading-dashboard
+npm install
 npm run dev
 ```
 
-3. Open your browser and navigate to the URL shown in the terminal (usually http://localhost:5173)
-
-### Build for Production
-
+### Environment Configuration
+Create `.env` file in backend directory:
 ```bash
-npm run build
+ENABLE_AUTH=false
+JWT_SECRET_KEY=your-secret-key
+UVICORN_HOST=127.0.0.1
+UVICORN_PORT=8000
+DEBUG_MODE=true
 ```
 
-The built files will be in the `dist` directory.
+## 🔧 Key Endpoints
 
-## API Integration
+### Authentication
+- `POST /auth/login` - User login
+- `POST /auth/logout` - User logout
+- `GET /auth/status` - Authentication status
 
-The frontend connects to the backend API at `http://127.0.0.1:8000`. All API calls are handled through the `services/api.ts` file.
+### Trading Tools
+- `POST /tools/predict` - Stock price predictions
+- `POST /tools/scan_all` - Market scanning and ranking
+- `POST /tools/analyze` - Detailed stock analysis
+- `POST /tools/feedback` - User feedback collection
 
-### Available Endpoints
-
-- `POST /auth/login` - User authentication
-- `POST /tools/predict` - Get stock predictions
-- `POST /tools/scan_all` - Scan multiple stocks
-- `POST /tools/analyze` - Analyze stock with risk parameters
-- `GET /tools/health` - System health check
-
-## Default Credentials
-
-- Username: `admin`
-- Password: `admin123`
-
-## Features Overview
-
-### Dashboard
-- Portfolio value overview
-- Daily change tracking
-- Top performing stocks
-- Portfolio performance chart
-
-### Market Scan
-- Search stocks by symbol
-- Quick select popular stocks
-- AI-powered predictions
-- Multiple time horizons (intraday, short, long)
+### Risk Management
+- `POST /api/risk/assess` - Risk assessment
+- `POST /api/risk/stop-loss` - Stop-loss management
 
 ### Portfolio
-- View all holdings
-- Real-time price updates
-- Gain/loss calculations
-- Buy/Sell actions
+- `GET /api/portfolio` - Portfolio data (backend-calculated)
+- `POST /api/portfolio/add` - Add position
+- `POST /api/portfolio/remove` - Remove position
 
-### Analytics
-- Performance trends
-- Signal distribution charts
-- Top predictions
-- Confidence metrics
+## 📊 Data Flow
 
-## Responsive Design
+1. **Frontend requests** financial data from backend
+2. **Backend calculates** all values server-side (no client math)
+3. **Backend returns** structured data with pre-calculated totals
+4. **Frontend validates** data integrity before rendering
+5. **Error handling** shows clear messages when backend unavailable
 
-The app is fully responsive and works on:
-- Desktop (1920px+)
-- Laptop (1024px - 1919px)
-- Tablet (768px - 1023px)
-- Mobile (320px - 767px)
+## 🔒 Security
 
-## Browser Support
+- **JWT Authentication**: Secure token-based authentication
+- **Rate Limiting**: Prevents API abuse (500 requests/minute)
+- **Input Validation**: Strict data validation on all endpoints
+- **CORS Protection**: Controlled cross-origin resource sharing
+- **No Client Calculations**: Prevents manipulation of financial data
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+## 🎯 Integration Status
 
-## License
+### Fully Integrated (Backend-Authoritative)
+- ✅ MarketScanPage.tsx
+- ✅ AnalyticsPage.tsx
 
-This project is for educational and research purposes.
+### Partially Integrated (Hybrid)
+- ⚠️ DashboardPage.tsx
+- ⚠️ PortfolioPage.tsx
+- ⚠️ WatchListPage.tsx
+- ⚠️ AlertsPage.tsx
+- ⚠️ ComparePage.tsx
+- ⚠️ TradingHistoryPage.tsx
+- ⚠️ SettingsPage.tsx
+- ⚠️ TrainModelPage.tsx
+- ⚠️ LoginPage.tsx
 
+### Not Integrated
+- ❌ SignupPage.tsx
+- ❌ UserProfilePage.tsx
+- ❌ EducationalDashboardPage.tsx
+
+## 📈 Performance
+
+- **Real-time Updates**: 2-minute polling intervals
+- **Rate Limiting**: 500 requests/minute, 10,000/hour
+- **Caching**: Intelligent caching for non-critical data
+- **Error Recovery**: Automatic retry logic with exponential backoff
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Backend Connection Failed**
+   - Ensure backend server is running on `http://127.0.0.1:8000`
+   - Check firewall settings
+   - Verify CORS configuration
+
+2. **Authentication Errors**
+   - Check JWT configuration
+   - Verify token expiration settings
+   - Ensure proper header formatting
+
+3. **Rate Limit Exceeded**
+   - Reduce polling frequency
+   - Check `config.py` rate limit settings
+   - Monitor API usage patterns
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📞 Support
+
+For issues and questions:
+- Open GitHub issues
+- Check documentation
+- Review existing troubleshooting guides
