@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { GitCompare, Plus, X, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { stockAPI, POPULAR_STOCKS, type PredictionItem } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const ComparePage = () => {
+  const { showNotification } = useNotification();
   const [selectedSymbols, setSelectedSymbols] = useState<string[]>([]);
   const [predictions, setPredictions] = useState<PredictionItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ const ComparePage = () => {
       setNewSymbol('');
       setSuggestions([]);
       setShowAddModal(false);
+      showNotification('success', 'Symbol Added', `${newSymbol} added to comparison.`);
     }
   };
 
@@ -64,11 +67,13 @@ const ComparePage = () => {
       setNewSymbol('');
       setSuggestions([]);
       setShowAddModal(false);
+      showNotification('success', 'Symbol Added', `${symbol} added to comparison.`);
     }
   };
 
   const handleRemoveSymbol = (symbol: string) => {
     setSelectedSymbols(selectedSymbols.filter(s => s !== symbol));
+    showNotification('info', 'Symbol Removed', `${symbol} removed from comparison.`);
   };
 
   useEffect(() => {
@@ -86,10 +91,16 @@ const ComparePage = () => {
       if (response.predictions) {
         const valid = response.predictions.filter((p: PredictionItem) => !p.error);
         setPredictions(valid);
+        showNotification('success', 'Comparison Loaded', `Compared ${valid.length} symbols. Ready for analysis.`);
+      } else {
+        showNotification('warning', 'No Predictions', 'Could not load predictions for selected symbols.');
+        setPredictions([]);
       }
     } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to load predictions';
       console.error('Failed to load predictions:', error);
       setPredictions([]);
+      showNotification('error', 'Comparison Failed', msg);
     } finally {
       setLoading(false);
     }

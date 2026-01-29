@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
-import { Settings, RefreshCw, Moon, Sun, Sparkles, Bell, Download, Trash2, Save } from 'lucide-react';
+import { Settings, RefreshCw, Moon, Sun, Sparkles, Bell, Download, Trash2, Save, Activity } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNotifications } from '../contexts/NotificationContext';
+import { useHealth } from '../contexts/HealthContext';
 import { notificationSettingsService, NotificationSettings } from '../services/alertsService';
+import { userAPI } from '../services/api';
+import { config } from '../config';
 
 interface UserPreferences {
   refreshInterval: number; // in seconds
@@ -24,56 +27,157 @@ const defaultPreferences: UserPreferences = {
 const SettingsPage = () => {
   const { theme, setTheme } = useTheme();
   const { settings: notificationSettings, updateSettings: updateNotificationSettings } = useNotifications();
+  const { health, checkHealth, isPolling } = useHealth();
   const [preferences, setPreferences] = useState<UserPreferences>(defaultPreferences);
   const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadPreferences();
+    loadSettingsFromBackend();
   }, []);
 
-  const loadPreferences = () => {
+  const loadSettingsFromBackend = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const stored = localStorage.getItem('user_preferences');
-      if (stored) {
-        setPreferences({ ...defaultPreferences, ...JSON.parse(stored) });
+      // Load settings from backend instead of localStorage
+      const response = await userAPI.getSettings();
+      if (response.settings) {
+        setPreferences({ ...defaultPreferences, ...response.settings });
       }
-    } catch {
-      // Use defaults
+    } catch (error: any) {
+      console.error('Failed to load settings from backend:', error);
+      setError('Failed to load settings from server. Using default settings.');
+      // Still try to load from localStorage as fallback
+      try {
+        const stored = localStorage.getItem('user_preferences');
+        if (stored) {
+          setPreferences({ ...defaultPreferences, ...JSON.parse(stored) });
+        }
+      } catch (localError) {
+        // Use defaults if localStorage also fails
+        setPreferences(defaultPreferences);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const savePreferences = () => {
-    localStorage.setItem('user_preferences', JSON.stringify(preferences));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-  };
-
-  const clearAllData = () => {
-    if (confirm('Are you sure you want to clear all local data? This will remove your portfolio, watchlist, alerts, and preferences.')) {
-      localStorage.clear();
-      window.location.reload();
+  const savePreferences = async () => {
+    try {
+      // Save preferences to backend
+      await userAPI.saveSettings(preferences);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (error: any) {
+      console.error('Failed to save settings to backend:', error);
+      // Fallback to localStorage if backend save fails
+      localStorage.setItem('user_preferences', JSON.stringify(preferences));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     }
   };
 
-  const exportData = () => {
-    const data = {
-      preferences,
-      portfolio: localStorage.getItem('portfolio_holdings'),
-      watchlist: localStorage.getItem('watchlist'),
-      alerts: {
-        price: localStorage.getItem('price_alerts'),
-        prediction: localStorage.getItem('prediction_alerts'),
-      },
-      timestamp: new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `trading-dashboard-backup-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const clearAllData = async () => {
+    if (confirm('Are you sure you want to clear all data? This will remove your portfolio, watchlist, alerts, and preferences.')) {
+      try {
+        // Try to clear data via backend API if available
+        const response = await fetch(`${config.API_BASE_URL}/api/data/clear`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (response.ok) {
+          // Backend cleared data successfully
+        } else {
+          // Fallback to localStorage clearing
+          localStorage.clear();
+        }
+      } catch (error) {
+        // Fallback to localStorage clearing
+        localStorage.clear();
+      } finally {
+        window.location.reload();
+      }
+    }
   };
+
+  const exportData = async () => {
+    try {
+      // Try to export data via backend API if available
+      const response = await fetch(`${config.API_BASE_URL}/api/data/export`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trading-dashboard-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        // Fallback to localStorage export
+        const data = {
+          preferences,
+          portfolio: localStorage.getItem('portfolio_holdings'),
+          watchlist: localStorage.getItem('watchlist'),
+          alerts: {
+            price: localStorage.getItem('price_alerts'),
+            prediction: localStorage.getItem('prediction_alerts'),
+          },
+          timestamp: new Date().toISOString(),
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trading-dashboard-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      // Fallback to localStorage export
+      const data = {
+        preferences,
+        portfolio: localStorage.getItem('portfolio_holdings'),
+        watchlist: localStorage.getItem('watchlist'),
+        alerts: {
+          price: localStorage.getItem('price_alerts'),
+          prediction: localStorage.getItem('prediction_alerts'),
+        },
+        timestamp: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `trading-dashboard-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <span className="ml-2 text-gray-400">Loading settings...</span>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -85,6 +189,19 @@ const SettingsPage = () => {
           </h1>
           <p className="text-gray-400 text-sm">Manage your preferences and application settings</p>
         </div>
+
+        {error && (
+          <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-red-200">
+            <p className="font-semibold mb-1">Error Loading Settings</p>
+            <p className="text-sm">{error}</p>
+            <button 
+              onClick={loadSettingsFromBackend}
+              className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* Appearance */}
         <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
@@ -258,6 +375,62 @@ const SettingsPage = () => {
           </div>
         </div>
 
+        {/* System Health Status */}
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5" />
+            System Health
+          </h2>
+          <div className="space-y-4">
+            <div className={`p-4 rounded-lg border ${
+              health.healthy 
+                ? 'bg-green-500/10 border-green-500/30' 
+                : 'bg-red-500/10 border-red-500/30'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-3 h-3 rounded-full ${
+                  health.healthy ? 'bg-green-400 animate-pulse' : 'bg-red-400'
+                }`}></div>
+                <div>
+                  <p className={`font-semibold ${
+                    health.healthy ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    System {health.healthy ? 'Healthy' : 'Offline'}
+                  </p>
+                  <p className="text-gray-400 text-sm mt-1">
+                    {health.status || 'Checking status...'}
+                  </p>
+                </div>
+                <button
+                  onClick={checkHealth}
+                  disabled={isPolling}
+                  className="ml-auto p-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Refresh health status"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isPolling ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+            
+            {health.healthy && (health as any).system && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-slate-700/50 p-3 rounded-lg">
+                  <p className="text-gray-400 text-sm">CPU Usage</p>
+                  <p className="text-white font-semibold text-lg">
+                    {(health as any).system.cpu_usage_percent?.toFixed(1) || 'N/A'}%
+                  </p>
+                </div>
+                <div className="bg-slate-700/50 p-3 rounded-lg">
+                  <p className="text-gray-400 text-sm">Memory Usage</p>
+                  <p className="text-white font-semibold text-lg">
+                    {(health as any).system.memory_percent?.toFixed(1) || 'N/A'}%
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Data Management */}
         <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
           <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -287,7 +460,3 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
-
-
-
-

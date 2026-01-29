@@ -2,34 +2,37 @@ import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { formatUSDToINR } from '../utils/currencyConverter';
+import { historyAPI } from '../services/api';
 
 const TradingHistoryPage = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     loadTradingHistory();
-  }, []);
+  }, [currentPage]);
 
   const loadTradingHistory = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Load from localStorage (user's saved transactions)
-      // In a real app, this would come from backend API
-      const saved = localStorage.getItem('tradingHistory');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setTransactions(parsed);
+      // Load from backend API instead of localStorage
+      const response = await historyAPI.getHistory(currentPage, 20);
+      if (response.trades) {
+        setTransactions(response.trades);
+        setTotalPages(response.totalPages || 1);
       } else {
-        // No mock data - show empty state
         setTransactions([]);
+        setTotalPages(1);
       }
     } catch (error: any) {
       console.error('Failed to load trading history:', error);
-      setError('Failed to load trading history');
+      setError('Failed to load trading history from server');
       setTransactions([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -51,6 +54,12 @@ const TradingHistoryPage = () => {
               <AlertCircle className="w-5 h-5" />
               <span>{error}</span>
             </div>
+            <button 
+              onClick={loadTradingHistory}
+              className="mt-3 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm"
+            >
+              Retry
+            </button>
           </div>
         ) : transactions.length > 0 ? (
           <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
@@ -98,9 +107,9 @@ const TradingHistoryPage = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">{transaction.symbol}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-300">{transaction.shares}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">${transaction.price?.toFixed(2) || '0.00'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-300">{formatUSDToINR(transaction.price || 0, transaction.symbol)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
-                        {formatUSDToINR(transaction.total || 0)}
+                        {formatUSDToINR(transaction.total || 0, transaction.symbol)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">
@@ -112,6 +121,39 @@ const TradingHistoryPage = () => {
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-slate-700 px-6 py-4">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg ${
+                    currentPage === 1
+                      ? 'bg-slate-700 text-gray-500 cursor-not-allowed'
+                      : 'bg-slate-700 hover:bg-slate-600 text-white'
+                  }`}
+                >
+                  Previous
+                </button>
+                
+                <span className="text-white">
+                  Page {currentPage} of {totalPages}
+                </span>
+                
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg ${
+                    currentPage === totalPages
+                      ? 'bg-slate-700 text-gray-500 cursor-not-allowed'
+                      : 'bg-slate-700 hover:bg-slate-600 text-white'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="bg-slate-800 rounded-lg p-12 border border-slate-700 text-center">

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { stockAPI, TimeoutError, type PredictionItem } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area } from 'recharts';
 import { Brain, Cpu, TrendingUp, Zap, BarChart3 } from 'lucide-react';
 
 const AnalyticsPage = () => {
+  const { showNotification } = useNotification();
   const [analytics, setAnalytics] = useState<{
     predictions: PredictionItem[];
     buyCount: number;
@@ -117,6 +119,7 @@ const AnalyticsPage = () => {
       }
       setLoading(false);
       setError(null);
+      showNotification('success', 'Analytics Loaded', `Analyzed ${predictions.length} symbols. ${buyCount} Buy, ${sellCount} Sell, ${holdCount} Hold.`);
     } catch (error: unknown) {
       // Handle TimeoutError - backend is still processing
       if (error instanceof TimeoutError) {
@@ -130,8 +133,10 @@ const AnalyticsPage = () => {
       const err = error instanceof Error ? error : new Error(String(error));
       console.error('Failed to load analytics:', err);
       setAnalytics(null);
-      setError(err.message || 'Failed to load analytics');
+      const msg = err.message || 'Failed to load analytics';
+      setError(msg);
       setLoading(false);
+      showNotification('error', 'Analytics Failed', msg);
     }
   };
 

@@ -54,21 +54,21 @@ const AlertsPage = () => {
 
   const handleAddPriceAlert = () => {
     if (!newPriceAlert.symbol) {
-      alert('Please enter a symbol');
+      window.alert('Please enter a symbol');
       return;
     }
 
     if (newPriceAlert.type !== 'change' && !newPriceAlert.targetPrice) {
-      alert('Please enter a target price');
+      window.alert('Please enter a target price');
       return;
     }
 
     if (newPriceAlert.type === 'change' && !newPriceAlert.changePercent) {
-      alert('Please enter a change percentage');
+      window.alert('Please enter a change percentage');
       return;
     }
 
-    const alert = priceAlertsService.add({
+    const newAlert = priceAlertsService.add({
       symbol: newPriceAlert.symbol.toUpperCase(),
       type: newPriceAlert.type,
       targetPrice: newPriceAlert.type !== 'change' ? parseFloat(newPriceAlert.targetPrice) : undefined,
@@ -79,8 +79,8 @@ const AlertsPage = () => {
     addNotification({
       type: 'price',
       title: 'Price Alert Created',
-      message: `Alert set for ${alert.symbol} ${alert.type === 'above' ? 'above' : alert.type === 'below' ? 'below' : 'change'} ${alert.targetPrice || alert.changePercent}%`,
-      symbol: alert.symbol,
+      message: `Alert set for ${newAlert.symbol} ${newAlert.type === 'above' ? 'above' : newAlert.type === 'below' ? 'below' : 'change'} ${newAlert.targetPrice || newAlert.changePercent}%`,
+      symbol: newAlert.symbol,
     });
 
     setNewPriceAlert({ symbol: '', type: 'above', targetPrice: '', changePercent: '' });
@@ -90,11 +90,11 @@ const AlertsPage = () => {
 
   const handleAddPredictionAlert = () => {
     if (!newPredictionAlert.symbol) {
-      alert('Please enter a symbol');
+      window.alert('Please enter a symbol');
       return;
     }
 
-    const alert = predictionAlertsService.add({
+    const newAlert = predictionAlertsService.add({
       symbol: newPredictionAlert.symbol.toUpperCase(),
       action: newPredictionAlert.action,
       isActive: true,
@@ -103,8 +103,8 @@ const AlertsPage = () => {
     addNotification({
       type: 'prediction',
       title: 'Prediction Alert Created',
-      message: `Alert set for ${alert.symbol} when prediction changes to ${alert.action}`,
-      symbol: alert.symbol,
+      message: `Alert set for ${newAlert.symbol} when prediction changes to ${newAlert.action}`,
+      symbol: newAlert.symbol,
     });
 
     setNewPredictionAlert({ symbol: '', action: 'LONG' });
